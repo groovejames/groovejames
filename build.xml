@@ -51,8 +51,9 @@
 		<taskdef
 			name="launch4j"
 			classname="net.sf.launch4j.ant.Launch4jTask"
-			classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar"
+			classpath="${launch4j.dir}/launch4j.jar"
 		/>
+        <!--
 		<launch4j
 			configFile="launch4j.xml"
 			jarPath="out/grooveJames-${build.number}.jar"
@@ -62,7 +63,47 @@
 			productVersion="0.0.0.${build.number}"
 			txtProductVersion="${build.number}"
 		/>
-	</target>
+        -->
+        <launch4j>
+            <config dontWrapJar="false"
+                    headerType="gui"
+                    jarPath="out/grooveJames-${build.number}.jar"
+                    outfile="out/grooveJames-${build.number}.exe"
+                    errtitle="GrooveJames - Error"
+                    priority="normal"
+                    downloadurl="http://java.com/download"
+                    customprocname="false"
+                    stayalive="false"
+                    icon="butler.ico">
+                <jre minversion="1.6.0" jdkpreference="preferJre">
+                    <!--<opt>-Dsun.java2d.d3d=false</opt>-->
+                </jre>
+                <singleinstance
+                    mutexName="grooveJames"
+                    windowTitle="GrooveJames"
+                />
+                <versioninfo
+                    fileVersion="0.0.0.${build.number}"
+                    txtFileVersion="0.${build.number}"
+                    fileDescription="GrooveJames - ripping tracks from Grooveshark.com"
+                    copyright="The GrooveJames developers"
+                    productVersion="0.0.0.${build.number}"
+                    txtProductVersion="0.${build.number}"
+                    productName="GrooveJames"
+                    companyName=""
+                    internalName="GrooveJames"
+                    originalFilename="grooveJames.exe"
+                />
+                <messages
+                    startupErr="An error occurred while starting the application."
+                    bundledJreErr="This application was configured to use a bundled Java Runtime Environment but the runtime is missing or corrupted."
+                    jreVersionErr="Cannot find a suitable Java Runtime Environment.\nGrooveJames requires Java 6 or higher.\n\nYour browser will now point you to a website\nwhere you can download the latest Java version.\n\nNote: GrooveJames requires at least Java version"
+                    launcherErr="The registry refers to a nonexistent Java Runtime Environment installation or the runtime is corrupted."
+                    instanceAlreadyExistsMsg="GrooveJames is already running."
+                />
+            </config>
+        </launch4j>
+    </target>
 
 
 	<target name="src" depends="readBuildNumber" description="create source distribution zip file">
@@ -80,7 +121,7 @@
 
     <target name="readBuildNumber">
         <property file="src/groovejames/gui/version.properties"/>
-        <echo message="build-number: ${build.number}" level="info"/>		
+        <echo message="build-number: ${build.number}" level="info"/>
     </target>
 
 
@@ -89,9 +130,9 @@
             <entry key="build.number" type="int" operation="+" default="0"/>
         </propertyfile>
         <property file="src/groovejames/gui/version.properties"/>
-        <echo message="build-number: ${build.number}" level="info"/>		
+        <echo message="build-number: ${build.number}" level="info"/>
     </target>
-	
+
 
 	<target name="all" depends="clean, incBuildNumber, exe, src" description="cleanup and rebuild executable and source distribution zip file"/>
 
