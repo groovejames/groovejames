@@ -1,0 +1,102 @@
+<project name="grooveJames" basedir="." default="all">
+
+	<property name="launch4j.dir" location="etc/launch4j"/>
+
+	<fileset id="libs" dir="lib" includes="*.jar"/>
+
+	<path id="compile.classpath">
+		<fileset refid="libs"/>
+	</path>
+
+
+	<target name="compile" description="compile all">
+		<mkdir dir="out/production/gs"/>
+		<javac
+			srcdir="src"
+			destdir="out/production/gs"
+			classpathref="compile.classpath"
+			debug="true"
+			deprecation="true"
+			source="1.6"
+			target="1.6"
+		/>
+		<copy todir="out/production/gs">
+			<fileset dir="src">
+				<include name="**/*.png"/>
+				<include name="**/*.gif"/>
+                <include name="**/*.properties"/>
+                <include name="**/*.bxml"/>
+                <include name="**/*.json"/>
+			</fileset>
+		</copy>
+	</target>
+
+
+	<target name="jar" depends="readBuildNumber, compile">
+		<jar destfile="out/grooveJames-${build.number}.jar" compress="true">
+            <manifest>
+                <attribute name="Main-Class" value="groovejames.gui.Main"/>
+                <attribute name="Build-Number" value="${build.number}"/>
+                <!--<attribute name="SplashScreen-Image" value="org/lastjames/gui/resources/splash.png"/>-->
+            </manifest>
+            <zipgroupfileset refid="libs"/>
+			<fileset dir="out/production/gs"/>
+		</jar>
+	</target>
+
+
+	<target name="exe" depends="readBuildNumber, jar">
+		<taskdef
+			name="launch4j"
+			classname="net.sf.launch4j.ant.Launch4jTask"
+			classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar"
+		/>
+		<launch4j
+			configFile="launch4j.xml"
+			jarPath="out/grooveJames-${build.number}.jar"
+			outfile="out/grooveJames-${build.number}.exe"
+			fileVersion="0.0.0.${build.number}"
+			txtFileVersion="${build.number}"
+			productVersion="0.0.0.${build.number}"
+			txtProductVersion="${build.number}"
+		/>
+	</target>
+
+
+	<target name="src" depends="readBuildNumber" description="create source distribution zip file">
+		<mkdir dir="out"/>
+		<zip destfile="out/grooveJames-${build.number}-src.zip">
+			<zipfileset dir="." prefix="grooveJames">
+				<exclude name="out/**"/>
+				<exclude name="**/*.log"/>
+                <exclude name="**/*.log.*"/>
+                <exclude name="**/Thumbs.db"/>
+			</zipfileset>
+		</zip>
+	</target>
+
+
+    <target name="readBuildNumber">
+        <property file="src/groovejames/gui/version.properties"/>
+        <echo message="build-number: ${build.number}" level="info"/>		
+    </target>
+
+
+    <target name="incBuildNumber">
+        <propertyfile file="src/groovejames/gui/version.properties">
+            <entry key="build.number" type="int" operation="+" default="0"/>
+        </propertyfile>
+        <property file="src/groovejames/gui/version.properties"/>
+        <echo message="build-number: ${build.number}" level="info"/>		
+    </target>
+	
+
+	<target name="all" depends="clean, incBuildNumber, exe, src" description="cleanup and rebuild executable and source distribution zip file"/>
+
+
+	<target name="clean" description="cleanup">
+		<delete dir="out"/>
+		<delete dir="." includes="*.log,*.log.*"/>
+	</target>
+
+</project>

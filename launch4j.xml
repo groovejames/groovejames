@@ -1,0 +1,54 @@
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>out/grooveJames.jar</jar>
+  <outfile>out/grooveJames.exe</outfile>
+  <errTitle>GrooveJames - Error</errTitle>
+  <cmdLine></cmdLine>
+  <chdir></chdir>
+  <priority>normal</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl></supportUrl>
+  <customProcName>false</customProcName>
+  <stayAlive>false</stayAlive>
+  <manifest></manifest>
+  <icon>butler.ico</icon>
+  <singleInstance>
+    <mutexName>grooveJames</mutexName>
+    <windowTitle>GrooveJames</windowTitle>
+  </singleInstance> 
+  <jre>
+    <path></path>
+    <minVersion>1.6.0</minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+    <!--<opt>-Dsun.java2d.d3d=false</opt>-->
+  </jre>
+<!--
+  <splash>
+    <file>src/org/lastjames/gui/resources/splash.bmp</file>
+    <waitForWindow>true</waitForWindow>
+    <timeout>60</timeout>
+    <timeoutErr>true</timeoutErr>
+  </splash>
+-->
+  <versionInfo>
+    <fileVersion>0.0.0.1</fileVersion>
+    <txtFileVersion>0.1</txtFileVersion>
+    <fileDescription>GrooveJames - ripping tracks from Grooveshark.com</fileDescription>
+    <copyright>The GrooveJames developers</copyright>
+    <productVersion>0.0.0.1</productVersion>
+    <txtProductVersion>0.1</txtProductVersion>
+    <productName>GrooveJames</productName>
+    <companyName></companyName>
+    <internalName>GrooveJames</internalName>
+    <originalFilename>grooveJames.exe</originalFilename>
+  </versionInfo>
+  <messages>
+    <startupErr>An error occurred while starting the application.</startupErr>
+    <bundledJreErr>This application was configured to use a bundled Java Runtime Environment but the runtime is missing or corrupted.</bundledJreErr>
+    <jreVersionErr>Cannot find a suitable Java Runtime Environment.\nGrooveJames requires Java 6 or higher.\n\nYour browser will now point you to a website\nwhere you can download the latest Java version.\n\nNote: GrooveJames requires at least Java version</jreVersionErr>
+    <launcherErr>The registry refers to a nonexistent Java Runtime Environment installation or the runtime is corrupted.</launcherErr>
+    <instanceAlreadyExistsMsg>GrooveJames is already running.</instanceAlreadyExistsMsg>
+  </messages>
+</launch4jConfig>

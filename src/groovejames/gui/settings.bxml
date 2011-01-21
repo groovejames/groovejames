@@ -1,0 +1,52 @@
+<Sheet xmlns="org.apache.pivot.wtk"
+       xmlns:validation="org.apache.pivot.wtk.validation"
+       xmlns:content="org.apache.pivot.wtk.content"
+       xmlns:bxml="http://pivot.apache.org/bxml">
+    <content>
+        <TablePane styles="{verticalSpacing:8}">
+            <columns>
+                <TablePane.Column width="1*"/>
+            </columns>
+            <rows>
+                <TablePane.Row height="-1">
+                    <Label text="Settings" styles="{font: {bold: true, size: '130%'}}"/>
+                </TablePane.Row>
+                <TablePane.Row height="1*">
+                    <TabPane>
+                        <tabs>
+                            <Form bxml:id="networkForm" styles="{fill:true}">
+                                <TabPane.tabData>
+                                    <content:ButtonData text="Network"/>
+                                </TabPane.tabData>
+                                <sections>
+                                    <Form.Section heading="Proxy">
+                                        <TextInput bxml:id="proxyHost" textKey="proxyHost" Form.label="HTTP Proxy"
+                                                   styles="{backgroundColor: '#FFFFFF'}"/>
+                                        <TextInput bxml:id="proxyPort" textKey="proxyPort" Form.label="Port"
+                                                   strictValidation="true" maximumLength="5"
+                                                   styles="{backgroundColor: '#FFFFFF'}">
+                                            <validator>
+                                                <validation:RegexTextValidator>
+                                                    <pattern><![CDATA[[0-9]*]]></pattern>
+                                                </validation:RegexTextValidator>
+                                            </validator>
+                                        </TextInput>
+                                    </Form.Section>
+                                </sections>
+                            </Form>
+                        </tabs>
+                    </TabPane>
+                </TablePane.Row>
+                <TablePane.Row height="-1">
+                    <bxml:define>
+                        <bxml:include bxml:id="styles" src="styles.json"/>
+                    </bxml:define>
+                    <BoxPane styles="{horizontalAlignment:'right', verticalAlignment:'center'}">
+                        <PushButton bxml:id="okButton" buttonData="OK" styles="$styles.commandButton"/>
+                        <PushButton bxml:id="cancelButton" buttonData="Cancel" styles="$styles.commandButton"/>
+                    </BoxPane>
+                </TablePane.Row>
+            </rows>
+        </TablePane>
+    </content>
+</Sheet>

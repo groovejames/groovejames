@@ -1,0 +1,63 @@
+<Window title="%main.window.title"
+        styles="%main.window.styles"
+        maximized="true"
+        bxml:id="window"
+        xmlns="org.apache.pivot.wtk"
+        xmlns:content="org.apache.pivot.wtk.content"
+        xmlns:gui="groovejames.gui"
+        xmlns:bxml="http://pivot.apache.org/bxml">
+    <content>
+        <TablePane styles="%main.tablePane.styles">
+            <columns>
+                <TablePane.Column width="1*"/>
+            </columns>
+            <rows>
+                <TablePane.Row>
+                    <FlowPane styles="{alignment:'right'}">
+                        <LinkButton buttonData="Settings..."
+                                    styles="%main.settingsButton.styles"
+                                    action="showSettings"/>
+                    </FlowPane>
+                </TablePane.Row>
+                <TablePane.Row>
+                    <Border>
+                        <content>
+                            <TablePane>
+                                <columns>
+                                    <TablePane.Column width="1*"/>
+                                    <TablePane.Column width="-1"/>
+                                </columns>
+                                <rows>
+                                    <TablePane.Row>
+                                        <TextInput bxml:id="searchField"
+                                                   prompt="%main.searchField.prompt"
+                                                   styles="%main.searchField.styles"/>
+                                        <PushButton bxml:id="searchButton" styles="%main.searchButton.styles">
+                                            <buttonData>
+                                                <content:ButtonData icon="@search.png"/>
+                                            </buttonData>
+                                        </PushButton>
+                                    </TablePane.Row>
+                                </rows>
+                            </TablePane>                            
+                        </content>
+                    </Border>
+                </TablePane.Row>
+                <TablePane.Row height="1*">
+                    <SplitPane bxml:id="mainSplitPane" splitRatio="1.0" orientation="vertical">
+                        <top>
+                            <TabPane bxml:id="tabPane" closeable="true"/>
+                        </top>
+                        <bottom>
+                            <TabPane>
+                                <tabs>
+                                    <bxml:include src="downloadpane.bxml" inline="true"/>
+                                </tabs>
+                            </TabPane>
+                        </bottom>
+                    </SplitPane>
+                </TablePane.Row>
+            </rows>
+        </TablePane>
+    </content>
+</Window>

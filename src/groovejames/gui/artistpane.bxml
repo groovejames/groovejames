@@ -1,0 +1,58 @@
+<gui:ArtistPane xmlns="org.apache.pivot.wtk"
+                xmlns:bxml="http://pivot.apache.org/bxml"
+                xmlns:collections="org.apache.pivot.collections"
+                xmlns:content="org.apache.pivot.wtk.content"
+                xmlns:gui="groovejames.gui"
+                xmlns:guicomponents="groovejames.gui.components"
+                xmlns:model="groovejames.model"
+                styles="{verticalSpacing:6}">
+    <columns>
+        <TablePane.Column width="1*"/>
+    </columns>
+    <rows>
+        <TablePane.Row>
+            <BoxPane styles="{fill:true, horizontalAlignment:'right'}">
+                <TextInput bxml:id="artistSearchInPage" prompt="Search in page..."
+                           styles="{backgroundColor: '#FFFFFF'}"/>
+            </BoxPane>
+        </TablePane.Row>
+        <TablePane.Row height="1*">
+            <Border>
+                <content>
+                    <ScrollPane horizontalScrollBarPolicy="fill_to_capacity">
+                        <view>
+                            <guicomponents:ClickableTableView bxml:id="artistTable" selectMode="single"
+                                                              clickableColumns="1"
+                                                              styles="{font:{bold:true, size:'130%'}, showHorizontalGridLines:false, showVerticalGridLines:false}"
+                                                              sort="[{columnName:'rank', sortDirection:'DESCENDING'}]">
+                                <columns>
+                                    <TableView.Column name="image" width="50">
+                                        <cellRenderer>
+                                            <guicomponents:ImageObjectCellRenderer
+                                                    bxml:id="artistImageRenderer"
+                                                    preferredHeight="40"
+                                                    urlPrefix="http://beta.grooveshark.com/static/amazonart/m"
+                                                    defaultImage="@unknownSong.png"/>
+                                        </cellRenderer>
+                                    </TableView.Column>
+                                    <TableView.Column name="artistName" headerData="Artist" width="1*"/>
+                                    <TableView.Column name="rank" headerData="Relevance" width="80">
+                                        <cellRenderer>
+                                            <guicomponents:MeterTableCellRenderer/>
+                                        </cellRenderer>
+                                    </TableView.Column>
+                                    <!--<TableView.Column name="dummy" width="1*"/>-->
+                                </columns>
+                            </guicomponents:ClickableTableView>
+                        </view>
+                        <columnHeader>
+                            <TableViewHeader tableView="$artistTable"
+                                             styles="{columnsResizable:true}"
+                                             sortMode="single_column"/>
+                        </columnHeader>
+                    </ScrollPane>
+                </content>
+            </Border>
+        </TablePane.Row>
+    </rows>
+</gui:ArtistPane>

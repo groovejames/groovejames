@@ -1,0 +1,74 @@
+<gui:SearchResultPane styles="{verticalSpacing:10, horizontalSpacing: 6}"
+                      xmlns="org.apache.pivot.wtk"
+                      xmlns:gui="groovejames.gui"
+                      xmlns:content="org.apache.pivot.wtk.content"
+                      xmlns:bxml="http://pivot.apache.org/bxml">
+    <columns>
+        <TablePane.Column width="1*"/>
+    </columns>
+    <rows>
+        <TablePane.Row>
+            <Label bxml:id="searchLabel" styles="%searchresultpane.searchLabel.styles"/>
+        </TablePane.Row>
+        <TablePane.Row height="1*">
+            <TabPane bxml:id="tabPane" selectedIndex="0">
+                <tabs>
+                    <CardPane bxml:id="artistCardPane" styles="{selectionChangeEffect: 'crossfade'}">
+                        <TabPane.tabData>
+                            <content:ButtonData text="Artists"/>
+                        </TabPane.tabData>
+                        <BoxPane styles="{horizontalAlignment:'center', verticalAlignment:'center'}">
+                            <ActivityIndicator active="false" styles="%main.activityIndicator.styles"
+                                               preferredWidth="120" preferredHeight="120"/>
+                        </BoxPane>
+                        <bxml:include bxml:id="artistpane" src="artistpane.bxml" inline="false"/>
+                    </CardPane>
+                    <CardPane bxml:id="albumCardPane" styles="{selectionChangeEffect: 'crossfade'}">
+                        <TabPane.tabData>
+                            <content:ButtonData text="Albums"/>
+                        </TabPane.tabData>
+                        <BoxPane styles="{horizontalAlignment:'center', verticalAlignment:'center'}">
+                            <ActivityIndicator active="false"
+                                               styles="%main.activityIndicator.styles"
+                                               preferredWidth="120" preferredHeight="120"/>
+                        </BoxPane>
+                        <bxml:include bxml:id="albumpane" src="albumpane.bxml" inline="false"/>
+                    </CardPane>
+                    <CardPane bxml:id="songCardPane" styles="{selectionChangeEffect: 'crossfade'}">
+                        <TabPane.tabData>
+                            <content:ButtonData text="Songs"/>
+                        </TabPane.tabData>
+                        <BoxPane styles="{horizontalAlignment:'center', verticalAlignment:'center'}">
+                            <ActivityIndicator active="false"
+                                               styles="%main.activityIndicator.styles"
+                                               preferredWidth="120" preferredHeight="120"/>
+                        </BoxPane>
+                        <bxml:include bxml:id="songpane" src="songpane.bxml" inline="false"/>
+                    </CardPane>
+                    <CardPane bxml:id="similarArtistCardPane" styles="{selectionChangeEffect: 'crossfade'}">
+                        <TabPane.tabData>
+                            <content:ButtonData text="Similar"/>
+                        </TabPane.tabData>
+                        <BoxPane styles="{horizontalAlignment:'center', verticalAlignment:'center'}">
+                            <ActivityIndicator active="false"
+                                               styles="%main.activityIndicator.styles"
+                                               preferredWidth="120" preferredHeight="120"/>
+                        </BoxPane>
+                        <bxml:include bxml:id="similarartistpane" src="artistpane.bxml" inline="false"/>
+                    </CardPane>
+                    <CardPane bxml:id="peopleCardPane" styles="{selectionChangeEffect: 'crossfade'}">
+                        <TabPane.tabData>
+                            <content:ButtonData text="People"/>
+                        </TabPane.tabData>
+                        <BoxPane styles="{horizontalAlignment:'center', verticalAlignment:'center'}">
+                            <ActivityIndicator active="false"
+                                               styles="%main.activityIndicator.styles"
+                                               preferredWidth="120" preferredHeight="120"/>
+                        </BoxPane>
+                        <bxml:include bxml:id="peoplepane" src="peoplepane.bxml" inline="false"/>
+                    </CardPane>
+                </tabs>
+            </TabPane>
+        </TablePane.Row>
+    </rows>
+</gui:SearchResultPane>
