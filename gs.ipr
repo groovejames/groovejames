@@ -293,20 +293,6 @@
         <entry key="$PROJECT_DIR$">
           <value>
             <SvnBranchConfiguration>
-              <option name="branchMap">
-                <map>
-                  <entry key="http://javaforge.com/svn/groovejames/branches">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                  <entry key="http://javaforge.com/svn/groovejames/tags">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                </map>
-              </option>
               <option name="branchUrls">
                 <list>
                   <option value="http://javaforge.com/svn/groovejames/branches" />

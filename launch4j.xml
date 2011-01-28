@@ -1,17 +1,14 @@
 <launch4jConfig>
-  <dontWrapJar>false</dontWrapJar>
+  <dontWrapJar>true</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>out/grooveJames.jar</jar>
-  <outfile>out/grooveJames.exe</outfile>
+  <jar>grooveJames.jar</jar>
+  <outfile>grooveJames.exe</outfile>
   <errTitle>GrooveJames - Error</errTitle>
-  <cmdLine></cmdLine>
-  <chdir></chdir>
+  <chdir>.</chdir>
   <priority>normal</priority>
   <downloadUrl>http://java.com/download</downloadUrl>
-  <supportUrl></supportUrl>
-  <customProcName>false</customProcName>
+  <supportUrl>http://www.javaforge.com/project/GJ</supportUrl>
   <stayAlive>false</stayAlive>
-  <manifest></manifest>
   <icon>butler.ico</icon>
   <singleInstance>
     <mutexName>grooveJames</mutexName>
@@ -33,12 +30,12 @@
   </splash>
 -->
   <versionInfo>
-    <fileVersion>0.0.0.1</fileVersion>
-    <txtFileVersion>0.1</txtFileVersion>
+    <fileVersion>1.0.0.0</fileVersion>
+    <txtFileVersion>1.0</txtFileVersion>
     <fileDescription>GrooveJames - ripping tracks from Grooveshark.com</fileDescription>
     <copyright>The GrooveJames developers</copyright>
-    <productVersion>0.0.0.1</productVersion>
-    <txtProductVersion>0.1</txtProductVersion>
+    <productVersion>1.0.0.0</productVersion>
+    <txtProductVersion>1.0</txtProductVersion>
     <productName>GrooveJames</productName>
     <companyName></companyName>
     <internalName>GrooveJames</internalName>
