@@ -83,6 +83,31 @@
 	</target>
 
 
+    <target name="release-bin" depends="dist-bin">
+        <CBRelease
+            file="out/grooveJames-${build.number}-bin.zip"
+            tofile="grooveJames-${build.number}-bin.zip"
+            todir="binaries"
+            description="GrooveJames ${build.number} binaries"
+            descriptionformat="T"
+        />
+    </target>
+
+
+    <target name="release-src" depends="dist-src">
+        <CBRelease
+            file="out/grooveJames-${build.number}-src.zip"
+            tofile="grooveJames-${build.number}-src.zip"
+            todir="sources"
+            description="GrooveJames ${build.number} sources"
+            descriptionformat="T"
+        />
+    </target>
+
+
+    <target name="release-all" depends="release-bin, release-src" description="release files on CodeBeamer/JavaForge"/>
+
+
     <target name="readBuildNumber">
         <property file="src/groovejames/gui/version.properties"/>
         <echo message="build-number: ${build.number}" level="info"/>
