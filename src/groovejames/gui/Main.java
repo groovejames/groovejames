@@ -179,7 +179,7 @@ public class Main implements Application, ImageGetter {
         serializer.getNamespace().put("main", this);
         Window window = (Window) serializer.readObject(getClass().getResource("main.bxml"), resources);
         serializer.bind(this, Main.class);
-        window.setTitle("GrooveJames " + getVersionNumber());
+        window.setTitle("GrooveJames " + getVersionNumberAndDate());
         return window;
     }
 
@@ -346,16 +346,32 @@ public class Main implements Application, ImageGetter {
         }
     }
 
-    private int getVersionNumber() throws IOException {
+    private String getVersionNumberAndDate() {
+        String versionNumberAndDate = "";
+        String buildNumber = "0";
+        String buildDate = "";
         InputStream is = getClass().getResourceAsStream("version.properties");
-        int versionNumber = 0;
         if (is != null) {
-            Properties properties = new Properties();
-            properties.load(is);
-            versionNumber = Integer.parseInt(properties.getProperty("build.number", "0"));
-            is.close();
+            try {
+                Properties properties = new Properties();
+                properties.load(is);
+                buildNumber = properties.getProperty("build.number", "0");
+                buildDate = properties.getProperty("build.date", "");
+            }
+            catch (IOException ignore) {
+            }
+            finally {
+                try {
+                    is.close();
+                } catch (IOException ignore) {
+                }
+            }
         }
-        return versionNumber;
+        if (!buildNumber.isEmpty())
+            versionNumberAndDate += "r" + buildNumber;
+        if (!buildDate.isEmpty())
+            versionNumberAndDate += " (built on " + buildDate + ")";
+        return versionNumberAndDate;
     }
 
 
