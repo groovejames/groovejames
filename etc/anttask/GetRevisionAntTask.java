@@ -24,6 +24,7 @@ public class GetRevisionAntTask extends Task {
     private String encryptedpassword;
     private String deskey;
     private String property;
+    private File svnconfigdir;
 
     public GetRevisionAntTask() {
     }
@@ -68,6 +69,14 @@ public class GetRevisionAntTask extends Task {
         this.property = property;
     }
 
+    public File getSvnconfigdir() {
+        return svnconfigdir;
+    }
+
+    public void setSvnconfigdir(File svnconfigdir) {
+        this.svnconfigdir = svnconfigdir;
+    }
+
     public void execute() throws BuildException {
         if (getProject() == null) {
             throw new IllegalStateException("project has not been set");
@@ -78,7 +87,7 @@ public class GetRevisionAntTask extends Task {
         getProject().log("determining maximum revision number below path: " + path.getAbsolutePath(), Project.MSG_VERBOSE);
         String password = decryptDES(encryptedpassword, deskey);
         try {
-            DefaultSVNOptions options = new DefaultSVNOptions();
+            DefaultSVNOptions options = new DefaultSVNOptions(svnconfigdir, true);
             options.setAuthStorageEnabled(false);
             SVNClientManager svnClientManager = SVNClientManager.newInstance(options, username, password);
             SVNWCClient wcClient = svnClientManager.getWCClient();

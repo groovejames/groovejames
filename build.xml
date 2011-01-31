@@ -148,7 +148,8 @@
                      path="."
                      username="groovejames"
                      encryptedpassword="6fb47b29d5150e19ace410d56c616031"
-                     deskey="7b0a2751683f601b"/>
+                     deskey="7b0a2751683f601b"
+                     svnconfigdir="out/subversion"/>
     </target>
 
 
