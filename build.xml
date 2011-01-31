@@ -136,11 +136,11 @@
 
 
     <target name="getSvnRevision" depends="getSvnPassword">
-        <taskdef resource="org/tigris/subversion/svnant/svnantlib.xml">
+        <taskdef name="svn" classname="org.tigris.subversion.svnant.SvnTask">
             <classpath>
+                <pathelement location="etc/svnkit-1.3.0.jar"/>
                 <pathelement location="etc/svnClientAdapter-1.3.0.jar"/>
                 <pathelement location="etc/svnant-1.3.0.jar"/>
-                <pathelement location="etc/svnkit-1.3.0.jar"/>
                 <pathelement location="etc/svnjavahl-1.3.0.jar"/>
             </classpath>
         </taskdef>
