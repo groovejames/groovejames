@@ -7,7 +7,7 @@
         <attribute name="URI" value="/" />
       </containerElement>
     </containerInfo>
-    <setting name="jarUrl" value="file://$MODULE_DIR$/etc/gs-ant.jar" />
+    <setting name="jarUrl" value="file://$MODULE_DIR$/etc/anttask/gs-ant.jar" />
     <setting name="buildJar" value="true" />
     <setting name="mainClass" value="" />
   </component>
@@ -19,6 +19,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="ant" level="application" />
+    <orderEntry type="library" name="svn" level="project" />
   </component>
 </module>
 
