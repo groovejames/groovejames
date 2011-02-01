@@ -136,6 +136,10 @@
 
 
     <target name="getSvnRevision">
+        <exec executable="svnversion" outputproperty="svnversion">
+            <arg value="--no-newline"/>
+        </exec>
+        <echo message="svnversion: ${svnversion}"/>
         <!-- gs-ant.jar is created from etc/anttask/GetRevisionAntTask.java by IntelliJ IDEA -->
         <!-- using menu entry "Build/Build jars...". There is no Ant task to recreate gs-ant.jar. -->
         <taskdef name="getrevision" classname="GetRevisionAntTask">
