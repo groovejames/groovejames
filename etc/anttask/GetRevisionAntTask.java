@@ -84,6 +84,7 @@ public class GetRevisionAntTask extends Task {
         if (path == null || username == null || encryptedpassword == null || deskey == null || property == null) {
             throw new BuildException("You must specify properties path, username, encryptedpassword, deskey and property", getLocation());
         }
+        getProject().log("using " + org.tmatesoft.svn.util.Version.getVersionString(), Project.MSG_INFO);
         getProject().log("determining maximum revision number below path: " + path.getAbsolutePath(), Project.MSG_VERBOSE);
         String password = decryptDES(encryptedpassword, deskey);
         try {
