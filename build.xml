@@ -136,7 +136,7 @@
 
 
     <target name="getSvnRevision">
-        <exec executable="svnversion" outputproperty="svnversion">
+        <exec executable="svnversion" outputproperty="svnversion" searchpath="true">
             <arg value="--no-newline"/>
         </exec>
         <echo message="svnversion: ${svnversion}"/>
