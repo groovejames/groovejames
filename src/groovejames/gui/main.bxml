@@ -14,7 +14,7 @@
             <rows>
                 <TablePane.Row>
                     <FlowPane styles="{alignment:'right'}">
-                        <LinkButton buttonData="Settings..."
+                        <LinkButton buttonData="Change settings..."
                                     styles="%main.settingsButton.styles"
                                     action="showSettings"/>
                     </FlowPane>
