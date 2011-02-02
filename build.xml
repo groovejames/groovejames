@@ -166,8 +166,7 @@
 
     <target name="clean" description="cleanup">
         <delete includeemptydirs="true">
-            <fileset dir="out" defaultexcludes="false"/>
-            <fileset dir="." includes="*.log,*.log.*"/>
+            <fileset dir="." includes="out/**,out,*.log,*.log.*"/>
         </delete>
     </target>
 
