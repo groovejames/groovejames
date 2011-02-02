@@ -11,7 +11,7 @@
     </path>
 
 
-    <target name="compile" description="compile all">
+    <target name="compile" description="compile all" depends="readBuildNumber">
         <mkdir dir="out/production/gs"/>
         <javac srcdir="src"
                destdir="out/production/gs"
@@ -22,7 +22,6 @@
                target="1.6"
                includeantruntime="false"
                includejavaruntime="false"/>
-        <antcall target="setBuildNumber"/>
         <copy todir="out/production/gs">
             <fileset dir="src">
                 <include name="**/*.png"/>
@@ -35,11 +34,11 @@
     </target>
 
 
-    <target name="jar" depends="getSvnRevision, compile">
+    <target name="jar" depends="readBuildNumber, compile">
         <jar destfile="out/grooveJames.jar" compress="true">
             <manifest>
                 <attribute name="Main-Class" value="groovejames.gui.Main"/>
-                <attribute name="Revision-Number" value="${svn.revision.max}"/>
+                <attribute name="Build-Number" value="${build.number}"/>
                 <attribute name="Build-Date" value="${build.date}"/>
                 <!--<attribute name="SplashScreen-Image" value="org/lastjames/gui/resources/splash.png"/>-->
             </manifest>
@@ -59,18 +58,19 @@
     </target>
 
 
-    <target name="dist-bin" depends="getSvnRevision, jar" description="create the binary distribution">
+    <target name="dist-bin" depends="readBuildNumber, jar" description="create the binary distribution">
         <copy file="grooveJames.exe" todir="out"/>
-        <zip destfile="out/grooveJames-r${svn.revision.max}-bin.zip">
+        <zip destfile="out/grooveJames-r${build.number}-bin.zip">
             <zipfileset dir="out" includes="grooveJames.jar, grooveJames.exe"/>
         </zip>
     </target>
 
 
-    <target name="dist-src" depends="getSvnRevision" description="create source distribution zip file">
+    <target name="dist-src" depends="readBuildNumber" description="create source distribution zip file">
         <mkdir dir="out"/>
-        <zip destfile="out/grooveJames-r${svn.revision.max}-src.zip">
+        <zip destfile="out/grooveJames-r${build.number}-src.zip">
             <zipfileset dir="." prefix="grooveJames">
+                <exclude name="**/.svn/**"/>
                 <exclude name="out/**"/>
                 <exclude name="gs.iws"/>
                 <exclude name="**/*.log"/>
@@ -81,79 +81,74 @@
     </target>
 
 
-    <target name="release-bin" depends="getSvnRevision, dist-bin">
-        <CBRelease file="out/grooveJames-r${svn.revision.max}-bin.zip"
-                   tofile="grooveJames-r${svn.revision.max}-bin.zip"
+    <target name="release-bin" depends="readBuildNumber, dist-bin" if="filesChanged">
+        <CBRelease file="out/grooveJames-r${build.number}-bin.zip"
+                   tofile="grooveJames-r${build.number}-bin.zip"
                    todir="binaries"
-                   description="GrooveJames ${svn.revision.max} binary files"
+                   description="GrooveJames ${build.number} binary files"
                    descriptionformat="T"/>
     </target>
 
 
-    <target name="release-src" depends="dist-src">
-        <CBRelease file="out/grooveJames-r${svn.revision.max}-src.zip"
-                   tofile="grooveJames-r${svn.revision.max}-src.zip"
+    <target name="release-src" depends="readBuildNumber, dist-src" if="filesChanged">
+        <CBRelease file="out/grooveJames-r${build.number}-src.zip"
+                   tofile="grooveJames-r${build.number}-src.zip"
                    todir="sources"
-                   description="GrooveJames ${svn.revision.max} sources"
+                   description="GrooveJames ${build.number} sources"
                    descriptionformat="T"/>
     </target>
 
 
-    <target name="release-all"
-            depends="-release-all.check"
-            if="newReleaseRequired"
-            description="release files on CodeBeamer/JavaForge">
-        <antcall target="release-bin"/>
-        <antcall target="release-src"/>
-    </target>
-
-
-    <target name="-release-all.check" depends="getSvnRevision">
-        <!-- only release if revision number is higher than the one of the last release build -->
-        <property file="lastrelease.properties"/>
-        <echo message="last.svn.revision: ${last.svn.revision}" level="info"/>
-        <condition property="newReleaseRequired">
-            <not>
-                <equals arg1="${last.svn.revision}" arg2="${svn.revision.max}" trim="true"/>
-            </not>
-        </condition>
-        <!-- remember current revision number for next release -->
-        <propertyfile file="lastrelease.properties">
-            <entry key="last.svn.revision" value="${svn.revision.max}"/>
-        </propertyfile>
-    </target>
-
-
-    <target name="setBuildNumber" depends="getSvnRevision">
-        <propertyfile file="src/groovejames/gui/version.properties">
-            <entry key="build.number" value="${svn.revision.max}"/>
-            <entry key="build.date" type="date" value="now"/>
-        </propertyfile>
+    <target name="readBuildNumber" depends="increaseBuildNumberIfSomeFilesChanged">
         <property file="src/groovejames/gui/version.properties"/>
-        <echo message="build.number (revision): ${build.number}" level="info"/>
+        <echo message="build.number: ${build.number}" level="info"/>
         <echo message="build.date: ${build.date}" level="info"/>
     </target>
 
 
-    <target name="getSvnRevision">
-        <exec executable="svnversion" outputproperty="svnversion" searchpath="true">
-            <arg value="--no-newline"/>
-        </exec>
-        <echo message="svnversion: ${svnversion}"/>
-        <!-- gs-ant.jar is created from etc/anttask/GetRevisionAntTask.java by IntelliJ IDEA -->
-        <!-- using menu entry "Build/Build jars...". There is no Ant task to recreate gs-ant.jar. -->
-        <taskdef name="getrevision" classname="GetRevisionAntTask">
-            <classpath>
-                <pathelement location="etc/anttask/gs-ant.jar"/>
-                <pathelement location="etc/anttask/svnkit-1.3.0.jar"/>
-            </classpath>
-        </taskdef>
-        <getrevision property="svn.revision.max"
-                     path="."
-                     username="groovejames"
-                     encryptedpassword="6fb47b29d5150e19ace410d56c616031"
-                     deskey="7b0a2751683f601b"
-                     svnconfigdir="out/subversion"/>
+    <target name="increaseBuildNumberIfSomeFilesChanged" depends="checkIfSomeFilesChanged" if="filesChanged">
+        <echo message="increasing build.number because checksum of all files changed" level="info"/>
+        <propertyfile file="src/groovejames/gui/version.properties">
+            <entry key="build.number" type="int" operation="+" default="0"/>
+            <entry key="build.date" type="date" value="now"/>
+        </propertyfile>
+    </target>
+
+
+    <target name="checkIfSomeFilesChanged" depends="computeChecksumOfAllFiles">
+        <!-- load checksum of previous check -->
+        <property file="lastrelease.properties"/>
+        <echo message="   last checksum: ${last.checksum}" level="info"/>
+        <echo message="current checksum: ${checksum}" level="info"/>
+        <!-- compare with new checksum (this works even if there is no old checksum) -->
+        <condition property="filesChanged">
+            <not>
+                <equals arg1="${last.checksum}" arg2="${checksum}" trim="true"/>
+            </not>
+        </condition>
+        <!-- remember current checksum of all files for next check -->
+        <propertyfile file="lastrelease.properties">
+            <entry key="last.checksum" value="${checksum}"/>
+        </propertyfile>
+    </target>
+
+
+    <target name="computeChecksumOfAllFiles">
+        <delete dir="out/checksums"/>
+        <mkdir dir="out/checksums"/>
+        <checksum todir="out/checksums" totalproperty="checksum" algorithm="MD5">
+            <fileset dir=".">
+                <exclude name="**/.svn/**"/>
+                <exclude name="out/**"/>
+                <exclude name="gs.iws"/>
+                <exclude name="**/*.log"/>
+                <exclude name="**/*.log.*"/>
+                <exclude name="**/Thumbs.db"/>
+                <exclude name="lastrelease.properties"/>
+                <exclude name="src/groovejames/gui/version.properties"/>
+            </fileset>
+        </checksum>
+        <echo message="checksum of all files: ${checksum}" level="debug"/>
     </target>
 
 
@@ -161,9 +156,19 @@
             description="cleanup and create source and binary distribution"/>
 
 
+    <target name="release" depends="readBuildNumber, release-src, release-bin" if="filesChanged"
+            description="checks if some files have been changed, if true releases files on CodeBeamer/JavaForge"/>
+
+
+    <target name="all-release" depends="all, release"
+            description="builds all and releases (if files have been changed)"/>
+
+
     <target name="clean" description="cleanup">
-        <delete dir="out"/>
-        <delete dir="." includes="*.log,*.log.*"/>
+        <delete includeemptydirs="true">
+            <fileset dir="out" defaultexcludes="false"/>
+            <fileset dir="." includes="*.log,*.log.*"/>
+        </delete>
     </target>
 
 </project>
