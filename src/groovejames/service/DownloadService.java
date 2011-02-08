@@ -1,10 +1,12 @@
 package groovejames.service;
 
 import groovejames.model.Country;
+import groovejames.model.FileStore;
+import groovejames.model.MemoryStore;
 import groovejames.model.Song;
+import groovejames.model.Store;
 import groovejames.model.StreamKey;
 import groovejames.model.Track;
-import groovejames.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
@@ -17,19 +19,11 @@ import org.apache.http.conn.BasicManagedEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HTTP;
 import org.apache.pivot.collections.ArrayList;
-import org.apache.pivot.collections.HashMap;
-import org.apache.pivot.collections.Map;
-import org.blinkenlights.jid3.ID3Exception;
-import org.blinkenlights.jid3.MP3File;
-import org.blinkenlights.jid3.v1.ID3V1Tag;
-import org.blinkenlights.jid3.v1.ID3V1_1Tag;
-import org.blinkenlights.jid3.v2.ID3V2Tag;
-import org.blinkenlights.jid3.v2.ID3V2_3_0Tag;
 
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import static java.lang.String.format;
 import java.util.concurrent.ExecutorService;
@@ -40,6 +34,8 @@ public class DownloadService {
     private static final Log log = LogFactory.getLog(DownloadService.class);
 
     private static final int numberOfParallelDownloads = Integer.getInteger("numberOfParallelDownloads", 10);
+
+    private static final int downloadBufferSize = 10240;
 
     private static final File defaultDownloadDir;
 
@@ -55,14 +51,13 @@ public class DownloadService {
         }
     }
 
-    private static final Object directoryDeleteLock = new Object();
-
     private final ExecutorService executorService;
+    private final ExecutorService executorServiceForPlay;
     private final HttpClientService httpClientService;
-    private final ArrayList<Track> tracks = new ArrayList<Track>();
-    private final Map<File, DownloadTask> downloads = new HashMap<File, DownloadTask>();
+    private final ArrayList<DownloadTask> currentlyRunningDownloads = new ArrayList<DownloadTask>();
     private final FilenameSchemeParser filenameSchemeParser;
 
+    private Grooveshark grooveshark;
     private File downloadDir;
     private long nextSongMustSleepUntil;
 
@@ -70,7 +65,12 @@ public class DownloadService {
         this.httpClientService = httpClientService;
         this.downloadDir = defaultDownloadDir;
         this.executorService = Executors.newFixedThreadPool(numberOfParallelDownloads);
+        this.executorServiceForPlay = Executors.newFixedThreadPool(1);
         this.filenameSchemeParser = new FilenameSchemeParser();
+    }
+
+    public void setGrooveshark(Grooveshark grooveshark) {
+        this.grooveshark = grooveshark;
     }
 
     public File getDownloadDir() {
@@ -85,84 +85,76 @@ public class DownloadService {
         return filenameSchemeParser;
     }
 
-    public ArrayList<Track> getTracks() {
-        return tracks;
-    }
-
     public synchronized Track download(Song song) {
         return download(song, null);
     }
 
-    public synchronized Track download(Song song, Grooveshark grooveshark) {
-        File downloadFile = getDownloadFile(song);
-        Track track = new Track(song, downloadFile);
-        int initialDelay = 0;
-        DownloadTask downloadTask = downloads.get(downloadFile);
+    public synchronized Track download(Song song, DownloadListener downloadListener) {
+        File file = new File(downloadDir, filenameSchemeParser.parse(song));
+        Store store = new FileStore(file);
+        return download(song, store, downloadListener, false);
+    }
+
+    public synchronized Track downloadToMemory(Song song) {
+        return downloadToMemory(song, null);
+    }
+
+    public synchronized Track downloadToMemory(Song song, DownloadListener downloadListener) {
+        Store store = new MemoryStore(song.toString());
+        return download(song, store, downloadListener, true);
+    }
+
+    private Track download(Song song, Store store, DownloadListener downloadListener, boolean forPlay) {
+        Track track = new Track(song, store);
+        int additionalAbortDelay = 0;
+        DownloadTask downloadTask = findSimilarDownloadTask(track);
         if (downloadTask != null) {
-            boolean aborted = downloadTask.abort();
-            if (aborted)
-                initialDelay = 5000;
+            boolean downloadWasInterrupted = cancelDownload(downloadTask.track, true);
+            if (downloadWasInterrupted)
+                additionalAbortDelay = 5000;
         }
-        initialDelay += Math.max(nextSongMustSleepUntil - System.currentTimeMillis(), 0);
-        tracks.add(track);
-        downloadTask = new DownloadTask(track, grooveshark, initialDelay);
-        downloads.put(downloadFile, downloadTask);
-        executorService.submit(downloadTask);
+        additionalAbortDelay += Math.max(nextSongMustSleepUntil - System.currentTimeMillis(), 0);
+        downloadTask = new DownloadTask(track, additionalAbortDelay, downloadListener);
+        currentlyRunningDownloads.add(downloadTask);
+        if (forPlay) {
+            executorServiceForPlay.submit(downloadTask);
+        } else {
+            executorService.submit(downloadTask);
+        }
         nextSongMustSleepUntil = Math.max(System.currentTimeMillis(), nextSongMustSleepUntil + 1000);
         return track;
     }
 
-    public synchronized void cancelDownload(Track track, boolean deleteFile) {
-        File file = track.getFile();
-        if (file != null) {
-            cancelDownload(file, deleteFile);
+    public synchronized boolean cancelDownload(Track track, boolean deleteStore) {
+        boolean downloadWasInterrupted = false;
+        DownloadTask downloadTask = findSimilarDownloadTask(track);
+        currentlyRunningDownloads.remove(downloadTask);
+        if (downloadTask != null) {
+            downloadWasInterrupted = downloadTask.abort();
+            if (deleteStore) {
+                downloadTask.track.getStore().deleteStore(downloadDir);
+            }
+            downloadTask.track.setStatus(Track.Status.CANCELLED);
+            downloadTask.fireDownloadStatusChanged();
         }
+        return downloadWasInterrupted;
     }
 
-    private void cancelDownload(File file, boolean deleteFile) {
-        DownloadTask downloadTask = downloads.remove(file);
-        if (downloadTask != null) {
-            downloadTask.abort();
+    private DownloadTask findSimilarDownloadTask(Track track) {
+        for (DownloadTask downloadTask : currentlyRunningDownloads) {
+            if (downloadTask.track.equals(track)) {
+                return downloadTask;
+            }
         }
-        if (deleteFile) {
-            deleteFile(file);
-        }
+        return null;
     }
 
     public void shutdown() {
         executorService.shutdownNow();
-        HashMap<File, DownloadTask> downloadsCopy = new HashMap<File, DownloadTask>(downloads);
-        for (File file : downloadsCopy) {
-            cancelDownload(file, true);
-        }
-    }
-
-    private File getDownloadFile(Song song) {
-        return new File(downloadDir, filenameSchemeParser.parse(song));
-    }
-
-    private void deleteFile(File file) {
-        File dir = file.getParentFile();
-
-        if (file.exists()) {
-            if (file.delete())
-                log.debug("deleted: " + file);
-            else
-                log.debug("could not delete: " + file);
-        }
-
-        // delete empty directories, recursively up to (but not including) the top download dir
-        synchronized (directoryDeleteLock) {
-            while (dir != null && !dir.equals(downloadDir)) {
-                File parent = dir.getParentFile();
-                if (Util.isEmptyDirectory(dir)) {
-                    Util.deleteQuietly(dir);
-                    if (log.isDebugEnabled()) log.debug("deleted dir: " + dir);
-                } else {
-                    break;
-                }
-                dir = parent;
-            }
+        executorServiceForPlay.shutdownNow();
+        ArrayList<DownloadTask> downloadsCopy = new ArrayList<DownloadTask>(currentlyRunningDownloads);
+        for (DownloadTask downloadTask : downloadsCopy) {
+            cancelDownload(downloadTask.track, true);
         }
     }
 
@@ -170,33 +162,38 @@ public class DownloadService {
     private class DownloadTask implements Runnable {
         private final Track track;
         private final int initialDelay;
-        private Grooveshark grooveshark;
+        private final DownloadListener downloadListener;
         private volatile HttpPost httpPost;
         private volatile boolean aborted;
 
-        public DownloadTask(Track track, Grooveshark grooveshark, int initialDelay) {
+        public DownloadTask(Track track, int initialDelay, DownloadListener downloadListener) {
             this.track = track;
-            this.grooveshark = grooveshark;
             this.initialDelay = initialDelay;
+            this.downloadListener = downloadListener;
         }
 
         public void run() {
             try {
-                log.info("start download track " + track);
+                if (track.getStatus() == Track.Status.CANCELLED)
+                    return;
                 Thread.sleep(initialDelay);
+                if (track.getStatus() == Track.Status.CANCELLED)
+                    return;
+                log.info("start download track " + track);
                 track.setStatus(Track.Status.INITIALIZING);
-                if (grooveshark == null)
-                    grooveshark = GroovesharkService.connect(httpClientService);
+                fireDownloadStatusChanged();
                 StreamKey streamKey = grooveshark.getStreamKeyFromSongIDEx(
                         Long.parseLong(track.getSong().getSongID()),
                         false, false, Country.GSLITE_DEFAULT_COUNTRY);
                 track.setStatus(Track.Status.DOWNLOADING);
                 track.setStartDownloadTime(System.currentTimeMillis());
+                fireDownloadStatusChanged();
                 if (Boolean.getBoolean("mockNet"))
-                    fakedownload();
+                    fakedownload(streamKey);
                 else
                     download(streamKey);
                 track.setStatus(Track.Status.FINISHED);
+                fireDownloadStatusChanged();
                 log.info("finished download track " + track);
             } catch (Exception ex) {
                 if (aborted || ex instanceof InterruptedException) {
@@ -207,15 +204,17 @@ public class DownloadService {
                     track.setStatus(Track.Status.ERROR);
                     track.setFault(ex);
                 }
-                deleteFile(track.getFile());
+                track.getStore().deleteStore(downloadDir);
+                fireDownloadStatusChanged();
             } finally {
                 track.setStopDownloadTime(System.currentTimeMillis());
                 synchronized (DownloadService.this) {
-                    downloads.remove(track.getFile());
+                    currentlyRunningDownloads.remove(this);
                 }
                 synchronized (this) {
                     httpPost = null;
                 }
+                fireDownloadStatusChanged();
             }
         }
 
@@ -241,21 +240,20 @@ public class DownloadService {
                 int statusCode = statusLine.getStatusCode();
                 if (statusCode == HttpStatus.SC_OK) {
                     track.setTotalBytes(httpEntity.getContentLength());
-                    File file = track.getFile();
-                    File dir = file.getParentFile();
-                    if (!dir.exists()) {
-                        //noinspection ResultOfMethodCallIgnored
-                        dir.mkdirs();
-                        if (!dir.exists()) {
-                            throw new IOException("could not create directory " + dir);
-                        }
+                    Store store = track.getStore();
+                    OutputStream storeOutputStream = store.getOutputStream();
+                    outputStream = new MonitoredOutputStream(storeOutputStream);
+                    InputStream instream = httpEntity.getContent();
+                    byte[] buf = new byte[downloadBufferSize];
+                    int l;
+                    while ((l = instream.read(buf)) != -1) {
+                        outputStream.write(buf, 0, l);
                     }
-                    FileOutputStream fis = new FileOutputStream(file);
-                    outputStream = new MonitoredOutputStream(fis);
-                    httpEntity.writeTo(outputStream);
+                    // need to close immediately otherwise we cannot write ID tags
                     outputStream.close();
                     outputStream = null;
-                    writeID3Tags();
+                    // write ID tags
+                    track.getStore().writeTrackInfo(track);
                 } else {
                     throw new HttpResponseException(statusCode,
                             format("%d %s", statusCode, statusLine.getReasonPhrase()));
@@ -266,7 +264,8 @@ public class DownloadService {
             }
         }
 
-        private void fakedownload() throws InterruptedException, IOException {
+        private void fakedownload(StreamKey streamKey) throws InterruptedException, IOException {
+            httpPost = new HttpPost(format("http://%s/stream.php", streamKey.getIp()));
             Thread.sleep(1000);
             track.setTotalBytes(2 * 1024 * 1024);
             for (int i = 0; i < 1024; i++) {
@@ -275,60 +274,20 @@ public class DownloadService {
                     throw new IOException("fake I/O error");
                 }
                 Thread.sleep(10);
+                if (aborted)
+                    return;
             }
             track.setTotalBytes(2 * 1024 * 1024);
         }
 
-        private void writeID3Tags() throws IOException {
-            log.info("writing ID3 tags to " + track);
+        private void fireDownloadStatusChanged() {
+            if (downloadListener != null)
+                downloadListener.statusChanged(track);
+        }
 
-            File file = track.getFile();
-
-            try {
-                ID3V1Tag id3V1Tag = new ID3V1_1Tag();
-                ID3V2Tag id3V2Tag = new ID3V2_3_0Tag();
-
-                String artistName = track.getSong().getArtistName();
-                if (artistName != null) {
-                    id3V1Tag.setArtist(artistName);
-                    id3V2Tag.setArtist(artistName);
-                }
-
-                String albumName = track.getSong().getAlbumName();
-                if (albumName != null) {
-                    id3V1Tag.setAlbum(albumName);
-                    id3V2Tag.setAlbum(albumName);
-                }
-
-                String songName = track.getSong().getSongName();
-                if (songName != null) {
-                    id3V1Tag.setTitle(songName);
-                    id3V2Tag.setTitle(songName);
-                }
-
-                String year = track.getSong().getYear();
-                if (year != null) {
-                    id3V1Tag.setYear(year);
-                    try {
-                        id3V2Tag.setYear(Integer.parseInt(year));
-                    } catch (NumberFormatException ignore) {
-                        // ignored
-                    }
-                }
-
-                Integer trackNum = track.getSong().getTrackNum();
-                if (trackNum != null) {
-                    id3V2Tag.setTrackNumber(trackNum);
-                }
-
-                MP3File mp3File = new MP3File(file);
-                mp3File.setID3Tag(id3V1Tag);
-                mp3File.setID3Tag(id3V2Tag);
-                mp3File.sync();
-            }
-            catch (ID3Exception ex) {
-                throw new IOException("cannot write ID3 tags to file " + file + "; track: " + track + "; reason: " + ex, ex);
-            }
+        private void fireDownloadBytesChanged() {
+            if (downloadListener != null)
+                downloadListener.downloadedBytesChanged(track);
         }
 
         private void close(HttpEntity httpEntity) {
@@ -376,18 +335,21 @@ public class DownloadService {
             public void write(byte[] b) throws IOException {
                 outputStream.write(b);
                 track.incDownloadedBytes(b.length);
+                fireDownloadBytesChanged();
             }
 
             @Override
             public void write(byte[] b, int off, int len) throws IOException {
                 outputStream.write(b, off, len);
                 track.incDownloadedBytes(len);
+                fireDownloadBytesChanged();
             }
 
             @Override
             public void write(int b) throws IOException {
                 outputStream.write(b);
                 track.incDownloadedBytes(1);
+                fireDownloadBytesChanged();
             }
         }
     }

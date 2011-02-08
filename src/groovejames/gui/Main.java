@@ -12,8 +12,11 @@ import groovejames.service.DownloadService;
 import groovejames.service.Grooveshark;
 import groovejames.service.GroovesharkService;
 import groovejames.service.HttpClientService;
+import groovejames.service.PlayService;
+import groovejames.service.PlayServiceListener;
 import groovejames.service.ProxySettings;
 import groovejames.util.ConsoleUtil;
+import static groovejames.util.Util.durationToString;
 import static groovejames.util.Util.isEmpty;
 import static groovejames.util.Util.toErrorString;
 import org.apache.commons.logging.Log;
@@ -44,7 +47,9 @@ import org.apache.pivot.wtk.ComponentMouseButtonListener;
 import org.apache.pivot.wtk.DesktopApplicationContext;
 import org.apache.pivot.wtk.Display;
 import org.apache.pivot.wtk.Keyboard;
+import org.apache.pivot.wtk.Label;
 import org.apache.pivot.wtk.MessageType;
+import org.apache.pivot.wtk.Meter;
 import org.apache.pivot.wtk.Mouse;
 import org.apache.pivot.wtk.Platform;
 import org.apache.pivot.wtk.Prompt;
@@ -70,6 +75,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static java.lang.String.format;
 import java.net.URI;
 import java.util.Properties;
 import java.util.Timer;
@@ -86,14 +92,21 @@ public class Main implements Application, ImageGetter {
     private Display display;
     private HttpClientService httpClientService;
     private DownloadService downloadService;
+    private PlayService playService;
     private Grooveshark grooveshark;
+    private final ArrayList<Track> downloadTracks = new ArrayList<Track>();
 
     @BXML private Window window;
     @BXML private SplitPane mainSplitPane;
     @BXML private TabPane tabPane;
+    @BXML private TabPane lowerPane;
     @BXML private TextInput searchField;
     @BXML private PushButton searchButton;
     @BXML private TableView downloadsTable;
+    @BXML private TableView playlistTable;
+    @BXML private Label nowPlayingLabel;
+    @BXML private Meter playProgress;
+    @BXML private Meter playDownloadProgress;
 
     public static void main(String[] args) {
         ConsoleUtil.redirectStdErrToCommonsLogging();
@@ -130,7 +143,9 @@ public class Main implements Application, ImageGetter {
         this.settings = loadSettings();
         this.httpClientService = new HttpClientService();
         this.downloadService = new DownloadService(httpClientService);
-        this.downloadService.getTracks().getListListeners().add(new TrackListListener());
+        this.playService = new PlayService(downloadService);
+        this.playService.setListener(new PlaylistListener());
+        this.downloadTracks.getListListeners().add(new TrackListListener());
 
         applySettings();
         initActions();
@@ -172,6 +187,16 @@ public class Main implements Application, ImageGetter {
         Action.getNamedActions().put("deleteSelectedDownloads", new RemoveDownloadsAction(true, false, true));
         Action.getNamedActions().put("deleteSuccessfulDownloads", new RemoveDownloadsAction(false, true, true));
         Action.getNamedActions().put("deleteFinishedDownloads", new RemoveDownloadsAction(false, false, true));
+
+        Action.getNamedActions().put("songPlayPause", new RemoveDownloadsAction(false, false, true));
+        Action.getNamedActions().put("songPrevious", new RemoveDownloadsAction(false, false, true));
+        Action.getNamedActions().put("songNext", new RemoveDownloadsAction(false, false, true));
+        Action.getNamedActions().put("songPlayNow", new RemoveDownloadsAction(false, false, true));
+        Action.getNamedActions().put("songAddAsNext", new RemoveDownloadsAction(false, false, true));
+        Action.getNamedActions().put("songAddAtEnd", new RemoveDownloadsAction(false, false, true));
+        Action.getNamedActions().put("songReplacePlaylist", new RemoveDownloadsAction(false, false, true));
+        Action.getNamedActions().put("songClearPlaylist", new RemoveDownloadsAction(false, false, true));
+        Action.getNamedActions().put("songClearPlaylistSelected", new RemoveDownloadsAction(false, false, true));
     }
 
     private Window createWindow() throws IOException, SerializationException {
@@ -188,7 +213,7 @@ public class Main implements Application, ImageGetter {
         window.getActionMappings().add(new Window.ActionMapping(
                 new Keyboard.KeyStroke(Keyboard.KeyCode.R, Platform.getCommandModifier().getMask()),
                 "reloadGUI"));
-        downloadsTable.setTableData(downloadService.getTracks());
+        downloadsTable.setTableData(downloadTracks);
         downloadsTable.getTableViewSortListeners().add(new DefaultTableViewSortListener());
         downloadsTable.getComponentMouseListeners().add(new TooltipTableMouseListener());
         downloadsTable.getComponentMouseButtonListeners().add(new ComponentMouseButtonListener.Adapter() {
@@ -206,6 +231,8 @@ public class Main implements Application, ImageGetter {
                 return false;
             }
         });
+        playlistTable.setTableData(playService.getPlaylist());
+        playlistTable.getComponentMouseListeners().add(new TooltipTableMouseListener());
         searchField.getComponentKeyListeners().add(new ComponentKeyListener.Adapter() {
             @Override
             public boolean keyTyped(Component searchField, char character) {
@@ -242,18 +269,37 @@ public class Main implements Application, ImageGetter {
     }
 
     public void download(Song song) {
-        // show download pane if currently collapsed
+        showLowerSplitPane();
+        lowerPane.setSelectedIndex(0);
+        downloadService.setGrooveshark(getGrooveshark());
+        Track track = downloadService.download(song);
+        downloadTracks.add(track);
+    }
+
+    public void play(Song song) {
+        showLowerSplitPane();
+        lowerPane.setSelectedIndex(1);
+        downloadService.setGrooveshark(getGrooveshark()); // TODO: looks clumsy
+        playService.play(song);
+    }
+
+    // show download/playlist pane if currently collapsed
+    private void showLowerSplitPane() {
         if (mainSplitPane.getSplitRatio() >= 0.95f) {
             float splitRatio = Preferences.userNodeForPackage(Main.class).node("mainSplitPane").getFloat("splitRatio", 0.5f);
             SplitRatioTransition transition = new SplitRatioTransition(mainSplitPane, splitRatio, 600, 50);
             transition.start();
         }
-        downloadService.download(song, grooveshark);
     }
 
-    public synchronized Grooveshark getGrooveshark() throws IOException {
-        if (grooveshark == null)
-            grooveshark = GroovesharkService.connect(httpClientService);
+    public synchronized Grooveshark getGrooveshark() {
+        if (grooveshark == null) {
+            try {
+                grooveshark = GroovesharkService.connect(httpClientService);
+            } catch (IOException ex) {
+                showError("Could not connect to GrooveShark", ex);
+            }
+        }
         return grooveshark;
     }
 
@@ -339,7 +385,7 @@ public class Main implements Application, ImageGetter {
                 inputStream.close();
                 return new Picture(image);
             } else {
-                throw new IOException(String.format("error loading image: uri=%s, status=%s%n", uri, statusLine));
+                throw new IOException(format("error loading image: uri=%s, status=%s%n", uri, statusLine));
             }
         } finally {
             httpEntity.consumeContent();
@@ -421,24 +467,19 @@ public class Main implements Application, ImageGetter {
             this.removeFromDisc = removeFromDisc;
         }
 
-        @Override
+        @Override @SuppressWarnings("unchecked")
         public void perform(Component source) {
-            for (Track track : getTracks()) {
-                if (selectedOnly
-                        || successfulOnly && track.getStatus().isSuccessful()
-                        || !successfulOnly && track.getStatus().isFinished()) {
+            Sequence<Track> selectedTracks = selectedOnly ? (Sequence<Track>) downloadsTable.getSelectedRows() : new ArrayList<Track>();
+            List.ItemIterator<Track> it = downloadTracks.iterator();
+            while (it.hasNext()) {
+                Track track = it.next();
+                if ((selectedOnly && selectedTracks.indexOf(track) != -1)
+                        || (!selectedOnly && successfulOnly && track.getStatus().isSuccessful())
+                        || (!selectedOnly && !successfulOnly && track.getStatus().isFinished())) {
                     downloadService.cancelDownload(track, removeFromDisc);
-                    downloadService.getTracks().remove(track);
+                    it.remove();
+                    selectedTracks.remove(track);
                 }
-            }
-        }
-
-        @SuppressWarnings({"unchecked"})
-        private ArrayList<Track> getTracks() {
-            if (selectedOnly) {
-                return new ArrayList<Track>((Sequence<Track>) downloadsTable.getSelectedRows());
-            } else {
-                return new ArrayList<Track>(downloadService.getTracks());
             }
         }
     }
@@ -482,6 +523,48 @@ public class Main implements Application, ImageGetter {
                         }
                     }
                 }, 0, 100);
+            }
+        }
+    }
+
+
+    private class PlaylistListener implements PlayServiceListener {
+        @Override public void playbackStarted(Track track) {
+            updateComponents(track);
+        }
+
+        @Override public void playbackFinished(Track track) {
+            updateComponents(null);
+        }
+
+        @Override public void positionChanged(Track track, int audioPosition) {
+            Long estimateDuration = track.getSong().getEstimateDuration();
+            double percentage = 0.0;
+            if (estimateDuration != null && estimateDuration != 0L && audioPosition >= 0)
+                percentage = (double) audioPosition / (estimateDuration * 1000L);
+            playProgress.setPercentage(percentage);
+            playProgress.setText(format("%s / %s", durationToString(audioPosition / 1000L), durationToString(estimateDuration)));
+        }
+
+        @Override public void statusChanged(Track track) {
+            updateComponents(track);
+        }
+
+        @Override public void downloadedBytesChanged(Track track) {
+            updateComponents(track);
+        }
+
+        @Override public void exception(Track track, Exception ex) {
+            showError("Error playing track " + track, ex);
+        }
+
+        private void updateComponents(Track track) {
+            if (track == null) {
+                nowPlayingLabel.setText("");
+                playDownloadProgress.setPercentage(1.0);
+            } else {
+                nowPlayingLabel.setText(format("Now playing: %s - %s - %s", track.getArtistName(), track.getAlbumName(), track.getSongName()));
+                playDownloadProgress.setPercentage(track.getProgress());
             }
         }
     }

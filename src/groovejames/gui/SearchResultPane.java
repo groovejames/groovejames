@@ -39,8 +39,6 @@ import org.apache.pivot.util.concurrent.TaskListener;
 import org.apache.pivot.wtk.ActivityIndicator;
 import org.apache.pivot.wtk.ApplicationContext;
 import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.Button;
-import org.apache.pivot.wtk.ButtonPressListener;
 import org.apache.pivot.wtk.CardPane;
 import org.apache.pivot.wtk.CardPaneListener;
 import org.apache.pivot.wtk.Component;
@@ -97,7 +95,6 @@ public class SearchResultPane extends TablePane implements Bindable {
     private boolean artistsLoaded;
     private boolean similarArtistsLoaded;
     private boolean peopleLoaded;
-    private boolean dontRedistributeColumnWidths;
     private Preferences prefs = Preferences.userNodeForPackage(SearchResultPane.class);
 
     public SearchResultPane() {
@@ -107,16 +104,6 @@ public class SearchResultPane extends TablePane implements Bindable {
         tabPane.getTabPaneSelectionListeners().add(new TabPaneSelectionListener.Adapter() {
             @Override public void selectedIndexChanged(TabPane tabPane, int previousSelectedIndex) {
                 startSearch();
-            }
-        });
-
-        songpane.downloadButton.getButtonPressListeners().add(new ButtonPressListener() {
-            @Override public void buttonPressed(Button button) {
-                Sequence<?> selectedRows = songpane.songTable.getSelectedRows();
-                for (int i = 0, len = selectedRows.getLength(); i < len; i++) {
-                    Song song = (Song) selectedRows.get(i);
-                    main.download(song);
-                }
             }
         });
 
@@ -130,7 +117,7 @@ public class SearchResultPane extends TablePane implements Bindable {
                     // save setting
                     getPrefsForTable("song").putBoolean("groupByAlbum", groupByAlbum);
                     // redistribute space among some of the columns
-                    if (!dontRedistributeColumnWidths) {
+                    if (songpane.songTable.getUserData().get("dontRedistributeColumnWidths") != Boolean.TRUE) {
                         if (songpane.songSplitPane.getWidth() > 0) {
                             ArrayList<TableView.Column> columns = getColumns(songpane.songTable, "songName", "artistName", "albumName");
                             int d = (int) (((songpane.songSplitPane.getWidth() * 0.25) + 6.0) / columns.getLength()) * (groupByAlbum ? -1 : 1);
@@ -200,6 +187,11 @@ public class SearchResultPane extends TablePane implements Bindable {
                 songpane.downloadButton.setButtonData(new ButtonData(
                         ((ButtonData) songpane.downloadButton.getButtonData()).getIcon(),
                         "Download" + (length == 0 ? "" : " (" + length + ")")
+                ));
+                songpane.playButton.setEnabled(length > 0);
+                songpane.playButton.setButtonData(new ButtonData(
+                        ((ButtonData) songpane.playButton.getButtonData()).getIcon(),
+                        "Play" + (length == 0 ? "" : " (" + length + ")")
                 ));
             }
         });
@@ -329,7 +321,6 @@ public class SearchResultPane extends TablePane implements Bindable {
         this.similarartistpane.artistImageRenderer.setImageGetter(main);
         this.albumpane.albumImageRenderer.setImageGetter(main);
         this.peoplepane.peopleImageRenderer.setImageGetter(main);
-        this.songpane.songAlbumImageRenderer.setImageGetter(main);
     }
 
     public SearchParameter getSearchParameter() {
@@ -459,9 +450,9 @@ public class SearchResultPane extends TablePane implements Bindable {
                 TabPane.setTabData(songCardPane, "Library");
             } else if (searchParameter.getSearchType() == SearchType.Album) {
                 songpane.songGroupByButton.setVisible(false);
-                dontRedistributeColumnWidths = true;
+                songpane.songTable.getUserData().put("dontRedistributeColumnWidths", Boolean.TRUE);
                 songpane.songGroupByButton.setSelectedIndex(1); // select "Don't Group"
-                dontRedistributeColumnWidths = false;
+                songpane.songTable.getUserData().put("dontRedistributeColumnWidths", Boolean.FALSE);
             }
             executeGuiAsyncTask(new SearchSongsTask(), songCardPane);
         }
@@ -514,7 +505,7 @@ public class SearchResultPane extends TablePane implements Bindable {
             public void columnWidthChanged(TableView.Column column, int previousWidth, boolean previousRelative) {
                 if (!column.getTableView().isVisible()) return;
                 if (searchParameter == null) return;
-                if (dontRedistributeColumnWidths) return;
+                if (tableView.getUserData().get("dontRedistributeColumnWidths") == Boolean.TRUE) return;
                 if (column.isRelative()) return;
                 Preferences columnPrefs = getPrefsForTable(tablePrefName).node("columns");
                 columnPrefs.putInt(column.getName(), column.getWidth());
@@ -716,9 +707,9 @@ public class SearchResultPane extends TablePane implements Bindable {
                 ApplicationContext.queueCallback(new Runnable() {
                     @Override public void run() {
                         boolean groupByAlbum = getPrefsForTable("song").getBoolean("groupByAlbum", true);
-                        dontRedistributeColumnWidths = true;
+                        songpane.songTable.getUserData().put("dontRedistributeColumnWidths", Boolean.TRUE);
                         songpane.songGroupByButton.setSelectedIndex(groupByAlbum ? 0 : 1);
-                        dontRedistributeColumnWidths = false;
+                        songpane.songTable.getUserData().put("dontRedistributeColumnWidths", Boolean.FALSE);
                     }
                 });
             }

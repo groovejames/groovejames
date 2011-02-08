@@ -357,4 +357,31 @@ public class Util {
             }
         }
     }
+
+    public static String durationToString(Long duration) {
+        if (duration == null) {
+            return "";
+        }
+        long hour = duration / 3600;
+        long min = duration / 60 % 60;
+        long sec = duration % 60;
+        StringBuilder sb = new StringBuilder();
+        if (hour > 0) {
+            if (hour < 10) {
+                sb.append('0');
+            }
+            sb.append(hour);
+            sb.append(':');
+        }
+        if (min < 10) {
+            sb.append('0');
+        }
+        sb.append(min);
+        sb.append(':');
+        if (sec < 10) {
+            sb.append('0');
+        }
+        sb.append(sec);
+        return sb.toString();
+    }
 }

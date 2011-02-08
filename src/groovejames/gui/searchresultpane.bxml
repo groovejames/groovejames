@@ -43,7 +43,7 @@
                                                styles="%main.activityIndicator.styles"
                                                preferredWidth="120" preferredHeight="120"/>
                         </BoxPane>
-                        <bxml:include bxml:id="songpane" src="songpane.bxml" inline="false"/>
+                        <bxml:include bxml:id="songpane" src="songpane.bxml" inline="false" main="$main"/>
                     </CardPane>
                     <CardPane bxml:id="similarArtistCardPane" styles="{selectionChangeEffect: 'crossfade'}">
                         <TabPane.tabData>

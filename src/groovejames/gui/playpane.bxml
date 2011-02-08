@@ -1,0 +1,87 @@
+<TablePane xmlns="org.apache.pivot.wtk"
+           xmlns:content="org.apache.pivot.wtk.content"
+           xmlns:gui="groovejames.gui"
+           xmlns:bxml="http://pivot.apache.org/bxml"
+           styles="{horizontalSpacing:6, verticalSpacing: 6}">
+    <TabPane.tabData>
+        <content:ButtonData text="Playlist"/>
+    </TabPane.tabData>
+    <columns>
+        <TablePane.Column/>
+        <TablePane.Column/>
+        <TablePane.Column/>
+        <TablePane.Column/>
+        <TablePane.Column width="1*"/>
+        <TablePane.Column/>
+    </columns>
+    <rows>
+        <TablePane.Row>
+            <PushButton action="songPlayPause" styles="{toolbar: true}">
+                <buttonData>
+                    <content:ButtonData icon="@player_play.png"/>
+                </buttonData>
+            </PushButton>
+            <PushButton action="songPrevious" styles="{toolbar: true}">
+                <buttonData>
+                    <content:ButtonData icon="@player_rew.png"/>
+                </buttonData>
+            </PushButton>
+            <PushButton action="songNext" styles="{toolbar: true}">
+                <buttonData>
+                    <content:ButtonData icon="@player_fwd.png"/>
+                </buttonData>
+            </PushButton>
+            <MenuButton>
+                <buttonData>
+                    <content:ButtonData text="Remove From List"/>
+                </buttonData>
+                <menu>
+                    <Menu>
+                        <sections>
+                            <Menu.Section>
+                                <Menu.Item action="songClearPlaylistSelected"
+                                           buttonData="Selected Tracks"/>
+                                <Menu.Item action="songClearPlaylist"
+                                           buttonData="All Tracks"/>
+                            </Menu.Section>
+                        </sections>
+                    </Menu>
+                </menu>
+            </MenuButton>
+            <Label bxml:id="nowPlayingLabel" styles="{verticalAlignment:'center', font:{bold:true,size:'120%'}}"/>
+            <BoxPane orientation="vertical" styles="{verticalAlignment:'bottom', fill:true, spacing:0}">
+                <Meter bxml:id="playProgress" percentage="1.0" preferredHeight="15"
+                       styles="{gridFrequency:1.0, gridColor:'0xA0A0A040'}"/>
+                <Meter bxml:id="playDownloadProgress" percentage="1.0" preferredHeight="2"
+                       styles="{color:'red', gridFrequency:1.0, gridColor:'0x00000000'}"/>
+            </BoxPane>
+        </TablePane.Row>
+        <TablePane.Row height="1*">
+            <Border TablePane.columnSpan="6">
+                <ScrollPane horizontalScrollBarPolicy="fill_to_capacity"
+                            verticalScrollBarPolicy="fill_to_capacity">
+                    <view>
+                        <TableView bxml:id="playlistTable"
+                                   selectMode="multi"
+                                   styles="{showVerticalGridLines:true}">
+                            <columns>
+                                <TableView.Column name="songName" headerData="Name" width="190"/>
+                                <TableView.Column name="artistName" headerData="Artist" width="155"/>
+                                <TableView.Column name="albumName" headerData="Album" width="155"/>
+                                <TableView.Column name="estimateDuration" headerData="Length" width="45">
+                                    <cellRenderer>
+                                        <gui:TimeTableCellRenderer/>
+                                    </cellRenderer>
+                                </TableView.Column>
+                            </columns>
+                        </TableView>
+                    </view>
+                    <columnHeader>
+                        <TableViewHeader tableView="$playlistTable"
+                                         styles="{columnsResizable:true}"/>
+                    </columnHeader>
+                </ScrollPane>
+            </Border>
+        </TablePane.Row>
+    </rows>
+</TablePane>

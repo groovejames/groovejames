@@ -49,10 +49,19 @@
                             <TabPane bxml:id="tabPane" closeable="true"/>
                         </top>
                         <bottom>
-                            <TabPane>
+                            <TabPane bxml:id="lowerPane">
                                 <tabs>
                                     <bxml:include src="downloadpane.bxml" inline="true"/>
+                                    <bxml:include src="playpane.bxml" inline="true"/>
                                 </tabs>
+                                <tabPaneSelectionListeners>
+                                    function selectedIndexChanged(tabPane, previousSelectedIndex) {
+                                      if (tabPane.selectedIndex == 0)
+                                        downloadsTable.requestFocus();
+                                      else if (tabPane.selectedIndex == 1)
+                                        playlistTable.requestFocus();
+                                    }
+                                </tabPaneSelectionListeners>
                             </TabPane>
                         </bottom>
                     </SplitPane>

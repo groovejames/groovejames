@@ -1,7 +1,5 @@
 package groovejames.model;
 
-import java.io.File;
-
 public class Track {
 
     public static enum Status {
@@ -17,7 +15,7 @@ public class Track {
     }
 
     private final Song song;
-    private final File file;
+    private final Store store;
     private long totalBytes;
     private long downloadedBytes;
     private Status status = Status.QUEUED;
@@ -25,13 +23,13 @@ public class Track {
     private Long stopDownloadTime;
     private Exception fault;
 
-    public Track(Song song, File file) {
+    public Track(Song song, Store store) {
         if (song == null)
             throw new IllegalArgumentException("song is null");
-        if (file == null)
-            throw new IllegalArgumentException("file is null");
+        if (store == null)
+            throw new IllegalArgumentException("store is null");
         this.song = song;
-        this.file = file;
+        this.store = store;
     }
 
     public Song getSong() {
@@ -53,8 +51,8 @@ public class Track {
         return song.getAlbumName();
     }
 
-    public File getFile() {
-        return file;
+    public Store getStore() {
+        return store;
     }
 
     public long getTotalBytes() {
@@ -86,7 +84,9 @@ public class Track {
     }
 
     public void setStatus(Status status) {
-        this.status = status;
+        if (!this.status.isFinished()) {
+            this.status = status;
+        }
     }
 
     public Exception getFault() {
@@ -136,12 +136,39 @@ public class Track {
             return null;
     }
 
+    /**
+     * Two tracks are the same if <ol><li>the song id is the same and</li>
+     * <li>the store is the same.</li></ol>.
+     * <p/>
+     * Note that two tracks may have the same Song-ID, but different stores, ie.
+     * different download locations (or one track is a file download while the
+     * other is a download to memory).
+     *
+     * @param o other object
+     * @return true, if the other object is a track and its song id and store
+     *         is the same
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Track track = (Track) o;
+        return song.equals(track.song) && store.equals(track.store);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = song.hashCode();
+        result = 31 * result + store.hashCode();
+        return result;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("Track");
         sb.append("{songID=").append(song.getSongID());
-        sb.append(", file=").append(file);
+        sb.append(", store=").append(store.getDescription());
         sb.append(", status=").append(status);
         sb.append(", totalBytes=").append(totalBytes);
         sb.append(", downloadedBytes=").append(downloadedBytes);

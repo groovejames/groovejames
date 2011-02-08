@@ -105,6 +105,11 @@ public class Song extends ImageObject {
         this.year = year;
     }
 
+    /**
+     * Return estimate duration of this song, in seconds
+     *
+     * @return the estimate duration, in seconds, or {@code null} if duration is unknown
+     */
     public Long getEstimateDuration() {
         return estimateDuration;
     }

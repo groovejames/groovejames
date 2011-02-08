@@ -26,7 +26,7 @@
                                 <Menu.Item action="clearSuccessfulDownloads"
                                            buttonData="All Successful Downloads"/>
                                 <Menu.Item action="clearFinishedDownloads"
-                                           buttonData="All Finished Downloads (including errors)"/>
+                                           buttonData="All Downloads (including errors)"/>
                             </Menu.Section>
                         </sections>
                     </Menu>

@@ -8,6 +8,7 @@
               styles="{horizontalSpacing:6, verticalSpacing:6}">
     <columns>
         <TablePane.Column width="-1"/>
+        <TablePane.Column width="-1"/>
         <TablePane.Column width="1*"/>
         <TablePane.Column width="-1"/>
         <TablePane.Column width="-1"/>
@@ -19,6 +20,23 @@
                     <content:ButtonData text="Download" icon="@download.png"/>
                 </buttonData>
             </PushButton>
+            <MenuButton bxml:id="playButton" enabled="false">
+                <buttonData>
+                    <content:ButtonData text="Play" icon="@player_play.png"/>
+                </buttonData>
+                <menu>
+                    <Menu>
+                        <sections>
+                            <Menu.Section>
+                                <Menu.Item bxml:id="songPlayNowButton" buttonData="Play now"/>
+                                <Menu.Item bxml:id="songAddAsNextButton" buttonData="Enqueue as next"/>
+                                <Menu.Item bxml:id="songAddAtEndButton" buttonData="Enqueue at end"/>
+                                <Menu.Item bxml:id="songReplacePlaylistButton" buttonData="Replace current playlist"/>
+                            </Menu.Section>
+                        </sections>
+                    </Menu>
+                </menu>
+            </MenuButton>
             <TablePane.Filler/>
             <ListButton bxml:id="songGroupByButton" selectedIndex="0">
                 <listData>
@@ -31,7 +49,7 @@
             <TextInput bxml:id="songSearchInPage" prompt="Search in page..." styles="{backgroundColor: '#FFFFFF'}"/>
         </TablePane.Row>
         <TablePane.Row height="1*">
-            <SplitPane bxml:id="songSplitPane" splitRatio="0.25" orientation="horizontal" TablePane.columnSpan="4">
+            <SplitPane bxml:id="songSplitPane" splitRatio="0.25" orientation="horizontal" TablePane.columnSpan="5">
                 <left>
                     <Border>
                         <content>
