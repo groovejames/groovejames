@@ -8,11 +8,16 @@ import groovejames.mp3player.PlaybackListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pivot.collections.ArrayList;
+import org.apache.pivot.collections.Sequence;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 public class PlayService {
+
+    public static enum AddMode {
+        NOW, NEXT, LAST, REPLACE
+    }
 
     private static final Log log = LogFactory.getLog(PlayService.class);
 
@@ -36,67 +41,79 @@ public class PlayService {
         return playlist;
     }
 
+    public synchronized void add(Sequence<Song> songs, AddMode addMode) {
+        if (songs.getLength() == 0) {
+            return;
+        }
+        if (addMode == AddMode.REPLACE) {
+            playlist.clear();
+            currentSongIndex = -1;
+            currentTrack = null;
+            pausedFrame = -1;
+        }
+        int insertIdx = (addMode == AddMode.LAST ? playlist.getLength()
+                : addMode == AddMode.NEXT ? currentSongIndex + 1 : currentSongIndex);
+        for (int i = 0; i < songs.getLength(); i++) {
+            Song song = songs.get(i);
+            log.info("adding: " + song);
+            if (insertIdx >= 0 && insertIdx < playlist.getLength()) {
+                playlist.insert(song, insertIdx);
+            } else {
+                int newIdx = playlist.add(song);
+                if (i == 0 && addMode == AddMode.NOW) {
+                    currentSongIndex = newIdx;
+                }
+            }
+            insertIdx++;
+        }
+        if (addMode == AddMode.NOW) {
+            Song song = songs.get(0);
+            log.info("starting: " + song);
+            startPlaying(song, 0);
+        }
+    }
+
     public synchronized void play() {
         Song currentSong = getCurrentSong();
         if (currentSong != null) {
             log.info("starting: " + currentSong);
             startPlaying(currentSong, 0);
+        } else {
+            log.info("no current song");
         }
-    }
-
-    public synchronized void play(Song song) {
-        currentSongIndex = playlist.add(song);
-        log.info("starting: " + song);
-        startPlaying(song, 0);
-    }
-
-    public synchronized void addAtEnd(Song song) {
-        log.info("adding at end: " + song);
-        playlist.add(song);
-    }
-
-    public synchronized void addAsNext(Song song) {
-        log.info("adding as next song: " + song);
-        if (currentSongIndex >= 0 && currentSongIndex < playlist.getLength())
-            playlist.insert(song, currentSongIndex);
-        else
-            playlist.add(song);
     }
 
     public synchronized void stop() {
         Song currentSong = getCurrentSong();
         log.info("stopping: " + currentSong);
-        playThread.forceStop();
-        currentTrack = null;
+        stopPlaying();
     }
 
     public synchronized void skipForward() {
         Song finishedSong = getCurrentSong();
         log.info("stopping because of skip: " + finishedSong);
-        playThread.forceStop();
-        currentTrack = null;
+        stopPlaying();
         if (currentSongIndex < playlist.getLength() - 1) {
             currentSongIndex++;
             Song currentSong = getCurrentSong();
             log.info("skipping forward to: " + currentSong);
             startPlaying(currentSong, 0);
         } else {
-            log.info("skipped beyond end of history");
+            log.info("skipped beyond end of playlist");
         }
     }
 
     public synchronized void skipBackward() {
         Song finishedSong = getCurrentSong();
-        log.info("stopping: " + finishedSong);
-        playThread.forceStop();
-        currentTrack = null;
+        log.info("stopping because of skip: " + finishedSong);
+        stopPlaying();
         if (currentSongIndex > 0) {
             currentSongIndex--;
             Song currentSong = getCurrentSong();
             log.info("skipping back to: " + currentSong);
             startPlaying(currentSong, 0);
         } else {
-            log.info("skipped beyond start of history");
+            log.info("skipped beyond start of playlist");
         }
     }
 
@@ -117,6 +134,10 @@ public class PlayService {
         }
     }
 
+    public synchronized boolean isPaused() {
+        return pausedFrame != -1;
+    }
+
     /**
      * Retrieves the position in milliseconds of the current audio sample being played.
      *
@@ -126,6 +147,9 @@ public class PlayService {
         return playThread != null ? playThread.getCurrentPosition() : 0;
     }
 
+    public int getCurrentSongIndex() {
+        return currentSongIndex;
+    }
 
     public Song getCurrentSong() {
         return currentSongIndex >= 0 ? playlist.get(currentSongIndex) : null;
@@ -135,7 +159,7 @@ public class PlayService {
         try {
             if (currentTrack != null)
                 downloadService.cancelDownload(currentTrack, true);
-            playThread.forceStop();
+            stopPlaying();
             currentTrack = downloadService.downloadToMemory(song, listener);
             InputStream inputStream = currentTrack.getStore().getInputStream();
             playThread = new PlayThread(inputStream, framePosition, new PlayThreadListener());
@@ -143,6 +167,12 @@ public class PlayService {
         } catch (IOException ex) {
             handlePlayException(ex);
         }
+    }
+
+    private void stopPlaying() {
+        playThread.forceStop();
+        currentTrack = null;
+        pausedFrame = -1;
     }
 
     private void handlePlayException(Exception ex) {

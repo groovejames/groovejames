@@ -16,44 +16,32 @@
     </columns>
     <rows>
         <TablePane.Row>
-            <PushButton action="songPlayPause" styles="{toolbar: true}">
+            <PushButton bxml:id="songPlayPauseButton" action="songPlayPause" tooltipText="Play/Pause" styles="{toolbar: true}">
                 <buttonData>
                     <content:ButtonData icon="@player_play.png"/>
                 </buttonData>
             </PushButton>
-            <PushButton action="songPrevious" styles="{toolbar: true}">
+            <PushButton action="songPrevious" tooltipText="Skip to previous song" styles="{toolbar: true}">
                 <buttonData>
                     <content:ButtonData icon="@player_rew.png"/>
                 </buttonData>
             </PushButton>
-            <PushButton action="songNext" styles="{toolbar: true}">
+            <PushButton action="songNext" tooltipText="Skip to next song" styles="{toolbar: true}">
                 <buttonData>
                     <content:ButtonData icon="@player_fwd.png"/>
                 </buttonData>
             </PushButton>
-            <MenuButton>
+            <PushButton action="songClearPlaylist" tooltipText="Remove all/selected songs" styles="{toolbar: true}">
                 <buttonData>
-                    <content:ButtonData text="Remove From List"/>
+                    <content:ButtonData icon="@trash.png"/>
                 </buttonData>
-                <menu>
-                    <Menu>
-                        <sections>
-                            <Menu.Section>
-                                <Menu.Item action="songClearPlaylistSelected"
-                                           buttonData="Selected Tracks"/>
-                                <Menu.Item action="songClearPlaylist"
-                                           buttonData="All Tracks"/>
-                            </Menu.Section>
-                        </sections>
-                    </Menu>
-                </menu>
-            </MenuButton>
+            </PushButton>
             <Label bxml:id="nowPlayingLabel" styles="{verticalAlignment:'center', font:{bold:true,size:'120%'}}"/>
             <BoxPane orientation="vertical" styles="{verticalAlignment:'bottom', fill:true, spacing:0}">
                 <Meter bxml:id="playProgress" percentage="1.0" preferredHeight="15"
-                       styles="{gridFrequency:1.0, gridColor:'0xA0A0A040'}"/>
+                       styles="{font:{bold:false}, gridFrequency:1.0, gridColor:'0xA0A0A040'}"/>
                 <Meter bxml:id="playDownloadProgress" percentage="1.0" preferredHeight="2"
-                       styles="{color:'red', gridFrequency:1.0, gridColor:'0x00000000'}"/>
+                       styles="{color:'0x202080FF', gridFrequency:1.0, gridColor:'0x00000000'}"/>
             </BoxPane>
         </TablePane.Row>
         <TablePane.Row height="1*">
@@ -65,6 +53,7 @@
                                    selectMode="multi"
                                    styles="{showVerticalGridLines:true}">
                             <columns>
+                                <TableView.Column name="isPlaying" width="20"/>
                                 <TableView.Column name="songName" headerData="Name" width="190"/>
                                 <TableView.Column name="artistName" headerData="Artist" width="155"/>
                                 <TableView.Column name="albumName" headerData="Album" width="155"/>

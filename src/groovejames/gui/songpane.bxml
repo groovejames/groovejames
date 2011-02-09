@@ -20,23 +20,16 @@
                     <content:ButtonData text="Download" icon="@download.png"/>
                 </buttonData>
             </PushButton>
-            <MenuButton bxml:id="playButton" enabled="false">
-                <buttonData>
-                    <content:ButtonData text="Play" icon="@player_play.png"/>
-                </buttonData>
-                <menu>
-                    <Menu>
-                        <sections>
-                            <Menu.Section>
-                                <Menu.Item bxml:id="songPlayNowButton" buttonData="Play now"/>
-                                <Menu.Item bxml:id="songAddAsNextButton" buttonData="Enqueue as next"/>
-                                <Menu.Item bxml:id="songAddAtEndButton" buttonData="Enqueue at end"/>
-                                <Menu.Item bxml:id="songReplacePlaylistButton" buttonData="Replace current playlist"/>
-                            </Menu.Section>
-                        </sections>
-                    </Menu>
-                </menu>
-            </MenuButton>
+            <ListButton bxml:id="playButton" enabled="false" selectedIndex="0" repeatable="true">
+                <listData>
+                    <collections:ArrayList>
+                        <guicomponents:ListIdItem bxml:id="songPlayNowButton" id="playNow" text="Play Now" userData="Play Now"/>
+                        <guicomponents:ListIdItem bxml:id="songPlayNextButton" id="playNext" text="Play Next" userData="Play Next"/>
+                        <guicomponents:ListIdItem bxml:id="songPlayLastButton" id="playLast" text="Play Last" userData="Play Last"/>
+                        <guicomponents:ListIdItem bxml:id="songPlayReplaceButton" id="playReplace" text="Replace Current Songs" userData="Replace Current Songs"/>
+                    </collections:ArrayList>
+                </listData>
+            </ListButton>
             <TablePane.Filler/>
             <ListButton bxml:id="songGroupByButton" selectedIndex="0">
                 <listData>

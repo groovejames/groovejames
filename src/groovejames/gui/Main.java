@@ -66,6 +66,7 @@ import org.apache.pivot.wtk.TableView;
 import org.apache.pivot.wtk.TextArea;
 import org.apache.pivot.wtk.TextInput;
 import org.apache.pivot.wtk.Window;
+import org.apache.pivot.wtk.content.ButtonData;
 import org.apache.pivot.wtk.media.Image;
 import org.apache.pivot.wtk.media.Picture;
 
@@ -107,6 +108,7 @@ public class Main implements Application, ImageGetter {
     @BXML private Label nowPlayingLabel;
     @BXML private Meter playProgress;
     @BXML private Meter playDownloadProgress;
+    @BXML private PushButton songPlayPauseButton;
 
     public static void main(String[] args) {
         ConsoleUtil.redirectStdErrToCommonsLogging();
@@ -188,15 +190,10 @@ public class Main implements Application, ImageGetter {
         Action.getNamedActions().put("deleteSuccessfulDownloads", new RemoveDownloadsAction(false, true, true));
         Action.getNamedActions().put("deleteFinishedDownloads", new RemoveDownloadsAction(false, false, true));
 
-        Action.getNamedActions().put("songPlayPause", new RemoveDownloadsAction(false, false, true));
-        Action.getNamedActions().put("songPrevious", new RemoveDownloadsAction(false, false, true));
-        Action.getNamedActions().put("songNext", new RemoveDownloadsAction(false, false, true));
-        Action.getNamedActions().put("songPlayNow", new RemoveDownloadsAction(false, false, true));
-        Action.getNamedActions().put("songAddAsNext", new RemoveDownloadsAction(false, false, true));
-        Action.getNamedActions().put("songAddAtEnd", new RemoveDownloadsAction(false, false, true));
-        Action.getNamedActions().put("songReplacePlaylist", new RemoveDownloadsAction(false, false, true));
-        Action.getNamedActions().put("songClearPlaylist", new RemoveDownloadsAction(false, false, true));
-        Action.getNamedActions().put("songClearPlaylistSelected", new RemoveDownloadsAction(false, false, true));
+        Action.getNamedActions().put("songPlayPause", new SongPlayPauseAction());
+        Action.getNamedActions().put("songPrevious", new SongPreviousAction());
+        Action.getNamedActions().put("songNext", new SongNextAction());
+        Action.getNamedActions().put("songClearPlaylist", new SongClearPlaylistAction());
     }
 
     private Window createWindow() throws IOException, SerializationException {
@@ -231,6 +228,7 @@ public class Main implements Application, ImageGetter {
                 return false;
             }
         });
+        playlistTable.getColumns().get(0).setCellRenderer(new PlaylistCellRenderer(playService));
         playlistTable.setTableData(playService.getPlaylist());
         playlistTable.getComponentMouseListeners().add(new TooltipTableMouseListener());
         searchField.getComponentKeyListeners().add(new ComponentKeyListener.Adapter() {
@@ -276,11 +274,11 @@ public class Main implements Application, ImageGetter {
         downloadTracks.add(track);
     }
 
-    public void play(Song song) {
+    public void play(Sequence<Song> songs, PlayService.AddMode addMode) {
         showLowerSplitPane();
         lowerPane.setSelectedIndex(1);
         downloadService.setGrooveshark(getGrooveshark()); // TODO: looks clumsy
-        playService.play(song);
+        playService.add(songs, addMode);
     }
 
     // show download/playlist pane if currently collapsed
@@ -485,6 +483,37 @@ public class Main implements Application, ImageGetter {
     }
 
 
+    private class SongPlayPauseAction extends Action {
+        @Override public void perform(Component source) {
+            if (playService.isPaused())
+                playService.resume();
+            else
+                playService.pause();
+        }
+    }
+
+
+    private class SongNextAction extends Action {
+        @Override public void perform(Component source) {
+            playService.skipForward();
+        }
+    }
+
+
+    private class SongClearPlaylistAction extends Action {
+        @Override public void perform(Component source) {
+            playService.skipForward();
+        }
+    }
+
+
+    private class SongPreviousAction extends Action {
+        @Override public void perform(Component source) {
+            playService.skipBackward();
+        }
+    }
+
+
     private class TrackListListener extends ListListener.Adapter<Track> {
         private Timer timer;
 
@@ -531,10 +560,16 @@ public class Main implements Application, ImageGetter {
     private class PlaylistListener implements PlayServiceListener {
         @Override public void playbackStarted(Track track) {
             updateComponents(track);
+            ((ButtonData) songPlayPauseButton.getButtonData()).setIcon("@player_pause.png");
+            songPlayPauseButton.repaint();
+            playlistTable.repaint();
         }
 
         @Override public void playbackFinished(Track track) {
             updateComponents(null);
+            ((ButtonData) songPlayPauseButton.getButtonData()).setIcon("@player_play.png");
+            songPlayPauseButton.repaint();
+            playlistTable.repaint();
         }
 
         @Override public void positionChanged(Track track, int audioPosition) {

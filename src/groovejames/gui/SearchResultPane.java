@@ -189,10 +189,10 @@ public class SearchResultPane extends TablePane implements Bindable {
                         "Download" + (length == 0 ? "" : " (" + length + ")")
                 ));
                 songpane.playButton.setEnabled(length > 0);
-                songpane.playButton.setButtonData(new ButtonData(
-                        ((ButtonData) songpane.playButton.getButtonData()).getIcon(),
-                        "Play" + (length == 0 ? "" : " (" + length + ")")
-                ));
+                for(Object listData : songpane.playButton.getListData()) {
+                    ListIdItem item = (ListIdItem) listData;
+                    item.setText(item.getUserData().toString() + (length == 0 ? "" : " (" + length + ")"));
+                }
             }
         });
 
