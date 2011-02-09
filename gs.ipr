@@ -382,11 +382,11 @@
     </library>
     <library name="jl">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/lib/jl1.0.1.jar!/" />
+        <root url="jar://$PROJECT_DIR$/lib/jl1.0.1-patched.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$PROJECT_DIR$/etc/jl1.0.1-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/etc/jl1.0.1-src-patched.zip!/" />
       </SOURCES>
     </library>
   </component>

@@ -16,7 +16,7 @@ public class MemoryStore implements Store {
     }
 
     @Override public OutputStream getOutputStream() throws IOException {
-        return buf.getOutputStream();
+        return buf;
     }
 
     @Override public InputStream getInputStream() throws IOException {

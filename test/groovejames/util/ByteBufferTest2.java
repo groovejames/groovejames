@@ -20,7 +20,7 @@ public class ByteBufferTest2 {
             @Override public void run() {
                 try {
                     InputStream inputStream = new FileInputStream(fIn);
-                    OutputStream outputStream = buf.getOutputStream();
+                    OutputStream outputStream = buf;
                     copy(inputStream, outputStream, 100);
                     outputStream.close();
                 } catch (Exception ex) {

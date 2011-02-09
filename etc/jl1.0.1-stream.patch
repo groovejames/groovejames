@@ -1,0 +1,102 @@
+diff -ubrN JLayer1.0.1-orig/src/javazoom/jl/decoder/Bitstream.java JLayer1.0.1/src/javazoom/jl/decoder/Bitstream.java
+--- JLayer1.0.1-orig/src/javazoom/jl/decoder/Bitstream.java	2008-11-16 17:34:08.000000000 +0100
++++ JLayer1.0.1/src/javazoom/jl/decoder/Bitstream.java	2011-02-09 15:56:45.054569400 +0100
+@@ -177,7 +177,7 @@
+ 			size = readID3v2Header(in);
+ 			header_pos = size;			
+ 		}
+-		catch (IOException e)
++		catch (BitstreamException e)
+ 		{}
+ 		finally
+ 		{
+@@ -195,10 +195,10 @@
+ 			if (size > 0)
+ 			{
+ 				rawid3v2 = new byte[size];
+-				in.read(rawid3v2,0,rawid3v2.length);
++				readBytes(in, rawid3v2,0,rawid3v2.length);
+ 			}			
+ 		}
+-		catch (IOException e)
++		catch (BitstreamException e)
+ 		{}
+ 	}
+ 	
+@@ -209,18 +209,18 @@
+ 	 * @throws IOException
+ 	 * @author JavaZOOM
+ 	 */
+-	private int readID3v2Header(InputStream in) throws IOException
++	private int readID3v2Header(InputStream in) throws BitstreamException
+ 	{		
+ 		byte[] id3header = new byte[4];
+ 		int size = -10;
+-		in.read(id3header,0,3);
++		readBytes(in,id3header,0,3);
+ 		// Look for ID3v2
+ 		if ( (id3header[0]=='I') && (id3header[1]=='D') && (id3header[2]=='3'))
+ 		{
+-			in.read(id3header,0,3);
++			readBytes(in,id3header,0,3);
+ 			int majorVersion = id3header[0];
+ 			int revision = id3header[1];
+-			in.read(id3header,0,4);
++			readBytes(in,id3header,0,4);
+ 			size = (int) (id3header[0] << 21) + (id3header[1] << 14) + (id3header[2] << 7) + (id3header[3]);
+ 		}
+ 		return (size+10);
+@@ -364,7 +364,7 @@
+ 	 */
+ 	public boolean isSyncCurrentPosition(int syncmode) throws BitstreamException
+ 	{
+-		int read = readBytes(syncbuf, 0, 4);
++		int read = readBytes(source, syncbuf, 0, 4);
+ 		int headerstring = ((syncbuf[0] << 24) & 0xFF000000) | ((syncbuf[1] << 16) & 0x00FF0000) | ((syncbuf[2] << 8) & 0x0000FF00) | ((syncbuf[3] << 0) & 0x000000FF);
+ 
+ 		try
+@@ -425,7 +425,7 @@
+ 		boolean sync;
+ 		int headerstring;
+ 		// read additional 2 bytes
+-		int bytesRead = readBytes(syncbuf, 0, 3);
++		int bytesRead = readBytes(source, syncbuf, 0, 3);
+ 
+ 		if (bytesRead!=3) throw newBitstreamException(STREAM_EOF, null);
+ 
+@@ -435,7 +435,7 @@
+ 		{
+ 			headerstring <<= 8;
+ 
+-			if (readBytes(syncbuf, 3, 1)!=1)
++			if (readBytes(source, syncbuf, 3, 1)!=1)
+ 				throw newBitstreamException(STREAM_EOF, null);
+ 
+ 			headerstring |= (syncbuf[3] & 0x000000FF);
+@@ -628,7 +628,7 @@
+ 	 * Simlar to readFully, but doesn't throw exception when
+ 	 * EOF is reached.
+ 	 */
+-	private int readBytes(byte[] b, int offs, int len)
++	private static int readBytes(InputStream in, byte[] b, int offs, int len)
+ 		throws BitstreamException
+ 	{
+ 		int totalBytesRead = 0;
+@@ -636,7 +636,7 @@
+ 		{
+ 			while (len > 0)
+ 			{
+-				int bytesread = source.read(b, offs, len);
++				int bytesread = in.read(b, offs, len);
+ 				if (bytesread == -1)
+ 				{
+ 					break;
+@@ -648,7 +648,7 @@
+ 		}
+ 		catch (IOException ex)
+ 		{
+-			throw newBitstreamException(STREAM_ERROR, ex);
++				throw new BitstreamException(STREAM_ERROR, ex);
+ 		}
+ 		return totalBytesRead;
+ 	}

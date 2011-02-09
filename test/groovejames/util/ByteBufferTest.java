@@ -2,7 +2,6 @@ package groovejames.util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 public class ByteBufferTest {
 
@@ -34,20 +33,20 @@ public class ByteBufferTest {
         InputStream is = buf.getInputStream();
 
         // read single byte
-        System.out.println("Wait 500ms for single byte...");
+        System.out.println("Wait 1000ms for single byte...");
         long startTime = System.currentTimeMillis();
         int b = is.read();
         long elapsed = System.currentTimeMillis() - startTime;
-        assertBetween(500L, 600L, elapsed);
+        assertBetween(900L, 1100L, elapsed);
         assertEquals(b, 42);
 
         // read byte array
-        System.out.println("Wait 500ms for 5 bytes...");
+        System.out.println("Wait 1000ms for 5 bytes...");
         startTime = System.currentTimeMillis();
         byte[] bytes = new byte[10];
         int cnt = is.read(bytes);
         elapsed = System.currentTimeMillis() - startTime;
-        assertBetween(500L, 600L, elapsed);
+        assertBetween(900L, 1100L, elapsed);
         assertEquals(5, cnt);
         assertEquals(47, bytes[0]);
         assertEquals(11, bytes[1]);
@@ -56,15 +55,15 @@ public class ByteBufferTest {
         assertEquals(15, bytes[4]);
 
         // wait for end of stream
-        System.out.println("Wait 500ms for end of stream...");
+        System.out.println("Wait 1000ms for end of stream...");
         startTime = System.currentTimeMillis();
         cnt = is.read(bytes, 0, 3);
         elapsed = System.currentTimeMillis() - startTime;
-        assertBetween(500L, 600L, elapsed);
+        assertBetween(900L, 1100L, elapsed);
         assertEquals(-1, cnt);
 
         // test getBytes()
-        bytes = buf.getBytes();
+        bytes = buf.toByteArray();
         assertEquals(6, bytes.length);
         assertEquals(42, bytes[0]);
         assertEquals(47, bytes[1]);
@@ -76,28 +75,18 @@ public class ByteBufferTest {
         System.out.println("All tests ok.");
     }
 
-    private static void write(ByteBuffer buf) throws IOException, InterruptedException {
-        OutputStream os = buf.getOutputStream();
-
-        // write single byte after 500ms
-        Thread.sleep(500);
+    private static void write(ByteBuffer os) throws IOException, InterruptedException {
+        // write single byte after 1000ms
+        Thread.sleep(1000);
         os.write(42);
 
-        // write 5 bytes after 500ms
-        Thread.sleep(500);
+        // write 5 bytes after 1000ms
+        Thread.sleep(1000);
         os.write(new byte[]{47, 11, 0, 8, 15});
 
-        // close stream after 500ms
-        Thread.sleep(500);
+        // close stream after 1000ms
+        Thread.sleep(1000);
         os.close();
-
-        // check close
-        try {
-            os.write(42);
-            throw new AssertionError("expected IOException");
-        } catch (IOException ex) {
-            // expected
-        }
     }
 
     private static void assertEquals(int expected, int value) {
