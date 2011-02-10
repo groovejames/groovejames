@@ -39,6 +39,7 @@
             <manifest>
                 <attribute name="Main-Class" value="groovejames.gui.Main"/>
                 <attribute name="Build-Number" value="${build.number}"/>
+                <attribute name="Build-Type" value="${build.type}"/>
                 <attribute name="Build-Date" value="${build.date}"/>
                 <!--<attribute name="SplashScreen-Image" value="org/lastjames/gui/resources/splash.png"/>-->
             </manifest>
@@ -59,16 +60,16 @@
 
 
     <target name="dist-bin" depends="readBuildNumber, jar" description="create the binary distribution">
-        <copy file="grooveJames.exe" todir="out"/>
-        <zip destfile="out/grooveJames-r${build.number}-bin.zip">
-            <zipfileset dir="out" includes="grooveJames.jar, grooveJames.exe"/>
+        <copy file="grooveJames.exe" tofile="out/grooveJames-${version}.exe"/>
+        <zip destfile="out/grooveJames-${version}-bin.zip">
+            <zipfileset dir="out" includes="grooveJames.jar, grooveJames-${version}.exe"/>
         </zip>
     </target>
 
 
     <target name="dist-src" depends="readBuildNumber" description="create source distribution zip file">
         <mkdir dir="out"/>
-        <zip destfile="out/grooveJames-r${build.number}-src.zip">
+        <zip destfile="out/grooveJames-${version}-src.zip">
             <zipfileset dir="." prefix="grooveJames">
                 <exclude name="**/.svn/**"/>
                 <exclude name="out/**"/>
@@ -81,37 +82,45 @@
     </target>
 
 
-    <target name="release-bin" depends="readBuildNumber, dist-bin" if="filesChanged">
-        <CBRelease file="out/grooveJames-r${build.number}-bin.zip"
-                   tofile="grooveJames-r${build.number}-bin.zip"
-                   todir="binaries"
-                   description="GrooveJames ${build.number} binary files"
+    <target name="release-bin" depends="checkIfSomeFilesChanged, readBuildNumber, dist-bin" if="filesChanged">
+        <condition property="releaseBinDir" value="stable/binaries" else="development/binaries">
+            <equals arg1="${build.type}" arg2="stable"/>
+        </condition>
+        <CBRelease file="out/grooveJames-${version}-bin.zip"
+                   tofile="grooveJames-${version}-bin.zip"
+                   todir="${releaseBinDir}"
+                   description="GrooveJames ${version} binary files"
                    descriptionformat="T"/>
     </target>
 
 
-    <target name="release-src" depends="readBuildNumber, dist-src" if="filesChanged">
-        <CBRelease file="out/grooveJames-r${build.number}-src.zip"
-                   tofile="grooveJames-r${build.number}-src.zip"
-                   todir="sources"
-                   description="GrooveJames ${build.number} sources"
+    <target name="release-src" depends="checkIfSomeFilesChanged, readBuildNumber, dist-src" if="filesChanged">
+        <condition property="releaseSrcDir" value="stable/sources" else="development/sources">
+            <equals arg1="${build.type}" arg2="stable"/>
+        </condition>
+        <CBRelease file="out/grooveJames-${version}-src.zip"
+                   tofile="grooveJames-${version}-src.zip"
+                   todir="${releaseSrcDir}"
+                   description="GrooveJames ${version} sources"
                    descriptionformat="T"/>
     </target>
 
 
-    <target name="readBuildNumber" depends="increaseBuildNumberIfSomeFilesChanged">
-        <property file="src/groovejames/gui/version.properties"/>
-        <echo message="build.number: ${build.number}" level="info"/>
-        <echo message="build.date: ${build.date}" level="info"/>
-    </target>
-
-
-    <target name="increaseBuildNumberIfSomeFilesChanged" depends="checkIfSomeFilesChanged" if="filesChanged">
-        <echo message="increasing build.number because checksum of all files changed" level="info"/>
-        <propertyfile file="src/groovejames/gui/version.properties">
-            <entry key="build.number" type="int" operation="+" default="0"/>
+    <target name="readBuildNumber">
+        <!-- set build.date in build.properties to current date -->
+        <propertyfile file="src/groovejames/gui/build.properties">
             <entry key="build.date" type="date" value="now"/>
         </propertyfile>
+        <!-- read build.properties and version.properties -->
+        <!-- Note: build.properties changes on every build, version.properties -->
+        <!-- changes only if someone commits a new version of this file -->
+        <property file="src/groovejames/gui/build.properties"/>
+        <property file="src/groovejames/gui/version.properties"/>
+        <property name="version" value="r${build.number}-${build.type}"/>
+        <echo message="build.type: ${build.type}" level="info"/>
+        <echo message="build.number: ${build.number}" level="info"/>
+        <echo message="build.date: ${build.date}" level="info"/>
+        <echo message="version: ${version}" level="info"/>
     </target>
 
 
@@ -145,7 +154,7 @@
                 <exclude name="**/*.log.*"/>
                 <exclude name="**/Thumbs.db"/>
                 <exclude name="lastrelease.properties"/>
-                <exclude name="src/groovejames/gui/version.properties"/>
+                <exclude name="src/groovejames/gui/build.properties"/>
             </fileset>
         </checksum>
         <echo message="checksum of all files: ${checksum}" level="debug"/>
@@ -156,7 +165,7 @@
             description="cleanup and create source and binary distribution"/>
 
 
-    <target name="release" depends="readBuildNumber, release-src, release-bin" if="filesChanged"
+    <target name="release" depends="checkIfSomeFilesChanged, readBuildNumber, release-src, release-bin" if="filesChanged"
             description="checks if some files have been changed, if true releases files on CodeBeamer/JavaForge"/>
 
 

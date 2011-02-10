@@ -391,16 +391,28 @@ public class Main implements Application, ImageGetter {
     }
 
     private String getVersionNumberAndDate() {
+        Properties properties = loadProperties("version.properties");
+        String buildNumber = properties.getProperty("build.number", "");
+        String buildType = properties.getProperty("build.type", "");
+        properties = loadProperties("build.properties");
+        String buildDate = properties.getProperty("build.date", "");
         String versionNumberAndDate = "";
-        String buildNumber = "0";
-        String buildDate = "";
-        InputStream is = getClass().getResourceAsStream("version.properties");
+        if (!buildNumber.isEmpty()) {
+            versionNumberAndDate += "r" + buildNumber;
+            if (!buildType.isEmpty())
+                versionNumberAndDate += "-" + buildType;
+        }
+        if (!buildDate.isEmpty())
+            versionNumberAndDate += " (built on " + buildDate + ")";
+        return versionNumberAndDate;
+    }
+
+    private Properties loadProperties(String resourceName) {
+        Properties properties = new Properties();
+        InputStream is = getClass().getResourceAsStream(resourceName);
         if (is != null) {
             try {
-                Properties properties = new Properties();
                 properties.load(is);
-                buildNumber = properties.getProperty("build.number", "0");
-                buildDate = properties.getProperty("build.date", "");
             }
             catch (IOException ignore) {
             }
@@ -411,11 +423,7 @@ public class Main implements Application, ImageGetter {
                 }
             }
         }
-        if (!buildNumber.isEmpty())
-            versionNumberAndDate += "r" + buildNumber;
-        if (!buildDate.isEmpty())
-            versionNumberAndDate += " (built on " + buildDate + ")";
-        return versionNumberAndDate;
+        return properties;
     }
 
 
