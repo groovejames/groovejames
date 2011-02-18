@@ -88,7 +88,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
             song3.setAlbumName("Black Celebration");
             song3.setSongName("Black Celebration");
             song3.setTrackNum(1);
-            song3.setEstimateDuration(199L);
+            song3.setEstimateDuration(60L);
             song3.setRank(0.5);
 
             Song song4 = new Song();
@@ -102,7 +102,18 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
             song4.setEstimateDuration(2032L);
             song4.setRank(0.0);
 
-            return new Song[]{song1, song2, song3, song4};
+            Song song5 = new Song();
+            song5.setSongID("1004");
+            song5.setArtistID("2");
+            song5.setArtistName("Depeche Mode");
+            song5.setAlbumID("2");
+            song5.setAlbumName("Black Celebration");
+            song5.setSongName("A Question Of Lust");
+            song5.setTrackNum(3);
+            song5.setEstimateDuration(30L);
+            song5.setRank(0.3);
+
+            return new Song[]{song1, song2, song3, song4, song5};
         }
     }
 

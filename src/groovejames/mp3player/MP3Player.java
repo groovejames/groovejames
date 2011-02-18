@@ -131,6 +131,15 @@ public class MP3Player {
         return complete;
     }
 
+    /**
+     * Set the new completed status of this player -- only used for tests.
+     *
+     * @param complete the new completed status of this player.
+     */
+    public synchronized void setComplete(boolean complete) {
+        this.complete = complete;
+    }
+
     public void play() throws JavaLayerException {
         currentFrame = 0;
         play(Integer.MAX_VALUE);
@@ -223,6 +232,9 @@ public class MP3Player {
         try {
             AudioDevice out = audio;
             if (out == null)
+                return false;
+
+            if (Thread.currentThread().isInterrupted())
                 return false;
 
             Header h = bitstream.readFrame();

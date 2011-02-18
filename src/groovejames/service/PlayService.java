@@ -46,34 +46,31 @@ public class PlayService {
             return;
         }
         if (addMode == AddMode.REPLACE) {
-            playlist.clear();
-            currentSongIndex = -1;
-            currentTrack = null;
-            pausedFrame = -1;
+            clearPlaylist();
         }
-        int insertIdx = (addMode == AddMode.LAST ? playlist.getLength()
-                : addMode == AddMode.NEXT ? currentSongIndex + 1 : currentSongIndex);
+        int insertIdx = (addMode == AddMode.LAST ? playlist.getLength() : currentSongIndex + 1);
         for (int i = 0; i < songs.getLength(); i++) {
             Song song = songs.get(i);
             log.info("adding: " + song);
-            if (insertIdx >= 0 && insertIdx < playlist.getLength()) {
+            if (insertIdx < playlist.getLength()) {
                 playlist.insert(song, insertIdx);
             } else {
-                int newIdx = playlist.add(song);
-                if (i == 0 && addMode == AddMode.NOW) {
-                    currentSongIndex = newIdx;
-                }
+                insertIdx = playlist.add(song);
+            }
+            if (i == 0 && addMode == AddMode.NOW) {
+                currentSongIndex = insertIdx;
             }
             insertIdx++;
         }
         if (addMode == AddMode.NOW) {
             Song song = songs.get(0);
-            log.info("starting: " + song);
             startPlaying(song, 0);
         }
     }
 
     public synchronized void play() {
+        if (currentSongIndex < 0 && !playlist.isEmpty())
+            currentSongIndex = 0;
         Song currentSong = getCurrentSong();
         if (currentSong != null) {
             log.info("starting: " + currentSong);
@@ -93,14 +90,7 @@ public class PlayService {
         Song finishedSong = getCurrentSong();
         log.info("stopping because of skip: " + finishedSong);
         stopPlaying();
-        if (currentSongIndex < playlist.getLength() - 1) {
-            currentSongIndex++;
-            Song currentSong = getCurrentSong();
-            log.info("skipping forward to: " + currentSong);
-            startPlaying(currentSong, 0);
-        } else {
-            log.info("skipped beyond end of playlist");
-        }
+        skipToNext();
     }
 
     public synchronized void skipBackward() {
@@ -122,6 +112,11 @@ public class PlayService {
         if (song != null && !playThread.isStopForced()) {
             log.info("pausing: " + song);
             pausedFrame = playThread.forceStop();
+            try {
+                playThread.join();
+            } catch (InterruptedException e) {
+                // ignored
+            }
             log.debug("paused at: " + pausedFrame);
         }
     }
@@ -138,6 +133,16 @@ public class PlayService {
         return pausedFrame != -1;
     }
 
+    public synchronized boolean isPlaying() {
+        return playThread.isAlive();
+    }
+
+    public synchronized void clearPlaylist() {
+        stopPlaying();
+        currentSongIndex = -1;
+        playlist.clear();
+    }
+
     /**
      * Retrieves the position in milliseconds of the current audio sample being played.
      *
@@ -147,63 +152,97 @@ public class PlayService {
         return playThread != null ? playThread.getCurrentPosition() : 0;
     }
 
-    public int getCurrentSongIndex() {
+    /**
+     * @return the index of the track being played currently
+     */
+    public int getCurrentTrackIndex() {
         return currentSongIndex;
     }
 
-    public Song getCurrentSong() {
+    /**
+     * @return the track being played currently
+     */
+    public Track getCurrentTrack() {
+        return currentTrack;
+    }
+
+    private Song getCurrentSong() {
         return currentSongIndex >= 0 ? playlist.get(currentSongIndex) : null;
     }
 
     private void startPlaying(Song song, int framePosition) {
         try {
-            if (currentTrack != null)
-                downloadService.cancelDownload(currentTrack, true);
-            stopPlaying();
-            currentTrack = downloadService.downloadToMemory(song, listener);
+            if (currentTrack != null && currentTrack.getSong() != song)
+                stopPlaying();
+            log.info("starting from " + framePosition + ": " + song);
+            if (currentTrack == null || currentTrack.getSong() != song)
+                currentTrack = downloadService.downloadToMemory(song, listener);
             InputStream inputStream = currentTrack.getStore().getInputStream();
-            playThread = new PlayThread(inputStream, framePosition, new PlayThreadListener());
+            playThread = new PlayThread(inputStream, framePosition, new PlayThreadListener(currentTrack));
+            playThread.setEstimateDuration(song.getEstimateDuration());
             playThread.start();
         } catch (IOException ex) {
-            handlePlayException(ex);
+            handlePlayException(currentTrack, ex);
         }
     }
 
     private void stopPlaying() {
         playThread.forceStop();
+        playThread.interrupt();
+        if (currentTrack != null)
+            downloadService.cancelDownload(currentTrack, true);
         currentTrack = null;
         pausedFrame = -1;
     }
 
-    private void handlePlayException(Exception ex) {
-        log.error("error playing track " + currentTrack, ex);
+    private void skipToNext() {
+        if (currentSongIndex < playlist.getLength() - 1) {
+            currentSongIndex++;
+            Song currentSong = getCurrentSong();
+            log.info("skipping forward to: " + currentSong);
+            startPlaying(currentSong, 0);
+        } else {
+            log.info("skipped beyond end of playlist");
+        }
+    }
+
+    private void handlePlayException(Track track, Exception ex) {
+        log.error("error playing track " + track, ex);
         if (listener != null)
-            listener.exception(currentTrack, ex);
+            listener.exception(track, ex);
         stop();
     }
 
 
     private class PlayThreadListener implements PlaybackListener {
+        private Track track;
+
+        private PlayThreadListener(Track track) {
+            this.track = track;
+        }
+
         @Override public void playbackStarted(MP3Player player, int audioPosition) {
-            log.info("playback started: " + currentTrack);
+            log.info("playback started: " + track);
             if (listener != null)
-                listener.playbackStarted(currentTrack);
+                listener.playbackStarted(track);
         }
 
         @Override public void playbackFinished(MP3Player player, int audioPosition) {
-            log.info("playback finished: " + currentTrack);
+            log.info("playback finished: " + track);
             if (listener != null)
-                listener.playbackFinished(currentTrack);
-            skipForward();
+                listener.playbackFinished(track, audioPosition);
+            if (player.isComplete()) {
+                skipToNext();
+            }
         }
 
         @Override public void positionChanged(MP3Player player, int audioPosition) {
             if (listener != null)
-                listener.positionChanged(currentTrack, audioPosition);
+                listener.positionChanged(track, audioPosition);
         }
 
         @Override public void exception(MP3Player player, Exception ex) {
-            handlePlayException(ex);
+            handlePlayException(track, ex);
         }
     }
 }
