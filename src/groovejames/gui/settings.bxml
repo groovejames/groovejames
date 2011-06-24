@@ -1,7 +1,11 @@
 <Sheet xmlns="org.apache.pivot.wtk"
        xmlns:validation="org.apache.pivot.wtk.validation"
+       xmlns:gjvalidation="groovejames.gui.validation"
        xmlns:content="org.apache.pivot.wtk.content"
        xmlns:bxml="http://pivot.apache.org/bxml">
+    <bxml:define>
+        <bxml:include bxml:id="styles" src="styles.json"/>
+    </bxml:define>
     <content>
         <TablePane styles="{verticalSpacing:8}">
             <columns>
@@ -14,7 +18,7 @@
                 <TablePane.Row height="1*">
                     <TabPane>
                         <tabs>
-                            <Form bxml:id="networkForm" styles="{fill:true}">
+                            <Form bxml:id="networkForm" styles="{fill:true, showFlagIcons:false}">
                                 <TabPane.tabData>
                                     <content:ButtonData text="Network"/>
                                 </TabPane.tabData>
@@ -34,17 +38,41 @@
                                     </Form.Section>
                                 </sections>
                             </Form>
+                            <Form bxml:id="downloadForm" styles="{fill:true, showFlagIcons:false}">
+                                <TabPane.tabData>
+                                    <content:ButtonData text="Download"/>
+                                </TabPane.tabData>
+                                <sections>
+                                    <Form.Section heading="Filename scheme">
+                                        <Label preferredWidth="300" styles="{wrapText:true}" text="This is a format string for file path of downloaded files. Use / to create a subdirectory. Use &lt;Artist&gt; to insert the artist's name, &lt;Album&gt; to insert the album title, &lt;Title&gt; to insert the track's name, &lt;#&gt; to insert the track number (if any). Use &lt;##&gt; or &lt;###&gt; to pad the track number with leading zeroes. &lt;ALBUM&gt; inserts the album name in uppercase, &lt;album&gt; in lowercase (likewise for &lt;Artist&gt; and &lt;Title&gt;). &lt;Album?text&gt; inserts 'text' only if the album name is not empty (likewise for &lt;Artist&gt;, &lt;Title&gt; and &lt;#&gt;)."/>
+                                        <TextInput bxml:id="filenameScheme" textKey="filenameScheme" styles="{backgroundColor: '#FFFFFF'}"
+                                                   Form.label="Scheme" Form.required="true">
+                                            <validator>
+                                                <gjvalidation:FilenameSchemeTextValidator/>
+                                            </validator>
+                                        </TextInput>
+                                    </Form.Section>
+                                </sections>
+                            </Form>
                         </tabs>
                     </TabPane>
                 </TablePane.Row>
                 <TablePane.Row height="-1">
-                    <bxml:define>
-                        <bxml:include bxml:id="styles" src="styles.json"/>
-                    </bxml:define>
-                    <BoxPane styles="{horizontalAlignment:'right', verticalAlignment:'center'}">
-                        <PushButton bxml:id="okButton" buttonData="OK" styles="$styles.commandButton"/>
-                        <PushButton bxml:id="cancelButton" buttonData="Cancel" styles="$styles.commandButton"/>
-                    </BoxPane>
+                    <TablePane>
+                        <columns>
+                            <TablePane.Column width="1*"/>
+                            <TablePane.Column width="-1"/>
+                        </columns>
+                        <TablePane.Row>
+                            <BoxPane styles="{horizontalAlignment:'left', verticalAlignment:'center'}">
+                                <Label bxml:id="errorLabel" styles="{color:'red'}"/>
+                             </BoxPane>
+                            <BoxPane styles="{horizontalAlignment:'right', verticalAlignment:'center'}">
+                                <PushButton bxml:id="okButton" buttonData="OK" styles="$styles.commandButton"/>
+                                <PushButton bxml:id="cancelButton" buttonData="Cancel" styles="$styles.commandButton"/>
+                            </BoxPane>
+                        </TablePane.Row>
+                    </TablePane>
                 </TablePane.Row>
             </rows>
         </TablePane>

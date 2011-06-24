@@ -50,6 +50,9 @@ public class FilenameSchemeParser {
     }
 
     public String parse(Song song, String filenameScheme) throws IllegalArgumentException {
+        if (filenameScheme == null || filenameScheme.trim().isEmpty())
+            throw new IllegalArgumentException("scheme may not be empty");
+
         int len = filenameScheme.length();
         int pos = 0;
         int bracketLevel = 0;

@@ -162,6 +162,7 @@ public class Main implements Application, ImageGetter {
         Preferences prefs = Preferences.userNodeForPackage(Settings.class);
         settings.setProxyHost(prefs.get("proxyHost", settings.getProxyHost()));
         settings.setProxyPort(prefs.getInt("proxyPort", settings.getProxyPort()));
+        settings.setFilenameScheme(prefs.get("filenameScheme", settings.getFilenameScheme()));
         return settings;
     }
 
@@ -169,6 +170,7 @@ public class Main implements Application, ImageGetter {
         Preferences prefs = Preferences.userNodeForPackage(Settings.class);
         prefs.put("proxyHost", settings.getProxyHost());
         prefs.putInt("proxyPort", settings.getProxyPort());
+        prefs.put("filenameScheme", settings.getFilenameScheme());
     }
 
     private void applySettings() {
@@ -177,6 +179,7 @@ public class Main implements Application, ImageGetter {
         } else {
             httpClientService.setProxySettings(null);
         }
+        downloadService.getFilenameSchemeParser().setFilenameScheme(settings.getFilenameScheme());
         grooveshark = null;
     }
 
