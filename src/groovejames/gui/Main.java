@@ -16,9 +16,6 @@ import groovejames.service.PlayService;
 import groovejames.service.PlayServiceListener;
 import groovejames.service.ProxySettings;
 import groovejames.util.ConsoleUtil;
-import static groovejames.util.Util.durationToString;
-import static groovejames.util.Util.isEmpty;
-import static groovejames.util.Util.toErrorString;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
@@ -48,6 +45,8 @@ import org.apache.pivot.wtk.DesktopApplicationContext;
 import org.apache.pivot.wtk.Display;
 import org.apache.pivot.wtk.Keyboard;
 import org.apache.pivot.wtk.Label;
+import org.apache.pivot.wtk.Menu;
+import org.apache.pivot.wtk.MenuHandler;
 import org.apache.pivot.wtk.MessageType;
 import org.apache.pivot.wtk.Meter;
 import org.apache.pivot.wtk.Mouse;
@@ -55,8 +54,6 @@ import org.apache.pivot.wtk.Platform;
 import org.apache.pivot.wtk.Prompt;
 import org.apache.pivot.wtk.PushButton;
 import org.apache.pivot.wtk.ScrollPane;
-import static org.apache.pivot.wtk.ScrollPane.ScrollBarPolicy.AUTO;
-import static org.apache.pivot.wtk.ScrollPane.ScrollBarPolicy.FILL;
 import org.apache.pivot.wtk.Sheet;
 import org.apache.pivot.wtk.SheetCloseListener;
 import org.apache.pivot.wtk.SplitPane;
@@ -74,14 +71,20 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static java.lang.String.format;
 import java.net.URI;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.prefs.Preferences;
+
+import static groovejames.util.Util.durationToString;
+import static groovejames.util.Util.isEmpty;
+import static groovejames.util.Util.toErrorString;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static java.lang.String.format;
+import static org.apache.pivot.wtk.ScrollPane.ScrollBarPolicy.AUTO;
+import static org.apache.pivot.wtk.ScrollPane.ScrollBarPolicy.FILL;
 
 @SuppressWarnings({"UnusedDeclaration"})
 public class Main implements Application, ImageGetter {
@@ -249,10 +252,53 @@ public class Main implements Application, ImageGetter {
                 doSearch();
             }
         });
+        final Action tabCloseAction = new Action() {
+            @Override
+            public void perform(Component source) {
+                tabPane.getTabs().remove(tabPane.getSelectedTab());
+            }
+        };
+        tabCloseAction.setEnabled(false);
+        final Action tabCloseAllAction = new Action() {
+            @Override
+            public void perform(Component source) {
+                TabPane.TabSequence tabs = tabPane.getTabs();
+                for (int i = tabs.getLength() - 1; i >= 0; i--) {
+                    tabPane.getTabs().remove(tabs.get(i));
+                }
+            }
+        };
+        tabCloseAllAction.setEnabled(false);
+        tabPane.setMenuHandler(new MenuHandler.Adapter() {
+            @Override
+            public boolean configureContextMenu(Component component, Menu menu, int x, int y) {
+                if (tabPane.getTabs().getLength() > 0) {
+                    Menu.Item closeCurrentTab = new Menu.Item("Close");
+                    closeCurrentTab.setAction(tabCloseAction);
+                    Menu.Item closeAllTabs = new Menu.Item("Close All");
+                    closeAllTabs.setAction(tabCloseAllAction);
+                    Menu.Section menuSection = new Menu.Section();
+                    menuSection.add(closeCurrentTab);
+                    menuSection.add(closeAllTabs);
+                    menu.getSections().add(menuSection);
+                }
+                return false;
+            }
+        });
         tabPane.getTabPaneListeners().add(new TabPaneListener.Adapter() {
-            @Override public void tabsRemoved(TabPane tabPane, int index, Sequence<Component> tabs) {
+            @Override
+            public void tabInserted(TabPane tabPane, int index) {
+                int numTabs = tabPane.getTabs().getLength();
+                tabCloseAction.setEnabled(numTabs > 0);
+                tabCloseAllAction.setEnabled(numTabs > 0);
+            }
+
+            @Override
+            public void tabsRemoved(TabPane tabPane, int index, Sequence<Component> tabs) {
                 int numTabs = tabPane.getTabs().getLength();
                 tabPane.setSelectedIndex(min(max(0, index), numTabs - 1));
+                tabCloseAction.setEnabled(numTabs > 0);
+                tabCloseAllAction.setEnabled(numTabs > 0);
             }
         });
     }
@@ -416,10 +462,9 @@ public class Main implements Application, ImageGetter {
         if (is != null) {
             try {
                 properties.load(is);
-            }
-            catch (IOException ignore) {
-            }
-            finally {
+            } catch (IOException ignore) {
+                // intentionally ignored
+            } finally {
                 try {
                     is.close();
                 } catch (IOException ignore) {

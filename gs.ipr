@@ -17,7 +17,55 @@
   <component name="CodeStyleSettingsManager">
     <option name="PER_PROJECT_SETTINGS">
       <value>
+        <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="100" />
+        <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="100" />
+        <option name="PACKAGES_TO_USE_IMPORT_ON_DEMAND">
+          <value />
+        </option>
+        <option name="METHOD_ANNOTATION_WRAP" value="1" />
+        <option name="CLASS_ANNOTATION_WRAP" value="1" />
+        <option name="FIELD_ANNOTATION_WRAP" value="1" />
+        <ADDITIONAL_INDENT_OPTIONS fileType="css">
+          <option name="INDENT_SIZE" value="4" />
+          <option name="CONTINUATION_INDENT_SIZE" value="8" />
+          <option name="TAB_SIZE" value="4" />
+          <option name="USE_TAB_CHARACTER" value="false" />
+          <option name="SMART_TABS" value="false" />
+          <option name="LABEL_INDENT_SIZE" value="0" />
+          <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+          <option name="USE_RELATIVE_INDENTS" value="false" />
+        </ADDITIONAL_INDENT_OPTIONS>
+        <ADDITIONAL_INDENT_OPTIONS fileType="groovy">
+          <option name="INDENT_SIZE" value="4" />
+          <option name="CONTINUATION_INDENT_SIZE" value="8" />
+          <option name="TAB_SIZE" value="4" />
+          <option name="USE_TAB_CHARACTER" value="false" />
+          <option name="SMART_TABS" value="false" />
+          <option name="LABEL_INDENT_SIZE" value="0" />
+          <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+          <option name="USE_RELATIVE_INDENTS" value="false" />
+        </ADDITIONAL_INDENT_OPTIONS>
+        <ADDITIONAL_INDENT_OPTIONS fileType="haml">
+          <option name="INDENT_SIZE" value="2" />
+          <option name="CONTINUATION_INDENT_SIZE" value="8" />
+          <option name="TAB_SIZE" value="4" />
+          <option name="USE_TAB_CHARACTER" value="false" />
+          <option name="SMART_TABS" value="false" />
+          <option name="LABEL_INDENT_SIZE" value="0" />
+          <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+          <option name="USE_RELATIVE_INDENTS" value="false" />
+        </ADDITIONAL_INDENT_OPTIONS>
         <ADDITIONAL_INDENT_OPTIONS fileType="java">
+          <option name="INDENT_SIZE" value="4" />
+          <option name="CONTINUATION_INDENT_SIZE" value="4" />
+          <option name="TAB_SIZE" value="4" />
+          <option name="USE_TAB_CHARACTER" value="false" />
+          <option name="SMART_TABS" value="false" />
+          <option name="LABEL_INDENT_SIZE" value="0" />
+          <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+          <option name="USE_RELATIVE_INDENTS" value="false" />
+        </ADDITIONAL_INDENT_OPTIONS>
+        <ADDITIONAL_INDENT_OPTIONS fileType="js">
           <option name="INDENT_SIZE" value="4" />
           <option name="CONTINUATION_INDENT_SIZE" value="8" />
           <option name="TAB_SIZE" value="4" />
@@ -37,6 +85,16 @@
           <option name="LABEL_INDENT_ABSOLUTE" value="false" />
           <option name="USE_RELATIVE_INDENTS" value="false" />
         </ADDITIONAL_INDENT_OPTIONS>
+        <ADDITIONAL_INDENT_OPTIONS fileType="sql">
+          <option name="INDENT_SIZE" value="2" />
+          <option name="CONTINUATION_INDENT_SIZE" value="8" />
+          <option name="TAB_SIZE" value="4" />
+          <option name="USE_TAB_CHARACTER" value="false" />
+          <option name="SMART_TABS" value="false" />
+          <option name="LABEL_INDENT_SIZE" value="0" />
+          <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+          <option name="USE_RELATIVE_INDENTS" value="false" />
+        </ADDITIONAL_INDENT_OPTIONS>
         <ADDITIONAL_INDENT_OPTIONS fileType="xml">
           <option name="INDENT_SIZE" value="4" />
           <option name="CONTINUATION_INDENT_SIZE" value="8" />
@@ -47,8 +105,19 @@
           <option name="LABEL_INDENT_ABSOLUTE" value="false" />
           <option name="USE_RELATIVE_INDENTS" value="false" />
         </ADDITIONAL_INDENT_OPTIONS>
+        <ADDITIONAL_INDENT_OPTIONS fileType="yml">
+          <option name="INDENT_SIZE" value="2" />
+          <option name="CONTINUATION_INDENT_SIZE" value="8" />
+          <option name="TAB_SIZE" value="4" />
+          <option name="USE_TAB_CHARACTER" value="false" />
+          <option name="SMART_TABS" value="false" />
+          <option name="LABEL_INDENT_SIZE" value="0" />
+          <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+          <option name="USE_RELATIVE_INDENTS" value="false" />
+        </ADDITIONAL_INDENT_OPTIONS>
       </value>
     </option>
+    <option name="USE_PER_PROJECT_SETTINGS" value="true" />
   </component>
   <component name="CompilerConfiguration">
     <option name="DEFAULT_COMPILER" value="Javac" />
@@ -136,6 +205,7 @@
           <option name="REPORT_ANNOTATION_NOT_PROPAGATED_TO_OVERRIDERS" value="true" />
           <option name="REPORT_NULLS_PASSED_TO_NON_ANNOTATED_METHOD" value="true" />
         </inspection_tool>
+        <inspection_tool class="ThrowableResultOfMethodCallIgnored" enabled="false" level="WARNING" enabled_by_default="false" />
       </profile>
     </profiles>
     <option name="PROJECT_PROFILE" value="Project Default" />
