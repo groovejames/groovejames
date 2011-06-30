@@ -3,7 +3,6 @@ package groovejames.gui.components;
 import org.apache.pivot.beans.BeanAdapter;
 import org.apache.pivot.collections.Dictionary;
 import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.Insets;
 import org.apache.pivot.wtk.Meter;
 import org.apache.pivot.wtk.Orientation;
 import org.apache.pivot.wtk.TableView;
@@ -17,7 +16,6 @@ public class MeterTableCellRenderer extends BoxPane implements TableView.CellRen
 
     public MeterTableCellRenderer() {
         super(Orientation.VERTICAL);
-        getStyles().put("padding", new Insets(2));
         getStyles().put("fill", true);
         getStyles().put("verticalAlignment", "center");
         meter = new Meter();
