@@ -7,10 +7,10 @@
                     paintType: 'gradient',
                     startX: 0,
                     startY: 0,
-                    startColor: '#101030',
-                    endX: 640,
-                    endY: 480,
-                    endColor: '#606090'
+                    startColor: '#606090',
+                    endX: 0,
+                    endY: 800,
+                    endColor: '#101030'
                 }
             }
         },

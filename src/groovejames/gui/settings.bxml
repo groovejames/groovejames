@@ -44,13 +44,13 @@
                                 </TabPane.tabData>
                                 <sections>
                                     <Form.Section heading="Filename scheme">
-                                        <Label preferredWidth="300" styles="{wrapText:true}" text="This is a format string for file path of downloaded files. Use / to create a subdirectory. Use &lt;Artist&gt; to insert the artist's name, &lt;Album&gt; to insert the album title, &lt;Title&gt; to insert the track's name, &lt;#&gt; to insert the track number (if any). Use &lt;##&gt; or &lt;###&gt; to pad the track number with leading zeroes. &lt;ALBUM&gt; inserts the album name in uppercase, &lt;album&gt; in lowercase (likewise for &lt;Artist&gt; and &lt;Title&gt;). &lt;Album?text&gt; inserts 'text' only if the album name is not empty (likewise for &lt;Artist&gt;, &lt;Title&gt; and &lt;#&gt;)."/>
                                         <TextInput bxml:id="filenameScheme" textKey="filenameScheme" styles="{backgroundColor: '#FFFFFF'}"
                                                    Form.label="Scheme" Form.required="true">
                                             <validator>
                                                 <gjvalidation:FilenameSchemeTextValidator/>
                                             </validator>
                                         </TextInput>
+                                        <Label preferredWidth="300" styles="{wrapText:true}" text="This is a format string for file path of downloaded files. Use / to create a subdirectory. Use &lt;Artist&gt; to insert the artist's name, &lt;Album&gt; to insert the album title, &lt;Title&gt; to insert the track's name, &lt;#&gt; to insert the track number (if any). Use &lt;##&gt; or &lt;###&gt; to pad the track number with leading zeroes. &lt;ALBUM&gt; inserts the album name in uppercase, &lt;album&gt; in lowercase (likewise for &lt;Artist&gt; and &lt;Title&gt;). &lt;Album?text&gt; inserts 'text' only if the album name is not empty (likewise for &lt;Artist&gt;, &lt;Title&gt; and &lt;#&gt;)."/>
                                     </Form.Section>
                                 </sections>
                             </Form>
