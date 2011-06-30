@@ -19,4 +19,5 @@ public interface Store {
 
     String getDescription();
 
+    boolean isSameLocation(Store other);
 }

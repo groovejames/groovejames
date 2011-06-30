@@ -136,33 +136,6 @@ public class Track {
             return null;
     }
 
-    /**
-     * Two tracks are the same if <ol><li>the song id is the same and</li>
-     * <li>the store is the same.</li></ol>.
-     * <p/>
-     * Note that two tracks may have the same Song-ID, but different stores, ie.
-     * different download locations (or one track is a file download while the
-     * other is a download to memory).
-     *
-     * @param o other object
-     * @return true, if the other object is a track and its song id and store
-     *         is the same
-     */
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Track track = (Track) o;
-        return song.equals(track.song) && store.equals(track.store);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = song.hashCode();
-        result = 31 * result + store.hashCode();
-        return result;
-    }
-
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();

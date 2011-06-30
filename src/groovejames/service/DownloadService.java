@@ -107,7 +107,7 @@ public class DownloadService {
     private Track download(Song song, Store store, DownloadListener downloadListener, boolean forPlay) {
         Track track = new Track(song, store);
         int additionalAbortDelay = 0;
-        DownloadTask downloadTask = findSimilarDownloadTask(track);
+        DownloadTask downloadTask = findDownloadTask(track);
         if (downloadTask != null) {
             boolean downloadWasInterrupted = cancelDownload(downloadTask.track, true);
             if (downloadWasInterrupted)
@@ -127,7 +127,7 @@ public class DownloadService {
 
     public synchronized boolean cancelDownload(Track track, boolean deleteStore) {
         boolean downloadWasInterrupted = false;
-        DownloadTask downloadTask = findSimilarDownloadTask(track);
+        DownloadTask downloadTask = findDownloadTask(track);
         currentlyRunningDownloads.remove(downloadTask);
         if (downloadTask != null) {
             downloadWasInterrupted = downloadTask.abort();
@@ -140,9 +140,9 @@ public class DownloadService {
         return downloadWasInterrupted;
     }
 
-    private DownloadTask findSimilarDownloadTask(Track track) {
+    private DownloadTask findDownloadTask(Track track) {
         for (DownloadTask downloadTask : currentlyRunningDownloads) {
-            if (downloadTask.track.equals(track)) {
+            if (downloadTask.track.getStore().isSameLocation(track.getStore())) {
                 return downloadTask;
             }
         }

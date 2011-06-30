@@ -32,4 +32,8 @@ public class MemoryStore implements Store {
     @Override public String getDescription() {
         return "mem{" + description + ",size=" + buf.size() + "}";
     }
+
+    @Override public boolean isSameLocation(Store other) {
+        return false;
+    }
 }

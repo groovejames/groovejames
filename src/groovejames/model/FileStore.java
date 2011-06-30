@@ -119,20 +119,11 @@ public class FileStore implements Store {
         }
     }
 
-    // two FileStores are the same if their file is the same
-    @Override public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        FileStore fileStore = (FileStore) o;
-        return file.equals(fileStore.file);
-    }
-
-    // two FileStores are the same if their file is the same
-    @Override public int hashCode() {
-        return file.hashCode();
-    }
-
     @Override public String getDescription() {
         return file.getAbsolutePath();
+    }
+
+    @Override public boolean isSameLocation(Store other) {
+        return other instanceof FileStore && file.equals(((FileStore)other).file);
     }
 }

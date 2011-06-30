@@ -214,8 +214,8 @@ public class Main implements Application, ImageGetter {
     private void initComponents() {
         window.setIcon(getClass().getResource("butler-48.png"));
         window.getActionMappings().add(new Window.ActionMapping(
-                new Keyboard.KeyStroke(Keyboard.KeyCode.R, Platform.getCommandModifier().getMask()),
-                "reloadGUI"));
+            new Keyboard.KeyStroke(Keyboard.KeyCode.R, Platform.getCommandModifier().getMask()),
+            "reloadGUI"));
         downloadsTable.setTableData(downloadTracks);
         downloadsTable.getTableViewSortListeners().add(new DefaultTableViewSortListener());
         downloadsTable.getComponentMouseListeners().add(new TooltipTableMouseListener());
@@ -273,9 +273,9 @@ public class Main implements Application, ImageGetter {
             @Override
             public boolean configureContextMenu(Component component, Menu menu, int x, int y) {
                 if (tabPane.getTabs().getLength() > 0) {
-                    Menu.Item closeCurrentTab = new Menu.Item("Close");
+                    Menu.Item closeCurrentTab = new Menu.Item("Close Tab");
                     closeCurrentTab.setAction(tabCloseAction);
-                    Menu.Item closeAllTabs = new Menu.Item("Close All");
+                    Menu.Item closeAllTabs = new Menu.Item("Close All Tabs");
                     closeAllTabs.setAction(tabCloseAllAction);
                     Menu.Section menuSection = new Menu.Section();
                     menuSection.add(closeCurrentTab);
@@ -320,6 +320,15 @@ public class Main implements Application, ImageGetter {
         lowerPane.setSelectedIndex(0);
         downloadService.setGrooveshark(getGrooveshark());
         Track track = downloadService.download(song);
+        List.ItemIterator<Track> it = downloadTracks.iterator();
+        //noinspection WhileLoopReplaceableByForEach
+        while (it.hasNext()) {
+            Track existingTrack = it.next();
+            if (track.getStore().isSameLocation(existingTrack.getStore())) {
+                it.update(track);
+                return;
+            }
+        }
         downloadTracks.add(track);
     }
 
@@ -386,11 +395,11 @@ public class Main implements Application, ImageGetter {
                     // paint the activity indicator only after 600ms, otherwise a strange redraw
                     // error will occur
                     ApplicationContext.scheduleCallback(new Runnable() {
-                        @Override
-                        public void run() {
-                            searchResultPane.startSearch();
-                        }
-                    }, 600);
+                            @Override
+                            public void run() {
+                                searchResultPane.startSearch();
+                            }
+                        }, 600);
                 }
             }
             searchField.requestFocus();
@@ -528,8 +537,8 @@ public class Main implements Application, ImageGetter {
             while (it.hasNext()) {
                 Track track = it.next();
                 if ((selectedOnly && selectedTracks.indexOf(track) != -1)
-                        || (!selectedOnly && successfulOnly && track.getStatus().isSuccessful())
-                        || (!selectedOnly && !successfulOnly && track.getStatus().isFinished())) {
+                    || (!selectedOnly && successfulOnly && track.getStatus().isSuccessful())
+                    || (!selectedOnly && !successfulOnly && track.getStatus().isFinished())) {
                     downloadService.cancelDownload(track, removeFromDisc);
                     it.remove();
                     selectedTracks.remove(track);
@@ -603,13 +612,13 @@ public class Main implements Application, ImageGetter {
             if (timer == null) {
                 timer = new Timer("downloadTable repainter", true);
                 timer.scheduleAtFixedRate(new TimerTask() {
-                    @Override
-                    public void run() {
-                        if (downloadsTable != null) {
-                            downloadsTable.repaint();
+                        @Override
+                        public void run() {
+                            if (downloadsTable != null) {
+                                downloadsTable.repaint();
+                            }
                         }
-                    }
-                }, 0, 100);
+                    }, 0, 100);
             }
         }
     }
