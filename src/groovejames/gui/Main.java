@@ -577,6 +577,8 @@ public class Main implements Application, ImageGetter {
     private class SongClearPlaylistAction extends Action {
         @Override public void perform(Component source) {
             playService.clearPlaylist();
+            updateLabelAndDownloadProgress(null);
+            updatePlayPauseButton();
         }
     }
 
@@ -623,6 +625,34 @@ public class Main implements Application, ImageGetter {
         }
     }
 
+    private void updateLabelAndDownloadProgress(Track track) {
+        if (track == null) {
+            nowPlayingLabel.setText("");
+            playDownloadProgress.setPercentage(1.0);
+            playProgress.setPercentage(0.0);
+            playProgress.setText("");
+        } else {
+            nowPlayingLabel.setText(format("Now playing: %s - %s - %s", track.getArtistName(), track.getAlbumName(), track.getSongName()));
+            playDownloadProgress.setPercentage(track.getProgress());
+        }
+    }
+
+    private void updatePlayPauseButton() {
+        String iconResourceName = playService.isPlaying() ? "player_pause.png" : "player_play.png";
+        ((ButtonData) songPlayPauseButton.getButtonData()).setIcon(getClass().getResource(iconResourceName));
+        songPlayPauseButton.repaint();
+    }
+
+    private void updatePlayProgress(Track track, int audioPosition) {
+        audioPosition = max(audioPosition, 0);
+        Long estimateDuration = track.getSong().getEstimateDuration();
+        double percentage = 0.0;
+        if (estimateDuration != null && estimateDuration > 0L)
+            percentage = (double) audioPosition / (estimateDuration * 1000L);
+        playProgress.setPercentage(min(max(percentage, 0.0), 1.0));
+        playProgress.setText(format("%s / %s", durationToString(audioPosition / 1000L), durationToString(estimateDuration)));
+    }
+
 
     private class PlaylistListener implements PlayServiceListener {
         @Override public void playbackStarted(Track track) {
@@ -632,8 +662,7 @@ public class Main implements Application, ImageGetter {
         }
 
         @Override public void playbackFinished(Track track, int audioPosition) {
-            updateLabelAndDownloadProgress(track);
-            updatePlayProgress(track, audioPosition);
+            updateLabelAndDownloadProgress(null);
             updatePlayPauseButton();
             playlistTable.repaint();
         }
@@ -652,31 +681,6 @@ public class Main implements Application, ImageGetter {
 
         @Override public void exception(Track track, Exception ex) {
             showError("Error playing track " + track, ex);
-        }
-
-        private void updateLabelAndDownloadProgress(Track track) {
-            if (track == null) {
-                nowPlayingLabel.setText("");
-                playDownloadProgress.setPercentage(1.0);
-            } else {
-                nowPlayingLabel.setText(format("Now playing: %s - %s - %s", track.getArtistName(), track.getAlbumName(), track.getSongName()));
-                playDownloadProgress.setPercentage(track.getProgress());
-            }
-        }
-
-        private void updatePlayPauseButton() {
-            String iconResourceName = playService.isPlaying() ? "player_pause.png" : "player_play.png";
-            ((ButtonData) songPlayPauseButton.getButtonData()).setIcon(getClass().getResource(iconResourceName));
-            songPlayPauseButton.repaint();
-        }
-
-        private void updatePlayProgress(Track track, int audioPosition) {
-            Long estimateDuration = track.getSong().getEstimateDuration();
-            double percentage = 0.0;
-            if (estimateDuration != null && estimateDuration != 0L && audioPosition >= 0)
-                percentage = (double) audioPosition / (estimateDuration * 1000L);
-            playProgress.setPercentage(percentage);
-            playProgress.setText(format("%s / %s", durationToString(audioPosition / 1000L), durationToString(estimateDuration)));
         }
     }
 }

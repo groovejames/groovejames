@@ -286,8 +286,8 @@ public class MP3Player {
     }
 
     protected void firePositionChangedEvent(AudioDevice dev) {
-        if (listener != null)
-            listener.positionChanged(this, dev != null ? dev.getPosition() : -1);
+        if (listener != null && dev != null)
+            listener.positionChanged(this, dev.getPosition());
     }
 
     protected void fireExceptionEvent(Exception ex) {

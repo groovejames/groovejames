@@ -14,8 +14,9 @@ public class MP3PlayerTest {
 
     public static void main(String[] args) throws IOException, JavaLayerException {
         final File file = new File(args[0]);
-//        playDirectly(file);
-        playUsingByteBuffer(file);
+        System.out.printf("Playing \"%s\" ...", file.getAbsolutePath());
+        playDirectly(file);
+//        playUsingByteBuffer(file);
     }
 
     private static void playDirectly(File file) throws FileNotFoundException, JavaLayerException {
