@@ -23,10 +23,10 @@
             <ListButton bxml:id="playButton" enabled="false" selectedIndex="0" repeatable="true">
                 <listData>
                     <collections:ArrayList>
-                        <guicomponents:ListIdItem bxml:id="songPlayNowButton" id="playNow" text="Play Now" userData="Play Now"/>
-                        <guicomponents:ListIdItem bxml:id="songPlayNextButton" id="playNext" text="Play Next" userData="Play Next"/>
-                        <guicomponents:ListIdItem bxml:id="songPlayLastButton" id="playLast" text="Play Last" userData="Play Last"/>
-                        <guicomponents:ListIdItem bxml:id="songPlayReplaceButton" id="playReplace" text="Replace Current Songs" userData="Replace Current Songs"/>
+                        <guicomponents:ListIdItem bxml:id="songPlayNowButton" id="playNow" text="Play Now" icon="@player_play.png" userData="Play Now"/>
+                        <guicomponents:ListIdItem bxml:id="songPlayNextButton" id="playNext" text="Play Next" icon="@player_play.png" userData="Play Next"/>
+                        <guicomponents:ListIdItem bxml:id="songPlayLastButton" id="playLast" text="Play Last" icon="@player_play.png" userData="Play Last"/>
+                        <guicomponents:ListIdItem bxml:id="songPlayReplaceButton" id="playReplace" text="Replace Current Songs" icon="@player_play.png" userData="Replace Current Songs"/>
                     </collections:ArrayList>
                 </listData>
             </ListButton>
