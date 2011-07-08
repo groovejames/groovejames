@@ -56,6 +56,11 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
             song2.setArtistName("Depeche Mode");
             song2.setRank(0.8);
 
+            Song song3 = new Song();
+            song3.setArtistID("3");
+            song3.setArtistName("Dead Kennedys");
+            song3.setRank(0.7);
+
             return new Song[]{song1, song2};
         } else {
             Song song1 = new Song();
@@ -111,9 +116,29 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
             song5.setSongName("A Question Of Lust");
             song5.setTrackNum(3);
             song5.setEstimateDuration(30L);
-            song5.setRank(0.3);
+            song5.setRank(0.0);
 
-            return new Song[]{song1, song2, song3, song4, song5};
+            Song song6 = new Song();
+            song6.setSongID("1");
+            song6.setArtistID("3");
+            song6.setArtistName("Dead Kennedys");
+            song6.setAlbumID("3");
+            song6.setSongName("track1");
+            song6.setTrackNum(1);
+            song6.setEstimateDuration(37L);
+            song6.setRank(0.0);
+
+            Song song7 = new Song();
+            song7.setSongID("2");
+            song7.setArtistID("3");
+            song7.setArtistName("Dead Kennedys");
+            song7.setAlbumID("3");
+            song7.setSongName("track2");
+            song7.setTrackNum(2);
+            song7.setEstimateDuration(28L);
+            song7.setRank(0.0);
+
+            return new Song[]{song1, song2, song3, song4, song5, song6, song7};
         }
     }
 
@@ -160,7 +185,10 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         artist2.setArtistID("2");
         artist2.setName("Depeche Mode");
 
-        return new Artist[]{artist1, artist2};
+        Artist artist3 = new Artist();
+        artist3.setArtistID("3");
+        artist3.setName("Dead Kennedys");
+        return new Artist[]{artist1, artist2, artist3};
     }
 
     @Override
@@ -170,6 +198,6 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
 
     @Override
     public StreamKey getStreamKeyFromSongIDEx(long songID, boolean mobile, boolean prefetch, Country country) {
-        return new StreamKey("dummystreamkey-" + songID, "dummystreamserver.com", 1L);
+        return new StreamKey("dummystreamkey-" + songID, "dummystreamserver.com", songID);
     }
 }

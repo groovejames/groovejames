@@ -114,6 +114,11 @@ public class Song extends ImageObject {
         return estimateDuration;
     }
 
+    /**
+     * Set the estimate duration of this song, in seconds.
+     *
+     * @param estimateDuration the estimate duration, in seconds, or {@code null} if duration is unknown
+     */
     public void setEstimateDuration(Long estimateDuration) {
         this.estimateDuration = estimateDuration;
     }

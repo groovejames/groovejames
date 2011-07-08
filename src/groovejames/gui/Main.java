@@ -395,11 +395,11 @@ public class Main implements Application, ImageGetter {
                     // paint the activity indicator only after 600ms, otherwise a strange redraw
                     // error will occur
                     ApplicationContext.scheduleCallback(new Runnable() {
-                            @Override
-                            public void run() {
-                                searchResultPane.startSearch();
-                            }
-                        }, 600);
+                        @Override
+                        public void run() {
+                            searchResultPane.startSearch();
+                        }
+                    }, 600);
                 }
             }
             searchField.requestFocus();
@@ -614,13 +614,13 @@ public class Main implements Application, ImageGetter {
             if (timer == null) {
                 timer = new Timer("downloadTable repainter", true);
                 timer.scheduleAtFixedRate(new TimerTask() {
-                        @Override
-                        public void run() {
-                            if (downloadsTable != null) {
-                                downloadsTable.repaint();
-                            }
+                    @Override
+                    public void run() {
+                        if (downloadsTable != null) {
+                            downloadsTable.repaint();
                         }
-                    }, 0, 100);
+                    }
+                }, 0, 100);
             }
         }
     }
@@ -646,11 +646,13 @@ public class Main implements Application, ImageGetter {
     private void updatePlayProgress(Track track, int audioPosition) {
         audioPosition = max(audioPosition, 0);
         Long estimateDuration = track.getSong().getEstimateDuration();
-        double percentage = 0.0;
-        if (estimateDuration != null && estimateDuration > 0L)
-            percentage = (double) audioPosition / (estimateDuration * 1000L);
-        playProgress.setPercentage(min(max(percentage, 0.0), 1.0));
-        playProgress.setText(format("%s / %s", durationToString(audioPosition / 1000L), durationToString(estimateDuration)));
+        if (estimateDuration != null && estimateDuration > 0L) {
+            double percentage = (double) audioPosition / (estimateDuration * 1000L);
+            playProgress.setPercentage(min(max(percentage, 0.0), 1.0));
+            playProgress.setText(format("%s / %s", durationToString(audioPosition / 1000L), durationToString(estimateDuration)));
+        } else {
+            playProgress.setText(durationToString(audioPosition / 1000L));
+        }
     }
 
 

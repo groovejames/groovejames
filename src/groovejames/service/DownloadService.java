@@ -21,13 +21,16 @@ import org.apache.http.protocol.HTTP;
 import org.apache.pivot.collections.ArrayList;
 
 import javax.swing.filechooser.FileSystemView;
+import java.io.Closeable;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import static java.lang.String.format;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import static java.lang.String.format;
 
 public class DownloadService {
 
@@ -183,8 +186,8 @@ public class DownloadService {
                 track.setStatus(Track.Status.INITIALIZING);
                 fireDownloadStatusChanged();
                 StreamKey streamKey = grooveshark.getStreamKeyFromSongIDEx(
-                        Long.parseLong(track.getSong().getSongID()),
-                        false, false, Country.GSLITE_DEFAULT_COUNTRY);
+                    Long.parseLong(track.getSong().getSongID()),
+                    false, false, Country.GSLITE_DEFAULT_COUNTRY);
                 track.setStatus(Track.Status.DOWNLOADING);
                 track.setStartDownloadTime(System.currentTimeMillis());
                 fireDownloadStatusChanged();
@@ -253,10 +256,10 @@ public class DownloadService {
                     outputStream.close();
                     outputStream = null;
                     // write ID tags
-                    track.getStore().writeTrackInfo(track);
+                    store.writeTrackInfo(track);
                 } else {
                     throw new HttpResponseException(statusCode,
-                            format("%d %s", statusCode, statusLine.getReasonPhrase()));
+                        format("%d %s", statusCode, statusLine.getReasonPhrase()));
                 }
             } finally {
                 close(httpEntity);
@@ -267,17 +270,30 @@ public class DownloadService {
         private void fakedownload(StreamKey streamKey) throws InterruptedException, IOException {
             httpPost = new HttpPost(format("http://%s/stream.php", streamKey.getIp()));
             Thread.sleep(1000);
-            track.setTotalBytes(2 * 1024 * 1024);
-            for (int i = 0; i < 1024; i++) {
-                track.incDownloadedBytes(2 * 1024);
-                if (i > 200 && (track.getSong().getTrackNum() % 2) == 0) {
-                    throw new IOException("fake I/O error");
+            File file = new File(format("test/groovejames/mp3player/%s.mp3", track.getSongName()));
+            Store store = track.getStore();
+            OutputStream storeOutputStream = store.getOutputStream();
+            OutputStream outputStream = new MonitoredOutputStream(storeOutputStream);
+            InputStream instream = new FileInputStream(file);
+            track.setTotalBytes(file.length());
+            try {
+                byte[] buf = new byte[downloadBufferSize];
+                int l;
+                while ((l = instream.read(buf)) != -1) {
+                    outputStream.write(buf, 0, l);
+                    Thread.sleep(100);
+                    if (aborted)
+                        return;
                 }
-                Thread.sleep(10);
-                if (aborted)
-                    return;
+                // need to close immediately otherwise we cannot write ID tags
+                outputStream.close();
+                outputStream = null;
+                // write ID tags
+                store.writeTrackInfo(track);
+            } finally {
+                close(outputStream);
+                close(instream);
             }
-            track.setTotalBytes(2 * 1024 * 1024);
         }
 
         private void fireDownloadStatusChanged() {
@@ -303,10 +319,10 @@ public class DownloadService {
             }
         }
 
-        private void close(OutputStream outputStream) {
-            if (outputStream != null) {
+        private void close(Closeable closeable) {
+            if (closeable != null) {
                 try {
-                    outputStream.close();
+                    closeable.close();
                 } catch (IOException ignore) {
                     // ignored
                 }
