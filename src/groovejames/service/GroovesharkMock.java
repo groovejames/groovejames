@@ -61,7 +61,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
             song3.setArtistName("Dead Kennedys");
             song3.setRank(0.7);
 
-            return new Song[]{song1, song2};
+            return new Song[]{song1, song2, song3};
         } else {
             Song song1 = new Song();
             song1.setSongID("1000");

@@ -1,6 +1,5 @@
 package groovejames.mp3player;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 /**
@@ -25,8 +24,6 @@ public class PlayThread extends Thread {
     private final PlaybackListener playbackListener;
     private volatile MP3Player player;
     private volatile boolean stopForced;
-    private long estimateDuration;
-    private int currentFrameMock;
 
     public PlayThread() {
         this.inputStream = null;
@@ -41,15 +38,6 @@ public class PlayThread extends Thread {
         this.inputStream = inputStream;
         this.firstFrame = firstFrame;
         this.playbackListener = playbackListener;
-    }
-
-    /**
-     * Set the estimate duration. This is only used when the net is mocked.
-     *
-     * @param estimateDuration estimate duration, in seconds
-     */
-    public void setEstimateDuration(Long estimateDuration) {
-        this.estimateDuration = estimateDuration != null ? estimateDuration : 180L;
     }
 
     /**
@@ -71,56 +59,25 @@ public class PlayThread extends Thread {
             return;
         try {
             try {
-                if (Boolean.getBoolean("mockNet")) {
-                    player = new MP3Player(new ByteArrayInputStream(new byte[0]));
-                } else {
-                    player = new MP3Player(inputStream);
-                }
+                player = new MP3Player(inputStream);
                 LocalPlaybackListener localPlaybackListener = new LocalPlaybackListener();
                 if (playbackListener != null)
                     localPlaybackListener.otherListener = playbackListener;
                 player.setPlayBackListener(localPlaybackListener);
-                if (Boolean.getBoolean("mockNet")) {
-                    localPlaybackListener.playbackStarted(player, 0);
-                    currentFrameMock = firstFrame;
-                    while (currentFrameMock < estimateDuration && !stopForced && !Thread.currentThread().isInterrupted()) {
-                        localPlaybackListener.positionChanged(player, currentFrameMock * 1000);
-                        sleepInterruptedly(1000);
-                        currentFrameMock++;
-                    }
-                    player.setComplete(currentFrameMock >= estimateDuration);
-                    localPlaybackListener.playbackFinished(player, currentFrameMock * 1000);
-                } else {
-                    player.play(firstFrame, Integer.MAX_VALUE);
-                }
+                player.play(firstFrame, Integer.MAX_VALUE);
             } finally {
                 inputStream.close();
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             if (playbackListener != null)
                 playbackListener.exception(player, ex);
-        }
-        finally {
+        } finally {
             System.out.println("thread ends");
-        }
-    }
-
-    private void sleepInterruptedly(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException ex) {
-            System.out.println("interrupted");
-            Thread.currentThread().interrupt();
         }
     }
 
     public int forceStop() {
         stopForced = true;
-
-        if (Boolean.getBoolean("mockNet"))
-            return currentFrameMock;
-
         int currentFrame = 0;
         if (player != null) {
             synchronized (this) {

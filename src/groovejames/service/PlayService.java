@@ -179,7 +179,6 @@ public class PlayService {
                 currentTrack = downloadService.downloadToMemory(song, listener);
             InputStream inputStream = currentTrack.getStore().getInputStream();
             playThread = new PlayThread(inputStream, framePosition, new PlayThreadListener(currentTrack));
-            playThread.setEstimateDuration(song.getEstimateDuration());
             playThread.start();
         } catch (IOException ex) {
             handlePlayException(currentTrack, ex);
