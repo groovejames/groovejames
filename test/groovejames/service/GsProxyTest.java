@@ -24,7 +24,7 @@ public class GsProxyTest {
                     song.getAlbumName(), song.getAlbumID(), song.getRank());
         }
 
-        long songID = Long.parseLong(songs[0].getSongID());
+        long songID = songs[0].getSongID();
         StreamKey streamKey = grooveshark.getStreamKeyFromSongIDEx(songID,
                 false, false, Country.GSLITE_GERMAN_COUNTRY);
         System.out.printf("%n%nstream key for song #0 id=%s: %s%n", songID, streamKey);

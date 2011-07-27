@@ -89,7 +89,7 @@ public class SearchResultPane extends TablePane implements Bindable {
     private FilteredList<Song> artistList = new FilteredList<Song>();
     private FilteredList<Artist> similarArtistList = new FilteredList<Artist>();
     private FilteredList<User> peopleList = new FilteredList<User>();
-    private String songListSelectedAlbumID;
+    private Long songListSelectedAlbumID;
     private boolean songsLoaded;
     private boolean albumsLoaded;
     private boolean artistsLoaded;
@@ -546,7 +546,7 @@ public class SearchResultPane extends TablePane implements Bindable {
     }
 
     private static ArrayList<Song> filterAlbums(ArrayList<Song> songs) {
-        HashSet<String> albumIDs = new HashSet<String>();
+        HashSet<Long> albumIDs = new HashSet<Long>();
         ArrayList<Song> result = new ArrayList<Song>(songs.getLength());
         for (Song song : songs) {
             if (!albumIDs.contains(song.getAlbumID())) {
@@ -644,7 +644,7 @@ public class SearchResultPane extends TablePane implements Bindable {
                     result = grooveshark.getSearchResultsEx(SearchSongsResultType.Songs, searchString);
                 } else if (searchType == SearchType.Album) {
                     // search for songs of the given album
-                    String albumID = ((AlbumSearch) searchParameter).getAlbumID();
+                    String albumID = ((AlbumSearch) searchParameter).getAlbumID().toString();
                     java.util.ArrayList<Song> allSongs = new java.util.ArrayList<Song>();
                     Songs songs = grooveshark.albumGetSongs(albumID, 0, true);
                     allSongs.addAll(java.util.Arrays.asList(songs.getSongs()));
@@ -659,7 +659,7 @@ public class SearchResultPane extends TablePane implements Bindable {
                     result = filterDuplicateSongs(allSongs);
                 } else if (searchType == SearchType.Artist) {
                     // search for all songs of the given artist
-                    String artistID = ((ArtistSearch) searchParameter).getArtistID();
+                    String artistID = ((ArtistSearch) searchParameter).getArtistID().toString();
                     java.util.ArrayList<Song> allSongs = new java.util.ArrayList<Song>();
                     Songs songs = grooveshark.artistGetSongs(artistID, 0, true);
                     allSongs.addAll(java.util.Arrays.asList(songs.getSongs()));
@@ -674,7 +674,7 @@ public class SearchResultPane extends TablePane implements Bindable {
                     result = filterDuplicateSongs(allSongs);
                 } else if (searchType == SearchType.User) {
                     // search for library songs of the given user
-                    String userID = ((UserSearch) searchParameter).getUserID();
+                    String userID = ((UserSearch) searchParameter).getUserID().toString();
                     result = grooveshark.userGetSongsInLibrary(userID, 0);
                 } else {
                     throw new IllegalArgumentException("invalid search type: " + searchType);
@@ -686,10 +686,10 @@ public class SearchResultPane extends TablePane implements Bindable {
         }
 
         private Song[] filterDuplicateSongs(java.util.ArrayList<Song> allSongs) {
-            HashSet<String> allSongsIds = new HashSet<String>();
+            HashSet<Long> allSongsIds = new HashSet<Long>();
             ArrayList<Song> resultList = new ArrayList<Song>(allSongs.size());
             for (Song song : allSongs) {
-                String songID = song.getSongID();
+                Long songID = song.getSongID();
                 if (!allSongsIds.contains(songID)) {
                     resultList.add(song);
                     allSongsIds.add(songID);
@@ -759,7 +759,7 @@ public class SearchResultPane extends TablePane implements Bindable {
                 SearchType searchType = searchParameter.getSearchType();
                 Artist[] result;
                 if (searchType == SearchType.Artist) {
-                    String artistID = ((ArtistSearch) searchParameter).getArtistID();
+                    String artistID = ((ArtistSearch) searchParameter).getArtistID().toString();
                     result = grooveshark.artistGetSimilarArtists(Long.parseLong(artistID));
                 } else {
                     throw new IllegalArgumentException("invalid search type: " + searchType);

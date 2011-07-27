@@ -2,15 +2,15 @@ package groovejames.model;
 
 public class Artist extends ImageObject {
 
-    private String artistID;
+    private Long artistID;
     private String name;
     private String picture;
 
-    public String getArtistID() {
+    public Long getArtistID() {
         return artistID;
     }
 
-    public void setArtistID(String artistID) {
+    public void setArtistID(Long artistID) {
         this.artistID = artistID;
     }
 

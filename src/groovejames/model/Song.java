@@ -5,24 +5,24 @@ import static java.lang.Math.min;
 
 public class Song extends ImageObject {
 
-    private String artistID;
+    private Long artistID;
     private String artistName;
     private String name;
     private String songName;
-    private String songID;
-    private String albumID;
+    private Long songID;
+    private Long albumID;
     private String albumName;
     private String coverArtFilename;
     private String year;
-    private Integer trackNum;
+    private Long trackNum;
     private Long estimateDuration; // in seconds
     private double rank;
 
-    public String getArtistID() {
+    public Long getArtistID() {
         return artistID;
     }
 
-    public void setArtistID(String artistID) {
+    public void setArtistID(Long artistID) {
         this.artistID = artistID;
     }
 
@@ -52,27 +52,27 @@ public class Song extends ImageObject {
         this.songName = songName;
     }
 
-    public String getSongID() {
+    public Long getSongID() {
         return songID;
     }
 
-    public void setSongID(String songID) {
+    public void setSongID(Long songID) {
         this.songID = songID;
     }
 
-    public Integer getTrackNum() {
+    public Long getTrackNum() {
         return trackNum;
     }
 
-    public void setTrackNum(Integer trackNum) {
+    public void setTrackNum(Long trackNum) {
         this.trackNum = trackNum;
     }
 
-    public String getAlbumID() {
+    public Long getAlbumID() {
         return albumID;
     }
 
-    public void setAlbumID(String albumID) {
+    public void setAlbumID(Long albumID) {
         this.albumID = albumID;
     }
 

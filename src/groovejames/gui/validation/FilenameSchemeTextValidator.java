@@ -10,7 +10,7 @@ public class FilenameSchemeTextValidator implements Validator {
   private static final Song testSong = new Song();
 
   static {
-    testSong.setTrackNum(2);
+    testSong.setTrackNum(2L);
     testSong.setArtistName("King Tubby");
     testSong.setAlbumName("Declaration of Dub");
     testSong.setName("African Roots");

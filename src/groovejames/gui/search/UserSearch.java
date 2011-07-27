@@ -2,10 +2,10 @@ package groovejames.gui.search;
 
 public class UserSearch implements SearchParameter {
 
-    private final String userID;
+    private final Long userID;
     private final String username;
 
-    public UserSearch(String userID, String username) {
+    public UserSearch(Long userID, String username) {
         this.userID = userID;
         this.username = username;
     }
@@ -30,7 +30,7 @@ public class UserSearch implements SearchParameter {
         return username;
     }
 
-    public String getUserID() {
+    public Long getUserID() {
         return userID;
     }
 

@@ -47,94 +47,94 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
     public Song[] getSearchResultsEx(SearchSongsResultType type, String query) {
         if (type == SearchSongsResultType.Artists) {
             Song song1 = new Song();
-            song1.setArtistID("1");
+            song1.setArtistID(1L);
             song1.setArtistName("Beck");
             song1.setRank(1.0);
 
             Song song2 = new Song();
-            song2.setArtistID("2");
+            song2.setArtistID(2L);
             song2.setArtistName("Depeche Mode");
             song2.setRank(0.8);
 
             Song song3 = new Song();
-            song3.setArtistID("3");
+            song3.setArtistID(3L);
             song3.setArtistName("Dead Kennedys");
             song3.setRank(0.7);
 
             return new Song[]{song1, song2, song3};
         } else {
             Song song1 = new Song();
-            song1.setSongID("1000");
-            song1.setArtistID("1");
+            song1.setSongID(1000L);
+            song1.setArtistID(1L);
             song1.setArtistName("Beck");
-            song1.setAlbumID("1");
+            song1.setAlbumID(1L);
             song1.setAlbumName("Odelay");
             song1.setSongName("New Pollution");
-            song1.setTrackNum(1);
+            song1.setTrackNum(1L);
             song1.setEstimateDuration(278L);
             song1.setRank(1.0);
 
             Song song2 = new Song();
-            song2.setSongID("1001");
-            song2.setArtistID("1");
+            song2.setSongID(1001L);
+            song2.setArtistID(1L);
             song2.setArtistName("Beck");
-            song2.setAlbumID("1");
+            song2.setAlbumID(1L);
             song2.setAlbumName("Odelay");
             song2.setSongName("Devil's Haircut");
-            song2.setTrackNum(2);
+            song2.setTrackNum(2L);
             song2.setEstimateDuration(328L);
             song2.setRank(0.8);
 
             Song song3 = new Song();
-            song3.setSongID("1002");
-            song3.setArtistID("2");
+            song3.setSongID(1002L);
+            song3.setArtistID(2L);
             song3.setArtistName("Depeche Mode");
-            song3.setAlbumID("2");
+            song3.setAlbumID(2L);
             song3.setAlbumName("Black Celebration");
             song3.setSongName("Black Celebration");
-            song3.setTrackNum(1);
+            song3.setTrackNum(1L);
             song3.setEstimateDuration(60L);
             song3.setRank(0.5);
 
             Song song4 = new Song();
-            song4.setSongID("1003");
-            song4.setArtistID("2");
+            song4.setSongID(1003L);
+            song4.setArtistID(2L);
             song4.setArtistName("Depeche Mode");
-            song4.setAlbumID("2");
+            song4.setAlbumID(2L);
             song4.setAlbumName("Black Celebration");
             song4.setSongName("Flies on the windscreen");
-            song4.setTrackNum(2);
+            song4.setTrackNum(2L);
             song4.setEstimateDuration(2032L);
             song4.setRank(0.0);
 
             Song song5 = new Song();
-            song5.setSongID("1004");
-            song5.setArtistID("2");
+            song5.setSongID(1004L);
+            song5.setArtistID(2L);
             song5.setArtistName("Depeche Mode");
-            song5.setAlbumID("2");
+            song5.setAlbumID(2L);
             song5.setAlbumName("Black Celebration");
             song5.setSongName("A Question Of Lust");
-            song5.setTrackNum(3);
+            song5.setTrackNum(3L);
             song5.setEstimateDuration(30L);
             song5.setRank(0.0);
 
             Song song6 = new Song();
-            song6.setSongID("1");
-            song6.setArtistID("3");
+            song6.setSongID(1L);
+            song6.setArtistID(3L);
             song6.setArtistName("Dead Kennedys");
-            song6.setAlbumID("3");
+            song6.setAlbumID(3L);
             song6.setSongName("track1");
-            song6.setTrackNum(1);
+            song6.setTrackNum(1L);
             song6.setEstimateDuration(37L);
             song6.setRank(0.0);
 
             Song song7 = new Song();
-            song7.setSongID("2");
-            song7.setArtistID("3");
+            song7.setSongID(2L);
+            song7.setArtistID(3L);
             song7.setArtistName("Dead Kennedys");
-            song7.setAlbumID("3");
+            song7.setAlbumID(3L);
             song7.setSongName("track2");
-            song7.setTrackNum(2);
+            song7.setTrackNum(2L);
             song7.setEstimateDuration(28L);
             song7.setRank(0.0);
 
@@ -145,17 +145,17 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
     @Override
     public User[] getSearchResultsEx(SearchUsersResultType type, String query) {
         User user1 = new User();
-        user1.setUserID("aaa");
+        user1.setUserID(300L);
         user1.setUsername("riuerigurig");
         user1.setRank(1.0);
 
         User user2 = new User();
-        user2.setUserID("bbb");
+        user2.setUserID(301L);
         user2.setUsername("ergrgruirutirugri");
         user2.setRank(0.9);
 
         User user3 = new User();
-        user3.setUserID("ccc");
+        user3.setUserID(302L);
         user3.setUsername("dfeuieurrrt");
         user3.setRank(0.8);
 
@@ -178,15 +178,15 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
     @Override
     public Artist[] artistGetSimilarArtists(long artistID) {
         Artist artist1 = new Artist();
-        artist1.setArtistID("1");
+        artist1.setArtistID(1L);
         artist1.setName("Beck");
 
         Artist artist2 = new Artist();
-        artist2.setArtistID("2");
+        artist2.setArtistID(2L);
         artist2.setName("Depeche Mode");
 
         Artist artist3 = new Artist();
-        artist3.setArtistID("3");
+        artist3.setArtistID(3L);
         artist3.setName("Dead Kennedys");
         return new Artist[]{artist1, artist2, artist3};
     }

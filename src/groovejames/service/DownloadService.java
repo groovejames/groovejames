@@ -186,7 +186,7 @@ public class DownloadService {
                 track.setStatus(Track.Status.INITIALIZING);
                 fireDownloadStatusChanged();
                 StreamKey streamKey = grooveshark.getStreamKeyFromSongIDEx(
-                    Long.parseLong(track.getSong().getSongID()),
+                    track.getSong().getSongID(),
                     false, false, Country.GSLITE_DEFAULT_COUNTRY);
                 track.setStatus(Track.Status.DOWNLOADING);
                 track.setStartDownloadTime(System.currentTimeMillis());

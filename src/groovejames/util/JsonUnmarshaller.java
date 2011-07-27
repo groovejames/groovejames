@@ -55,11 +55,21 @@ public class JsonUnmarshaller {
                 if (value != null && (value instanceof JSONObject || value instanceof JSONArray))
                     value = unmarshall(value, propertyDescriptor.getPropertyType());
                 if (value != null) {
-                    if (log.isTraceEnabled()) log.trace("set " + propertyName + " = " + value);
+                    if (log.isTraceEnabled())
+                        log.trace("set " + propertyName + " = " + value + " (property type: " + propertyDescriptor.getPropertyType().getName() + ")");
                     Method writeMethod = propertyDescriptor.getWriteMethod();
+                    Object valueToSet;
                     if (value instanceof String)
-                        value = Util.coerce((String) value, propertyDescriptor.getPropertyType());
-                    writeMethod.invoke(result, value);
+                        valueToSet = Util.coerce((String) value, propertyDescriptor.getPropertyType());
+                    else
+                        valueToSet = value;
+                    try {
+                        writeMethod.invoke(result, valueToSet);
+                    } catch (IllegalArgumentException ex) {
+                        throw new RuntimeException("cannot set property " + propertyName + " to value " + value
+                        + " (value type: " + value.getClass().getName() + ", property type: " + propertyDescriptor.getPropertyType().getName()
+                        + " , coerced type: " + valueToSet.getClass().getName() + ")");
+                    }
                     usedPropertyNames.add(propertyName);
                 }
             }

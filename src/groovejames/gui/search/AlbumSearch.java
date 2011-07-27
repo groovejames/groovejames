@@ -2,12 +2,12 @@ package groovejames.gui.search;
 
 public class AlbumSearch implements SearchParameter {
 
-    private final String albumID;
+    private final Long albumID;
     private final String albumName;
-    private final String artistID;
+    private final Long artistID;
     private final String artistName;
 
-    public AlbumSearch(String albumID, String albumName, String artistID, String artistName) {
+    public AlbumSearch(Long albumID, String albumName, Long artistID, String artistName) {
         this.albumID = albumID;
         this.albumName = albumName;
         this.artistName = artistName;
@@ -34,7 +34,7 @@ public class AlbumSearch implements SearchParameter {
         return "Album: " + albumName;
     }
 
-    public String getAlbumID() {
+    public Long getAlbumID() {
         return albumID;
     }
 
@@ -42,7 +42,7 @@ public class AlbumSearch implements SearchParameter {
         return albumName;
     }
 
-    public String getArtistID() {
+    public Long getArtistID() {
         return artistID;
     }
 

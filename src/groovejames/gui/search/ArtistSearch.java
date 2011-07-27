@@ -2,10 +2,10 @@ package groovejames.gui.search;
 
 public class ArtistSearch implements SearchParameter {
 
-    private final String artistID;
+    private final Long artistID;
     private final String artistName;
 
-    public ArtistSearch(String artistID, String artistName) {
+    public ArtistSearch(Long artistID, String artistName) {
         this.artistName = artistName;
         this.artistID = artistID;
     }
@@ -30,7 +30,7 @@ public class ArtistSearch implements SearchParameter {
         return artistName;
     }
 
-    public String getArtistID() {
+    public Long getArtistID() {
         return artistID;
     }
 

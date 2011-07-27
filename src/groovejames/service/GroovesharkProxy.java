@@ -37,9 +37,9 @@ class GroovesharkProxy implements InvocationHandler {
 
     private static final Log log = LogFactory.getLog(GroovesharkProxy.class);
 
-    private static final String GS_CLIENT_NAME = System.getProperty("grooveshark.client.name", "gslite");
-    private static final String GS_CLIENT_REVISION = System.getProperty("grooveshark.client.revision", "20101012.37");
-    private static final String GS_SECRET = System.getProperty("grooveshark.secret", decryptDES("1011a209e00aae570c595cf4bd0b8dcd6ae5f9231af59965"));
+    private static final String GS_CLIENT_NAME = System.getProperty("grooveshark.client.name", "htmlshark");
+    private static final String GS_CLIENT_REVISION = System.getProperty("grooveshark.client.revision", "20110722");
+    private static final String GS_SECRET = System.getProperty("grooveshark.secret", decryptDES("d1f62f0ddcbb2b03c9bf8e0814a4771e4a9d3290f3dd0d7e"));
 
     /**
      * how long a communication token is valid before a new one must be fetched, in milliseconds.

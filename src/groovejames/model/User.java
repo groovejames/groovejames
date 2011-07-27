@@ -5,16 +5,16 @@ import static java.lang.Math.min;
 
 public class User extends ImageObject {
 
-    private String userID;
+    private Long userID;
     private String username;
     private String picture;
     private double rank;
 
-    public String getUserID() {
+    public Long getUserID() {
         return userID;
     }
 
-    public void setUserID(String userID) {
+    public void setUserID(Long userID) {
         this.userID = userID;
     }
 

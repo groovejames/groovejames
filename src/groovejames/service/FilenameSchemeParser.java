@@ -52,7 +52,10 @@ public class FilenameSchemeParser {
     public String parse(Song song, String filenameScheme) throws IllegalArgumentException {
         if (filenameScheme == null || filenameScheme.trim().isEmpty())
             throw new IllegalArgumentException("scheme may not be empty");
+        return parse0(song, filenameScheme);
+    }
 
+    private String parse0(Song song, String filenameScheme) throws IllegalArgumentException {
         int len = filenameScheme.length();
         int pos = 0;
         int bracketLevel = 0;
@@ -117,10 +120,10 @@ public class FilenameSchemeParser {
             return null;
         String parsedConditionalText = null;
         if (conditionalText != null)
-            parsedConditionalText = parse(song, conditionalText);
+            parsedConditionalText = parse0(song, conditionalText);
         if (conditionalText != null)
             return parsedConditionalText;
-        Integer trackNum = song.getTrackNum();
+        Long trackNum = song.getTrackNum();
         if (trackNum != null) {
             String formatMask = tag.replace('#', '0');
             return new DecimalFormat(formatMask).format(trackNum);
@@ -137,7 +140,7 @@ public class FilenameSchemeParser {
             return null;
         String parsedConditionalText = null;
         if (conditionalText != null)
-            parsedConditionalText = parse(song, conditionalText);
+            parsedConditionalText = parse0(song, conditionalText);
         if (entryValue == null || entryValue.isEmpty())
             return "";
         if (conditionalText != null)
