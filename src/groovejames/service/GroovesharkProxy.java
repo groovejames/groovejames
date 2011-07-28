@@ -28,9 +28,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.UUID;
 
@@ -48,7 +46,7 @@ class GroovesharkProxy implements InvocationHandler {
     private final HttpClientService httpClientService;
     private final String sessionID;
     private final UUID uuid;
-    private Map<String,CommunicationToken> communicationTokens = new HashMap<String, CommunicationToken>();
+    private CommunicationToken communicationToken;
 
 
     public GroovesharkProxy(HttpClientService httpClientService) throws IOException {
@@ -208,17 +206,14 @@ class GroovesharkProxy implements InvocationHandler {
     }
 
     private synchronized String getCommunicationToken(String clientName, String clientRevision) throws IOException, ParseException {
-        CommunicationToken communicationToken = communicationTokens.get(clientName);
-        if (communicationToken == null || communicationToken.isExpired()) {
-            String token = fetchNewCommunicationToken(clientName, clientRevision);
-            communicationToken = new CommunicationToken(token);
-            communicationTokens.put(clientName, communicationToken);
+        if (communicationToken == null || communicationToken.isExpired() || communicationToken.isDifferentClient(clientName)) {
+            communicationToken = fetchNewCommunicationToken(clientName, clientRevision);
         }
         return communicationToken.getToken();
     }
 
     @SuppressWarnings("unchecked")
-    private String fetchNewCommunicationToken(String clientName, String clientRevision)
+    private CommunicationToken fetchNewCommunicationToken(String clientName, String clientRevision)
         throws IOException, ParseException
     {
         JSONObject jsonObject = new JSONObject();
@@ -259,19 +254,21 @@ class GroovesharkProxy implements InvocationHandler {
             throw new IOException("Grooveshark connect error: " + message + (code != null ? ", error code: " + code : ""));
         }
 
-        return communicationToken;
+        return new CommunicationToken(clientName, communicationToken);
     }
 
 
     private static class CommunicationToken {
-        private String token;
-        private long expires;
+        private final String client;
+        private final String token;
+        private final long expires;
 
-        private CommunicationToken(String token) {
+        private CommunicationToken(String client, String token) {
+            this.client = client;
             this.token = token;
             this.expires = System.currentTimeMillis() + GS_COMMUNICATION_TOKEN_DURATION;
             if (log.isDebugEnabled()) {
-                log.debug("new communication token: " + token);
+                log.debug("new communication token for client " + client + ": " + token);
                 log.debug("new communication token expires: " + new Date(expires));
             }
         }
@@ -282,6 +279,10 @@ class GroovesharkProxy implements InvocationHandler {
 
         public boolean isExpired() {
             return System.currentTimeMillis() > expires;
+        }
+
+        public boolean isDifferentClient(String client) {
+            return !client.equals(this.client);
         }
     }
 }
