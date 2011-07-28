@@ -144,8 +144,8 @@ public class Util {
         Random random = new Random(System.currentTimeMillis());
         char[] result = new char[length];
         for (int i = 0; i < length; i++) {
-            int r = random.nextInt(36);
-            result[i] = r < 10 ? Character.forDigit(r, 10) : Character.toChars('a' + (r - 10))[0];
+            int r = random.nextInt(16);
+            result[i] = Integer.toHexString(r).charAt(0);
         }
         return new String(result);
     }

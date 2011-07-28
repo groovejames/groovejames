@@ -12,6 +12,9 @@ import groovejames.model.User;
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GroovesharkMock implements InvocationHandler, Grooveshark {
 
@@ -163,7 +166,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
     }
 
     @Override
-    public Songs albumGetSongs(String albumID, int offset, boolean isVerified) {
+    public Songs albumGetSongs(Long albumID, int offset, boolean isVerified) {
         return artistGetSongs(null, 0, false);
     }
 

@@ -644,7 +644,7 @@ public class SearchResultPane extends TablePane implements Bindable {
                     result = grooveshark.getSearchResultsEx(SearchSongsResultType.Songs, searchString);
                 } else if (searchType == SearchType.Album) {
                     // search for songs of the given album
-                    String albumID = ((AlbumSearch) searchParameter).getAlbumID().toString();
+                    Long albumID = ((AlbumSearch) searchParameter).getAlbumID();
                     java.util.ArrayList<Song> allSongs = new java.util.ArrayList<Song>();
                     Songs songs = grooveshark.albumGetSongs(albumID, 0, true);
                     allSongs.addAll(java.util.Arrays.asList(songs.getSongs()));
