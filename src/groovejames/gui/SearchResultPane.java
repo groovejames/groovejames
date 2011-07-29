@@ -58,6 +58,7 @@ import org.apache.pivot.wtk.TextInput;
 import org.apache.pivot.wtk.content.ButtonData;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -648,12 +649,12 @@ public class SearchResultPane extends TablePane implements Bindable {
                     Long albumID = ((AlbumSearch) searchParameter).getAlbumID();
                     java.util.ArrayList<Song> allSongs = new java.util.ArrayList<Song>();
                     Songs songs = grooveshark.albumGetSongs(albumID, 0, true);
-                    allSongs.addAll(java.util.Arrays.asList(songs.getSongs()));
+                    allSongs.addAll(Arrays.asList(songs.getSongs()));
                     boolean hasMore = true;
                     int offset = 0;
                     while (hasMore) {
                         songs = grooveshark.albumGetSongs(albumID, offset, false);
-                        allSongs.addAll(java.util.Arrays.asList(songs.getSongs()));
+                        allSongs.addAll(Arrays.asList(songs.getSongs()));
                         hasMore = songs.isHasMore();
                         offset += songs.getSongs().length;
                     }
@@ -663,12 +664,12 @@ public class SearchResultPane extends TablePane implements Bindable {
                     String artistID = ((ArtistSearch) searchParameter).getArtistID().toString();
                     java.util.ArrayList<Song> allSongs = new java.util.ArrayList<Song>();
                     Songs songs = grooveshark.artistGetSongs(artistID, 0, true);
-                    allSongs.addAll(java.util.Arrays.asList(songs.getSongs()));
+                    allSongs.addAll(Arrays.asList(songs.getSongs()));
                     boolean hasMore = true;
                     int offset = 0;
                     while (hasMore) {
                         songs = grooveshark.artistGetSongs(artistID, offset, false);
-                        allSongs.addAll(java.util.Arrays.asList(songs.getSongs()));
+                        allSongs.addAll(Arrays.asList(songs.getSongs()));
                         hasMore = songs.isHasMore();
                         offset += songs.getSongs().length;
                     }
@@ -676,7 +677,19 @@ public class SearchResultPane extends TablePane implements Bindable {
                 } else if (searchType == SearchType.User) {
                     // search for library songs of the given user
                     String userID = ((UserSearch) searchParameter).getUserID().toString();
-                    result = grooveshark.userGetSongsInLibrary(userID, 0);
+                    java.util.ArrayList<Song> allSongs = new java.util.ArrayList<Song>();
+                    int page = 0;
+                    boolean hasMore = true;
+                    while (hasMore) {
+                        Songs songs = grooveshark.userGetSongsInLibrary(userID, page);
+                        allSongs.addAll(Arrays.asList(songs.getSongs()));
+                        hasMore = songs.isHasMore();
+                        page++;
+                    }
+                    // search for favorites, too
+                    Song[] favorites = grooveshark.getFavorites(userID, SearchSongsResultType.Songs);
+                    allSongs.addAll(Arrays.asList(favorites));
+                    result = filterDuplicateSongs(allSongs);
                 } else {
                     throw new IllegalArgumentException("invalid search type: " + searchType);
                 }

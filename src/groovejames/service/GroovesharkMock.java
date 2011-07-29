@@ -195,8 +195,16 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
     }
 
     @Override
-    public Song[] userGetSongsInLibrary(String userID, int page) throws Exception {
+    public Song[] getFavorites(String userID, SearchSongsResultType ofWhat) {
         return getSearchResultsEx(SearchSongsResultType.Songs, null);
+    }
+
+    @Override
+    public Songs userGetSongsInLibrary(String userID, int page) throws Exception {
+        Songs songs = new Songs();
+        songs.setSongs(getSearchResultsEx(SearchSongsResultType.Songs, null));
+        songs.setHasMore(false);
+        return songs;
     }
 
     @Override

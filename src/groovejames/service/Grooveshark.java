@@ -9,8 +9,6 @@ import groovejames.model.Songs;
 import groovejames.model.StreamKey;
 import groovejames.model.User;
 
-import static groovejames.util.Util.decryptDES;
-
 public interface Grooveshark {
 
     final String CLIENT_NAME = System.getProperty("grooveshark.client.name", "htmlshark");
@@ -39,8 +37,12 @@ public interface Grooveshark {
     @ResultPath("SimilarArtists") Artist[] artistGetSimilarArtists(@Param("artistID") long artistID)
         throws Exception;
 
-    @ResultPath("Songs") Song[] userGetSongsInLibrary(@Param("userID") String userID,
-                                                      @Param("page") int page)
+    Song[] getFavorites(@Param("userID") String userID,
+                        @Param("ofWhat") SearchSongsResultType ofWhat)
+        throws Exception;
+
+    Songs userGetSongsInLibrary(@Param("userID") String userID,
+                                @Param("page") int page)
         throws Exception;
 
     @Header(clientName = "jsqueue", clientRevision = "20110722.01", secret = "neverGonnaLetYouDown")
