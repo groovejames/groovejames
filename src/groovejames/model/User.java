@@ -7,6 +7,7 @@ public class User extends ImageObject {
 
     private Long userID;
     private String username;
+    private String name;
     private String picture;
     private double rank;
 
@@ -24,6 +25,14 @@ public class User extends ImageObject {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getPicture() {

@@ -307,7 +307,8 @@ public class SearchResultPane extends TablePane implements Bindable {
                 final String searchString = ((TextInput) searchField).getText().trim();
                 peopleList.setFilter(new Filter<User>() {
                     @Override public boolean include(User user) {
-                        return containsIgnoringCase(user.getUsername(), searchString);
+                        return containsIgnoringCase(user.getUsername(), searchString)
+                            || containsIgnoringCase(user.getName(), searchString);
                     }
                 });
                 return false;

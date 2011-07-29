@@ -12,9 +12,6 @@ import groovejames.model.User;
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class GroovesharkMock implements InvocationHandler, Grooveshark {
 
@@ -149,17 +146,20 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
     public User[] getSearchResultsEx(SearchUsersResultType type, String query) {
         User user1 = new User();
         user1.setUserID(300L);
-        user1.setUsername("riuerigurig");
+        user1.setUsername("wwonka");
+        user1.setName("Willi Wonka");
         user1.setRank(1.0);
 
         User user2 = new User();
         user2.setUserID(301L);
-        user2.setUsername("ergrgruirutirugri");
+        user2.setUsername("lsnicket");
+        user2.setName("Lemony Snicket");
         user2.setRank(0.9);
 
         User user3 = new User();
         user3.setUserID(302L);
-        user3.setUsername("dfeuieurrrt");
+        user3.setUsername("mhatter");
+        user3.setName("Mad Hatter");
         user3.setRank(0.8);
 
         return new User[]{user1, user2, user3};
