@@ -101,5 +101,9 @@ public class ByteBuffer extends ByteArrayOutputStream {
         @Override public int available() throws IOException {
             return count - pos;
         }
+
+        @Override public void close() throws IOException {
+            ByteBuffer.this.close();
+        }
     }
 }

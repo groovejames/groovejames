@@ -1,5 +1,6 @@
 package groovejames.mp3player;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -46,7 +47,7 @@ public class PlayThread extends Thread {
      * @return position, in milliseconds
      */
     public int getCurrentPosition() {
-        return player != null ? player.getCurrentAudioDevicePosition() : 0;
+        return player != null ? (int) player.getCurrentPosition() : 0;
     }
 
     public boolean isStopForced() {
@@ -78,6 +79,13 @@ public class PlayThread extends Thread {
 
     public int forceStop() {
         stopForced = true;
+        if (inputStream != null) {
+            try {
+                inputStream.close();
+            } catch (IOException ignore) {
+                // intentionally ignored
+            }
+        }
         int currentFrame = 0;
         if (player != null) {
             synchronized (this) {

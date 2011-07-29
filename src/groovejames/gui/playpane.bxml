@@ -31,7 +31,7 @@
                     <content:ButtonData icon="@player_fwd.png"/>
                 </buttonData>
             </PushButton>
-            <PushButton action="songClearPlaylist" tooltipText="Remove all/selected songs" styles="{toolbar: true}">
+            <PushButton action="songClearPlaylist" tooltipText="Clear playlist (remove all songs)" styles="{toolbar: true}">
                 <buttonData>
                     <content:ButtonData icon="@trash.png"/>
                 </buttonData>

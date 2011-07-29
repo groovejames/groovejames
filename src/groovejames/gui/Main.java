@@ -577,8 +577,8 @@ public class Main implements Application, ImageGetter {
     private class SongClearPlaylistAction extends Action {
         @Override public void perform(Component source) {
             playService.clearPlaylist();
-            updateLabelAndDownloadProgress(null);
-            updatePlayPauseButton();
+            resetPlayInfo();
+            updatePlayPauseButton(false);
         }
     }
 
@@ -625,20 +625,19 @@ public class Main implements Application, ImageGetter {
         }
     }
 
-    private void updateLabelAndDownloadProgress(Track track) {
-        if (track == null) {
-            nowPlayingLabel.setText("");
-            playDownloadProgress.setPercentage(1.0);
-            playProgress.setPercentage(0.0);
-            playProgress.setText("");
-        } else {
-            nowPlayingLabel.setText(format("Now playing: %s - %s - %s", track.getArtistName(), track.getAlbumName(), track.getSongName()));
-            playDownloadProgress.setPercentage(track.getProgress());
-        }
+    private void updatePlayInfo(Track track, String prefix) {
+        nowPlayingLabel.setText(format("%s: %s - %s - %s", prefix, track.getArtistName(), track.getAlbumName(), track.getSongName()));
     }
 
-    private void updatePlayPauseButton() {
-        String iconResourceName = playService.isPlaying() ? "player_pause.png" : "player_play.png";
+    private void resetPlayInfo() {
+        nowPlayingLabel.setText("");
+        playDownloadProgress.setPercentage(1.0);
+        playProgress.setPercentage(0.0);
+        playProgress.setText("");
+    }
+
+    private void updatePlayPauseButton(boolean isPlaying) {
+        String iconResourceName = isPlaying ? "player_pause.png" : "player_play.png";
         ((ButtonData) songPlayPauseButton.getButtonData()).setIcon(getClass().getResource(iconResourceName));
         songPlayPauseButton.repaint();
     }
@@ -657,32 +656,75 @@ public class Main implements Application, ImageGetter {
 
 
     private class PlaylistListener implements PlayServiceListener {
-        @Override public void playbackStarted(Track track) {
-            updateLabelAndDownloadProgress(track);
-            updatePlayPauseButton();
-            playlistTable.repaint();
+        @Override public void playbackStarted(final Track track) {
+            ApplicationContext.queueCallback(new Runnable() {
+                public void run() {
+                    updatePlayInfo(track, "Now playing");
+                    updatePlayPauseButton(true);
+                    playlistTable.repaint();
+                }
+            });
         }
 
-        @Override public void playbackFinished(Track track, int audioPosition) {
-            updateLabelAndDownloadProgress(null);
-            updatePlayPauseButton();
-            playlistTable.repaint();
+        @Override public void playbackPaused(final Track track, final int audioPosition) {
+            ApplicationContext.queueCallback(new Runnable() {
+                public void run() {
+                    updatePlayInfo(track, "Paused");
+                    updatePlayPauseButton(false);
+                    playlistTable.repaint();
+                }
+            });
         }
 
-        @Override public void positionChanged(Track track, int audioPosition) {
-            updatePlayProgress(track, audioPosition);
+        @Override public void playbackFinished(final Track track, final int audioPosition) {
+            ApplicationContext.queueCallback(new Runnable() {
+                public void run() {
+                    if (track.getStatus() == Track.Status.ERROR) {
+                        updatePlayInfo(track, "ERROR playing");
+                    } else {
+                        resetPlayInfo();
+                    }
+                    updatePlayPauseButton(false);
+                    playlistTable.repaint();
+                }
+            });
         }
 
-        @Override public void statusChanged(Track track) {
-            updateLabelAndDownloadProgress(track);
+        @Override public void positionChanged(final Track track, final int audioPosition) {
+            ApplicationContext.queueCallback(new Runnable() {
+                public void run() {
+                    updatePlayProgress(track, audioPosition);
+                }
+            });
         }
 
-        @Override public void downloadedBytesChanged(Track track) {
-            updateLabelAndDownloadProgress(track);
+        @Override public void statusChanged(final Track track) {
+            ApplicationContext.queueCallback(new Runnable() {
+                public void run() {
+                    if (track.getStatus() == Track.Status.ERROR) {
+                        resetPlayInfo();
+                        playService.stop();
+                    } else {
+                        updatePlayInfo(track, "Now playing");
+                    }
+                }
+            });
         }
 
-        @Override public void exception(Track track, Exception ex) {
-            showError("Error playing track " + track, ex);
+        @Override public void downloadedBytesChanged(final Track track) {
+            ApplicationContext.queueCallback(new Runnable() {
+                public void run() {
+                    playDownloadProgress.setPercentage(track.getProgress());
+                }
+            });
+        }
+
+        @Override public void exception(final Track track, final Exception ex) {
+            ApplicationContext.queueCallback(new Runnable() {
+                public void run() {
+                    showError("Error playing track " + track, ex);
+                }
+            });
         }
     }
 }
