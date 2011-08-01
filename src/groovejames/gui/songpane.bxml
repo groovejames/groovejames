@@ -39,14 +39,14 @@
                     </collections:ArrayList>
                 </listData>
             </ListButton>
-            <TextInput bxml:id="songSearchInPage" prompt="Search in page..." styles="{backgroundColor: '#FFFFFF'}"/>
+            <TextInput bxml:id="songSearchInPage" prompt="Search in page..."/>
         </TablePane.Row>
         <TablePane.Row height="1*">
             <SplitPane bxml:id="songSplitPane" splitRatio="0.25" orientation="horizontal" TablePane.columnSpan="5">
                 <left>
                     <Border>
                         <content>
-                            <ScrollPane horizontalScrollBarPolicy="fill_to_capacity">
+                            <ScrollPane horizontalScrollBarPolicy="fill_to_capacity" verticalScrollBarPolicy="fill_to_capacity">
                                 <view>
                                     <TableView bxml:id="songAlbumTable" selectMode="single"
                                                styles="{font:{bold:true, size:'130%'}, showHorizontalGridLines:false, showVerticalGridLines:false}"
@@ -72,7 +72,7 @@
                 <right>
                     <Border>
                         <content>
-                            <ScrollPane horizontalScrollBarPolicy="fill_to_capacity">
+                            <ScrollPane horizontalScrollBarPolicy="fill_to_capacity" verticalScrollBarPolicy="fill_to_capacity">
                                 <view>
                                     <guicomponents:ClickableTableView
                                             bxml:id="songTable"

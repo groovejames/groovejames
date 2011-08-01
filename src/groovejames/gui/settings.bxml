@@ -24,11 +24,9 @@
                                 </TabPane.tabData>
                                 <sections>
                                     <Form.Section heading="Proxy">
-                                        <TextInput bxml:id="proxyHost" textKey="proxyHost" Form.label="HTTP Proxy"
-                                                   styles="{backgroundColor: '#FFFFFF'}"/>
+                                        <TextInput bxml:id="proxyHost" textKey="proxyHost" Form.label="HTTP Proxy"/>
                                         <TextInput bxml:id="proxyPort" textKey="proxyPort" Form.label="Port"
-                                                   strictValidation="true" maximumLength="5"
-                                                   styles="{backgroundColor: '#FFFFFF'}">
+                                                   strictValidation="true" maximumLength="5">
                                             <validator>
                                                 <validation:RegexTextValidator>
                                                     <pattern><![CDATA[[0-9]*]]></pattern>
@@ -44,7 +42,7 @@
                                 </TabPane.tabData>
                                 <sections>
                                     <Form.Section heading="Filename scheme">
-                                        <TextInput bxml:id="filenameScheme" textKey="filenameScheme" styles="{backgroundColor: '#FFFFFF'}"
+                                        <TextInput bxml:id="filenameScheme" textKey="filenameScheme"
                                                    Form.label="Scheme" Form.required="true">
                                             <validator>
                                                 <gjvalidation:FilenameSchemeTextValidator/>

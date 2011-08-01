@@ -116,6 +116,7 @@ public class Main implements Application, ImageGetter {
     public static void main(String[] args) {
         ConsoleUtil.redirectStdErrToCommonsLogging();
         ConsoleUtil.redirectStdOutToCommonsLogging();
+        System.setProperty("org.apache.pivot.wtk.skin.terra.location", "TerraTheme_dark.json");
         args = filterSystemProperties(args);
         DesktopApplicationContext.main(Main.class, args);
     }

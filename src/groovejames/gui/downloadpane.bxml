@@ -55,8 +55,7 @@
         <TablePane.Row height="1*">
             <Border TablePane.columnSpan="3">
                 <content>
-                    <ScrollPane horizontalScrollBarPolicy="fill_to_capacity"
-                                verticalScrollBarPolicy="fill_to_capacity">
+                    <ScrollPane horizontalScrollBarPolicy="fill_to_capacity" verticalScrollBarPolicy="fill_to_capacity">
                         <view>
                             <TableView bxml:id="downloadsTable"
                                        selectMode="multi"

@@ -4,13 +4,16 @@
             title: "GrooveJames",
             styles: {
                 backgroundPaint: {
-                    paintType: 'gradient',
+                    paintType: 'linear_gradient',
                     startX: 0,
                     startY: 0,
-                    startColor: '#606090',
                     endX: 0,
                     endY: 800,
-                    endColor: '#101030'
+                    stops: [
+                        { offset: 0.0, color: '#000000' },
+                        { offset: 0.8, color: '#c0c0c0' },
+                        { offset: 1.0, color: '#2b2b2b' }
+                    ]
                 }
             }
         },

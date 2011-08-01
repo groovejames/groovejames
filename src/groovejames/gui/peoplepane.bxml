@@ -12,14 +12,13 @@
     <rows>
         <TablePane.Row>
             <BoxPane styles="{fill:true, horizontalAlignment:'right'}">
-                <TextInput bxml:id="peopleSearchInPage" prompt="Search in page..."
-                           styles="{backgroundColor: '#FFFFFF'}"/>
+                <TextInput bxml:id="peopleSearchInPage" prompt="Search in page..."/>
             </BoxPane>
         </TablePane.Row>
         <TablePane.Row height="1*">
             <Border>
                 <content>
-                    <ScrollPane horizontalScrollBarPolicy="fill_to_capacity">
+                    <ScrollPane horizontalScrollBarPolicy="fill_to_capacity" verticalScrollBarPolicy="fill_to_capacity">
                         <view>
                             <guicomponents:ClickableTableView bxml:id="peopleTable" selectMode="single"
                                                               clickableColumns="1"
