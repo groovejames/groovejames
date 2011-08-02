@@ -58,13 +58,14 @@ public class PlayService {
             } else {
                 insertIdx = playlist.add(song);
             }
-            if (i == 0 && addMode == AddMode.NOW) {
+            if (i == 0 && (addMode == AddMode.NOW || addMode == AddMode.REPLACE)) {
                 currentSongIndex = insertIdx;
             }
             insertIdx++;
         }
-        if (addMode == AddMode.NOW) {
+        if (addMode == AddMode.NOW || addMode == AddMode.REPLACE) {
             Song song = songs.get(0);
+            stopPlaying();
             startPlaying(song, 0, 0);
         }
     }
