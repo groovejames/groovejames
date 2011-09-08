@@ -1,6 +1,7 @@
 package groovejames.gui;
 
 import groovejames.gui.components.DefaultTableViewSortListener;
+import groovejames.gui.components.FixedTerraTooltipSkin;
 import groovejames.gui.components.ImageGetter;
 import groovejames.gui.components.TooltipTableMouseListener;
 import groovejames.gui.search.GeneralSearch;
@@ -62,6 +63,8 @@ import org.apache.pivot.wtk.TabPaneListener;
 import org.apache.pivot.wtk.TableView;
 import org.apache.pivot.wtk.TextArea;
 import org.apache.pivot.wtk.TextInput;
+import org.apache.pivot.wtk.Theme;
+import org.apache.pivot.wtk.Tooltip;
 import org.apache.pivot.wtk.Window;
 import org.apache.pivot.wtk.content.ButtonData;
 import org.apache.pivot.wtk.media.Image;
@@ -143,6 +146,9 @@ public class Main implements Application, ImageGetter {
 
 
     public void startup(Display display, Map<String, String> properties) throws Exception {
+        // fix a bug in Pivot: replace the Tooltip skin class to set the background color of tooltips properly
+        Theme.getTheme().set(Tooltip.class, FixedTerraTooltipSkin.class);
+
         this.resources = new Resources("groovejames.gui.main");
         this.display = display;
 
@@ -369,6 +375,7 @@ public class Main implements Application, ImageGetter {
         scrollPane.setPreferredHeight(300);
         scrollPane.setMaximumHeight(300);
         scrollPane.setView(errorText);
+        scrollPane.getStyles().put("backgroundColor", "#2b2b2b");
         Prompt.prompt(MessageType.ERROR, message, scrollPane, window);
     }
 
