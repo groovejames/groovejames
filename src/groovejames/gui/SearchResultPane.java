@@ -44,6 +44,7 @@ import org.apache.pivot.wtk.Label;
 import org.apache.pivot.wtk.ListButton;
 import org.apache.pivot.wtk.ListButtonSelectionListener;
 import org.apache.pivot.wtk.Mouse;
+import org.apache.pivot.wtk.SortDirection;
 import org.apache.pivot.wtk.Span;
 import org.apache.pivot.wtk.TabPane;
 import org.apache.pivot.wtk.TabPaneSelectionListener;
@@ -307,7 +308,11 @@ public class SearchResultPane extends TablePane implements Bindable {
             case Artist:
                 // remove "Artist" column
                 removeColumn(songpane.songTable, "artistName");
-                // remove unneccessary tabs
+                // remove "Relevance" column because it is always 0
+                removeColumn(songpane.songTable, "scorePercentage");
+                // sort by popularity
+                songpane.songTable.setSort("popularityPercentage", SortDirection.DESCENDING);
+                // remove unnecessary tabs
                 tabPane.getTabs().remove(albumCardPane);
                 tabPane.getTabs().remove(artistCardPane);
                 tabPane.getTabs().remove(peopleCardPane);
@@ -316,7 +321,11 @@ public class SearchResultPane extends TablePane implements Bindable {
             case Album:
                 // remove "Album" column
                 removeColumn(songpane.songTable, "albumName");
-                // remove unneccessary tabs
+                // remove "Relevance" column because it is always 0
+                removeColumn(songpane.songTable, "scorePercentage");
+                // sort by popularity
+                songpane.songTable.setSort("popularityPercentage", SortDirection.DESCENDING);
+                // remove unnecessary tabs
                 tabPane.getTabs().remove(albumCardPane);
                 tabPane.getTabs().remove(artistCardPane);
                 tabPane.getTabs().remove(peopleCardPane);
@@ -517,20 +526,25 @@ public class SearchResultPane extends TablePane implements Bindable {
 
     private Song[] normalizeScoreAndPopularity(Song[] songs) {
         double minScore = Double.MAX_VALUE, maxScore = Double.MIN_VALUE;
-        double minPopularity = Double.MAX_VALUE, maxPopularity = Double.MAX_VALUE;
+        double minPopularity = Double.MAX_VALUE, maxPopularity = Double.MIN_VALUE;
         for (Song song : songs) {
-            minScore = Math.min(minScore, song.getScore());
-            maxScore = Math.max(maxScore, song.getScore());
-            minPopularity = Math.min(minPopularity, song.getPopularity());
-            maxPopularity = Math.max(maxPopularity, song.getPopularity());
+            if (song.getScore() > 0.0) {
+                minScore = Math.min(minScore, song.getScore());
+                maxScore = Math.max(maxScore, song.getScore());
+            }
+            if (song.getPopularity() > 0.0) {
+                minPopularity = Math.min(minPopularity, song.getPopularity());
+                maxPopularity = Math.max(maxPopularity, song.getPopularity());
+            }
         }
         double rangeScore = maxScore - minScore;
         double rangePopularity = maxPopularity - minPopularity;
-        if (rangeScore != 0.0 || rangePopularity != 0.0) {
+        if (maxScore > Double.MIN_VALUE || maxPopularity > Double.MIN_VALUE
+            || rangeScore > 0.0 || rangePopularity > 0.0) {
             for (Song song : songs) {
-                if (rangeScore != 0.0)
+                if (maxScore > Double.MIN_VALUE && rangeScore > 0.0)
                     song.setScorePercentage((song.getScore() - minScore) / rangeScore);
-                if (rangePopularity != 0.0)
+                if (maxPopularity > Double.MIN_VALUE && rangePopularity > 0.0)
                     song.setPopularityPercentage((song.getPopularity() - minPopularity) / rangePopularity);
             }
         }
@@ -544,7 +558,7 @@ public class SearchResultPane extends TablePane implements Bindable {
             maxScore = Math.max(maxScore, song.getScore());
         }
         double range = maxScore - minScore;
-        if (range != 0.0) {
+        if (range > 0.0) {
             for (User song : users) {
                 song.setScorePercentage((song.getScore() - minScore) / range);
             }

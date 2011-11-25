@@ -89,6 +89,11 @@
                                                     <gui:TimeTableCellRenderer/>
                                                 </cellRenderer>
                                             </TableView.Column>
+                                            <TableView.Column name="popularityPercentage" headerData="Popularity" width="1*">
+                                                <cellRenderer>
+                                                    <guicomponents:MeterTableCellRenderer/>
+                                                </cellRenderer>
+                                            </TableView.Column>
                                             <TableView.Column name="scorePercentage" headerData="Relevance" width="1*">
                                                 <cellRenderer>
                                                     <guicomponents:MeterTableCellRenderer/>
