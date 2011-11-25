@@ -1,6 +1,7 @@
 package groovejames.service;
 
 import groovejames.model.Country;
+import groovejames.model.Playlist;
 import groovejames.model.SearchSongsResultType;
 import groovejames.model.SearchUsersResultType;
 import groovejames.model.Song;
@@ -188,6 +189,11 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         songs.setSongs(getSearchResultsEx(SearchSongsResultType.Songs, null));
         songs.setHasMore(false);
         return songs;
+    }
+
+    @Override
+    public Playlist[] userGetPlaylists(long userID) {
+        return new Playlist[0];
     }
 
     @Override

@@ -1,6 +1,7 @@
 package groovejames.service;
 
 import groovejames.model.Country;
+import groovejames.model.Playlist;
 import groovejames.model.SearchSongsResultType;
 import groovejames.model.SearchUsersResultType;
 import groovejames.model.Song;
@@ -40,6 +41,8 @@ public interface Grooveshark {
     Songs userGetSongsInLibrary(@Param("userID") String userID,
                                 @Param("page") int page)
         throws Exception;
+
+    @ResultPath("Playlists") Playlist[] userGetPlaylists(@Param("userID") long userID);
 
     @Header(clientName = "jsqueue", clientRevision = "20110722.01", secret = "neverGonnaLetYouDown")
     StreamKey getStreamKeyFromSongIDEx(@Param("songID") long songID,
