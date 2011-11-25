@@ -1,6 +1,5 @@
 package groovejames.service;
 
-import groovejames.model.Artist;
 import groovejames.model.Country;
 import groovejames.model.SearchSongsResultType;
 import groovejames.model.SearchUsersResultType;
@@ -176,22 +175,6 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         songs.setSongs(getSearchResultsEx(SearchSongsResultType.Songs, null));
         songs.setHasMore(false);
         return songs;
-    }
-
-    @Override
-    public Artist[] artistGetSimilarArtists(long artistID) {
-        Artist artist1 = new Artist();
-        artist1.setArtistID(1L);
-        artist1.setName("Beck");
-
-        Artist artist2 = new Artist();
-        artist2.setArtistID(2L);
-        artist2.setName("Depeche Mode");
-
-        Artist artist3 = new Artist();
-        artist3.setArtistID(3L);
-        artist3.setName("Dead Kennedys");
-        return new Artist[]{artist1, artist2, artist3};
     }
 
     @Override

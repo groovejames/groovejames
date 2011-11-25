@@ -65,10 +65,10 @@ public class JsonUnmarshaller {
                         valueToSet = value;
                     try {
                         writeMethod.invoke(result, valueToSet);
-                    } catch (IllegalArgumentException ex) {
+                    } catch (Exception ex) {
                         throw new RuntimeException("cannot set property " + propertyName + " to value " + value
                         + " (value type: " + value.getClass().getName() + ", property type: " + propertyDescriptor.getPropertyType().getName()
-                        + " , coerced type: " + valueToSet.getClass().getName() + ")");
+                        + " , coerced type: " + valueToSet.getClass().getName() + ")", ex);
                     }
                     usedPropertyNames.add(propertyName);
                 }

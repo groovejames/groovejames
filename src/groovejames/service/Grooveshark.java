@@ -1,6 +1,5 @@
 package groovejames.service;
 
-import groovejames.model.Artist;
 import groovejames.model.Country;
 import groovejames.model.SearchSongsResultType;
 import groovejames.model.SearchUsersResultType;
@@ -32,9 +31,6 @@ public interface Grooveshark {
     Songs artistGetSongs(@Param("artistID") String artistID,
                          @Param("offset") int offset,
                          @Param("isVerified") boolean isVerified)
-        throws Exception;
-
-    @ResultPath("SimilarArtists") Artist[] artistGetSimilarArtists(@Param("artistID") long artistID)
         throws Exception;
 
     Song[] getFavorites(@Param("userID") String userID,

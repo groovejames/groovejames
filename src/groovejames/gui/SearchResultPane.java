@@ -11,7 +11,6 @@ import groovejames.gui.search.GeneralSearch;
 import groovejames.gui.search.SearchParameter;
 import groovejames.gui.search.SearchType;
 import groovejames.gui.search.UserSearch;
-import groovejames.model.Artist;
 import groovejames.model.SearchSongsResultType;
 import groovejames.model.SearchUsersResultType;
 import groovejames.model.Song;
@@ -71,14 +70,12 @@ public class SearchResultPane extends TablePane implements Bindable {
     @BXML private TabPane tabPane;
     @BXML private CardPane songCardPane;
     @BXML private CardPane artistCardPane;
-    @BXML private CardPane similarArtistCardPane;
     @BXML private CardPane albumCardPane;
     @BXML private CardPane peopleCardPane;
     @BXML private Label searchLabel;
 
     @BXML private SongPane songpane;
     @BXML private ArtistPane artistpane;
-    @BXML private ArtistPane similarartistpane;
     @BXML private AlbumPane albumpane;
     @BXML private PeoplePane peoplepane;
 
@@ -88,13 +85,11 @@ public class SearchResultPane extends TablePane implements Bindable {
     private FilteredList<Song> songAlbumList = new FilteredList<Song>();
     private FilteredList<Song> albumList = new FilteredList<Song>();
     private FilteredList<Song> artistList = new FilteredList<Song>();
-    private FilteredList<Artist> similarArtistList = new FilteredList<Artist>();
     private FilteredList<User> peopleList = new FilteredList<User>();
     private Long songListSelectedAlbumID;
     private boolean songsLoaded;
     private boolean albumsLoaded;
     private boolean artistsLoaded;
-    private boolean similarArtistsLoaded;
     private boolean peopleLoaded;
     private Preferences prefs = Preferences.userNodeForPackage(SearchResultPane.class);
 
@@ -229,21 +224,6 @@ public class SearchResultPane extends TablePane implements Bindable {
             }
         });
 
-        similarartistpane.artistTable.setTableData(similarArtistList);
-        similarartistpane.artistTable.getTableViewSortListeners().add(new DefaultTableViewSortListener());
-        similarartistpane.artistTable.getComponentMouseListeners().add(new TooltipTableMouseListener());
-        similarartistpane.artistTable.getClickableTableListeners().add(new ClickableTableListener() {
-            @Override
-            public boolean cellClicked(ClickableTableView source, Object row, int rowIndex, int columnIndex, Mouse.Button button, int clickCount) {
-                TableView.Column column = source.getColumns().get(columnIndex);
-                if ("artistName".equals(column.getName())) {
-                    Artist artist = (Artist) row;
-                    main.openSearchTab(new ArtistSearch(artist.getArtistID(), artist.getArtistName()));
-                }
-                return false;
-            }
-        });
-
         peoplepane.peopleTable.setTableData(peopleList);
         peoplepane.peopleTable.getTableViewSortListeners().add(new DefaultTableViewSortListener());
         peoplepane.peopleTable.getComponentMouseListeners().add(new TooltipTableMouseListener());
@@ -291,18 +271,6 @@ public class SearchResultPane extends TablePane implements Bindable {
             }
         });
 
-        similarartistpane.artistSearchInPage.getComponentKeyListeners().add(new ComponentKeyListener.Adapter() {
-            @Override public boolean keyTyped(Component searchField, char character) {
-                final String searchString = ((TextInput) searchField).getText().trim();
-                similarArtistList.setFilter(new Filter<Artist>() {
-                    @Override public boolean include(Artist artist) {
-                        return containsIgnoringCase(artist.getArtistName(), searchString);
-                    }
-                });
-                return false;
-            }
-        });
-
         peoplepane.peopleSearchInPage.getComponentKeyListeners().add(new ComponentKeyListener.Adapter() {
             @Override public boolean keyTyped(Component searchField, char character) {
                 final String searchString = ((TextInput) searchField).getText().trim();
@@ -320,7 +288,6 @@ public class SearchResultPane extends TablePane implements Bindable {
     public void setMain(Main main) {
         this.main = main;
         this.artistpane.artistImageRenderer.setImageGetter(main);
-        this.similarartistpane.artistImageRenderer.setImageGetter(main);
         this.albumpane.albumImageRenderer.setImageGetter(main);
         this.peoplepane.peopleImageRenderer.setImageGetter(main);
     }
@@ -334,7 +301,6 @@ public class SearchResultPane extends TablePane implements Bindable {
         this.searchLabel.setText(getLabel());
         switch (searchParameter.getSearchType()) {
             case General:
-                tabPane.getTabs().remove(similarArtistCardPane);
                 tabPane.setSelectedIndex(0);
                 break;
             case Artist:
@@ -352,14 +318,12 @@ public class SearchResultPane extends TablePane implements Bindable {
                 // remove unneccessary tabs
                 tabPane.getTabs().remove(albumCardPane);
                 tabPane.getTabs().remove(artistCardPane);
-                tabPane.getTabs().remove(similarArtistCardPane);
                 tabPane.getTabs().remove(peopleCardPane);
                 tabPane.setSelectedIndex(0);
                 break;
             case User:
                 tabPane.getTabs().remove(albumCardPane);
                 tabPane.getTabs().remove(artistCardPane);
-                tabPane.getTabs().remove(similarArtistCardPane);
                 tabPane.getTabs().remove(peopleCardPane);
                 tabPane.setSelectedIndex(0);
                 break;
@@ -371,7 +335,6 @@ public class SearchResultPane extends TablePane implements Bindable {
         loadColumnWidthsFromPreferences(artistpane.artistTable, "artistTable");
         loadColumnWidthsFromPreferences(albumpane.albumTable, "albumTable");
         loadColumnWidthsFromPreferences(peoplepane.peopleTable, "peopleTable");
-        loadColumnWidthsFromPreferences(similarartistpane.artistTable, "similarartistTable");
     }
 
     public String getLabel() {
@@ -398,10 +361,6 @@ public class SearchResultPane extends TablePane implements Bindable {
         artistList.setSource(new ArrayList<Song>(artists));
     }
 
-    public void setSimilarArtists(Artist[] similarArtists) {
-        similarArtistList.setSource(new ArrayList<Artist>(similarArtists));
-    }
-
     public void setAlbums(Song[] albums) {
         albumList.setSource(new ArrayList<Song>(albums));
     }
@@ -416,8 +375,6 @@ public class SearchResultPane extends TablePane implements Bindable {
             loadSongs();
         else if (selectedTab == artistCardPane)
             loadArtists();
-        else if (selectedTab == similarArtistCardPane)
-            loadSimilarArtists();
         else if (selectedTab == albumCardPane)
             loadAlbums();
         else if (selectedTab == peopleCardPane)
@@ -464,13 +421,6 @@ public class SearchResultPane extends TablePane implements Bindable {
         if (!artistsLoaded) {
             artistsLoaded = true;
             executeGuiAsyncTask(new SearchArtistsTask(), artistCardPane);
-        }
-    }
-
-    private void loadSimilarArtists() {
-        if (!similarArtistsLoaded) {
-            similarArtistsLoaded = true;
-            executeGuiAsyncTask(new SearchSimilarArtistsTask(), similarArtistCardPane);
         }
     }
 
@@ -757,36 +707,6 @@ public class SearchResultPane extends TablePane implements Bindable {
         @Override protected void taskExecuted() {
             Song[] result = getResult();
             setArtists(result);
-        }
-    }
-
-
-    private class SearchSimilarArtistsTask extends GuiAsyncTask<Artist[]> {
-        public SearchSimilarArtistsTask() {
-            super("searching for artists similar to " + searchParameter.getSimpleSearchString());
-            setSimilarArtists(new Artist[]{});
-        }
-
-        @Override public Artist[] execute() throws TaskExecutionException {
-            try {
-                Grooveshark grooveshark = main.getGrooveshark();
-                SearchType searchType = searchParameter.getSearchType();
-                Artist[] result;
-                if (searchType == SearchType.Artist) {
-                    String artistID = ((ArtistSearch) searchParameter).getArtistID().toString();
-                    result = grooveshark.artistGetSimilarArtists(Long.parseLong(artistID));
-                } else {
-                    throw new IllegalArgumentException("invalid search type: " + searchType);
-                }
-                return result;
-            } catch (Exception ex) {
-                throw new TaskExecutionException(ex);
-            }
-        }
-
-        @Override protected void taskExecuted() {
-            Artist[] result = getResult();
-            setSimilarArtists(result);
         }
     }
 
