@@ -18,8 +18,6 @@ import groovejames.model.Songs;
 import groovejames.model.User;
 import groovejames.service.Grooveshark;
 import groovejames.util.FilteredList;
-import static groovejames.util.Util.compareNullSafe;
-import static groovejames.util.Util.containsIgnoringCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pivot.beans.BXML;
@@ -61,6 +59,9 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+
+import static groovejames.util.Util.compareNullSafe;
+import static groovejames.util.Util.containsIgnoringCase;
 
 @SuppressWarnings({"UnusedDeclaration"})
 public class SearchResultPane extends TablePane implements Bindable {
@@ -150,7 +151,7 @@ public class SearchResultPane extends TablePane implements Bindable {
                     main.openSearchTab(new ArtistSearch(song.getArtistID(), song.getArtistName()));
                 } else if ("albumName".equals(column.getName())) {
                     main.openSearchTab(new AlbumSearch(
-                            song.getAlbumID(), song.getAlbumName(), song.getArtistID(), song.getArtistName()));
+                        song.getAlbumID(), song.getAlbumName(), song.getArtistID(), song.getArtistName()));
                 }
                 return false;
             }
@@ -181,11 +182,11 @@ public class SearchResultPane extends TablePane implements Bindable {
                 }
                 songpane.downloadButton.setEnabled(length > 0);
                 songpane.downloadButton.setButtonData(new ButtonData(
-                        ((ButtonData) songpane.downloadButton.getButtonData()).getIcon(),
-                        "Download" + (length == 0 ? "" : " (" + length + ")")
+                    ((ButtonData) songpane.downloadButton.getButtonData()).getIcon(),
+                    "Download" + (length == 0 ? "" : " (" + length + ")")
                 ));
                 songpane.playButton.setEnabled(length > 0);
-                for(Object listData : songpane.playButton.getListData()) {
+                for (Object listData : songpane.playButton.getListData()) {
                     ListIdItem item = (ListIdItem) listData;
                     item.setText(item.getUserData().toString() + (length == 0 ? "" : " (" + length + ")"));
                 }
@@ -252,7 +253,7 @@ public class SearchResultPane extends TablePane implements Bindable {
                 albumList.setFilter(new Filter<Song>() {
                     @Override public boolean include(Song song) {
                         return containsIgnoringCase(song.getAlbumName(), searchString)
-                                || containsIgnoringCase(song.getArtistName(), searchString);
+                            || containsIgnoringCase(song.getArtistName(), searchString);
                     }
                 });
                 return false;
@@ -514,6 +515,42 @@ public class SearchResultPane extends TablePane implements Bindable {
         return result;
     }
 
+    private Song[] normalizeScoreAndPopularity(Song[] songs) {
+        double minScore = Double.MAX_VALUE, maxScore = Double.MIN_VALUE;
+        double minPopularity = Double.MAX_VALUE, maxPopularity = Double.MAX_VALUE;
+        for (Song song : songs) {
+            minScore = Math.min(minScore, song.getScore());
+            maxScore = Math.max(maxScore, song.getScore());
+            minPopularity = Math.min(minPopularity, song.getPopularity());
+            maxPopularity = Math.max(maxPopularity, song.getPopularity());
+        }
+        double rangeScore = maxScore - minScore;
+        double rangePopularity = maxPopularity - minPopularity;
+        if (rangeScore != 0.0 || rangePopularity != 0.0) {
+            for (Song song : songs) {
+                if (rangeScore != 0.0)
+                    song.setScorePercentage((song.getScore() - minScore) / rangeScore);
+                if (rangePopularity != 0.0)
+                    song.setPopularityPercentage((song.getPopularity() - minPopularity) / rangePopularity);
+            }
+        }
+        return songs;
+    }
+
+    private User[] normalizeScore(User[] users) {
+        double minScore = Double.MAX_VALUE, maxScore = Double.MIN_VALUE;
+        for (User song : users) {
+            minScore = Math.min(minScore, song.getScore());
+            maxScore = Math.max(maxScore, song.getScore());
+        }
+        double range = maxScore - minScore;
+        if (range != 0.0) {
+            for (User song : users) {
+                song.setScorePercentage((song.getScore() - minScore) / range);
+            }
+        }
+        return users;
+    }
 
     private class SongListFilter implements Filter<Song> {
         @Override public boolean include(Song song) {
@@ -590,60 +627,68 @@ public class SearchResultPane extends TablePane implements Bindable {
                 Grooveshark grooveshark = main.getGrooveshark();
                 SearchType searchType = searchParameter.getSearchType();
                 Song[] result;
-                if (searchType == SearchType.General) {
-                    // search for song names via string search
-                    String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
-                    result = grooveshark.getSearchResultsEx(SearchSongsResultType.Songs, searchString);
-                } else if (searchType == SearchType.Album) {
-                    // search for songs of the given album
-                    Long albumID = ((AlbumSearch) searchParameter).getAlbumID();
-                    java.util.ArrayList<Song> allSongs = new java.util.ArrayList<Song>();
-                    Songs songs = grooveshark.albumGetSongs(albumID, 0, true);
-                    allSongs.addAll(Arrays.asList(songs.getSongs()));
-                    boolean hasMore = true;
-                    int offset = 0;
-                    while (hasMore) {
-                        songs = grooveshark.albumGetSongs(albumID, offset, false);
+                switch (searchType) {
+                    case General:
+                        // search for song names via string search
+                        String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
+                        result = grooveshark.getSearchResultsEx(SearchSongsResultType.Songs, searchString);
+                        break;
+                    case Album: {
+                        // search for songs of the given album
+                        Long albumID = ((AlbumSearch) searchParameter).getAlbumID();
+                        java.util.ArrayList<Song> allSongs = new java.util.ArrayList<Song>();
+                        Songs songs = grooveshark.albumGetSongs(albumID, 0, true);
                         allSongs.addAll(Arrays.asList(songs.getSongs()));
-                        hasMore = songs.isHasMore();
-                        offset += songs.getSongs().length;
+                        boolean hasMore = true;
+                        int offset = 0;
+                        while (hasMore) {
+                            songs = grooveshark.albumGetSongs(albumID, offset, false);
+                            allSongs.addAll(Arrays.asList(songs.getSongs()));
+                            hasMore = songs.isHasMore();
+                            offset += songs.getSongs().length;
+                        }
+                        result = filterDuplicateSongs(allSongs);
+                        break;
                     }
-                    result = filterDuplicateSongs(allSongs);
-                } else if (searchType == SearchType.Artist) {
-                    // search for all songs of the given artist
-                    String artistID = ((ArtistSearch) searchParameter).getArtistID().toString();
-                    java.util.ArrayList<Song> allSongs = new java.util.ArrayList<Song>();
-                    Songs songs = grooveshark.artistGetSongs(artistID, 0, true);
-                    allSongs.addAll(Arrays.asList(songs.getSongs()));
-                    boolean hasMore = true;
-                    int offset = 0;
-                    while (hasMore) {
-                        songs = grooveshark.artistGetSongs(artistID, offset, false);
+                    case Artist: {
+                        // search for all songs of the given artist
+                        String artistID = ((ArtistSearch) searchParameter).getArtistID().toString();
+                        java.util.ArrayList<Song> allSongs = new java.util.ArrayList<Song>();
+                        Songs songs = grooveshark.artistGetSongs(artistID, 0, true);
                         allSongs.addAll(Arrays.asList(songs.getSongs()));
-                        hasMore = songs.isHasMore();
-                        offset += songs.getSongs().length;
+                        boolean hasMore = true;
+                        int offset = 0;
+                        while (hasMore) {
+                            songs = grooveshark.artistGetSongs(artistID, offset, false);
+                            allSongs.addAll(Arrays.asList(songs.getSongs()));
+                            hasMore = songs.isHasMore();
+                            offset += songs.getSongs().length;
+                        }
+                        result = filterDuplicateSongs(allSongs);
+                        break;
                     }
-                    result = filterDuplicateSongs(allSongs);
-                } else if (searchType == SearchType.User) {
-                    // search for library songs of the given user
-                    String userID = ((UserSearch) searchParameter).getUserID().toString();
-                    java.util.ArrayList<Song> allSongs = new java.util.ArrayList<Song>();
-                    int page = 0;
-                    boolean hasMore = true;
-                    while (hasMore) {
-                        Songs songs = grooveshark.userGetSongsInLibrary(userID, page);
-                        allSongs.addAll(Arrays.asList(songs.getSongs()));
-                        hasMore = songs.isHasMore();
-                        page++;
+                    case User: {
+                        // search for library songs of the given user
+                        String userID = ((UserSearch) searchParameter).getUserID().toString();
+                        java.util.ArrayList<Song> allSongs = new java.util.ArrayList<Song>();
+                        int page = 0;
+                        boolean hasMore = true;
+                        while (hasMore) {
+                            Songs songs = grooveshark.userGetSongsInLibrary(userID, page);
+                            allSongs.addAll(Arrays.asList(songs.getSongs()));
+                            hasMore = songs.isHasMore();
+                            page++;
+                        }
+                        // search for favorites, too
+                        Song[] favorites = grooveshark.getFavorites(userID, SearchSongsResultType.Songs);
+                        allSongs.addAll(Arrays.asList(favorites));
+                        result = filterDuplicateSongs(allSongs);
+                        break;
                     }
-                    // search for favorites, too
-                    Song[] favorites = grooveshark.getFavorites(userID, SearchSongsResultType.Songs);
-                    allSongs.addAll(Arrays.asList(favorites));
-                    result = filterDuplicateSongs(allSongs);
-                } else {
-                    throw new IllegalArgumentException("invalid search type: " + searchType);
+                    default:
+                        throw new IllegalArgumentException("invalid search type: " + searchType);
                 }
-                return result;
+                return normalizeScoreAndPopularity(result);
             } catch (Exception ex) {
                 throw new TaskExecutionException(ex);
             }
@@ -666,8 +711,8 @@ public class SearchResultPane extends TablePane implements Bindable {
             Song[] result = getResult();
             setSongs(result);
             if (searchParameter.getSearchType() == SearchType.General
-                    || searchParameter.getSearchType() == SearchType.Artist
-                    || searchParameter.getSearchType() == SearchType.User) {
+                || searchParameter.getSearchType() == SearchType.Artist
+                || searchParameter.getSearchType() == SearchType.User) {
                 ApplicationContext.queueCallback(new Runnable() {
                     @Override public void run() {
                         boolean groupByAlbum = getPrefsForTable("song").getBoolean("groupByAlbum", true);
@@ -694,7 +739,7 @@ public class SearchResultPane extends TablePane implements Bindable {
                 Song[] result;
                 if (searchType == SearchType.General) {
                     String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
-                    result = grooveshark.getSearchResultsEx(SearchSongsResultType.Artists, searchString);
+                    result = normalizeScoreAndPopularity(grooveshark.getSearchResultsEx(SearchSongsResultType.Artists, searchString));
                 } else {
                     throw new IllegalArgumentException("invalid search type: " + searchType);
                 }
@@ -724,7 +769,7 @@ public class SearchResultPane extends TablePane implements Bindable {
                 Song[] result;
                 if (searchType == SearchType.General) {
                     String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
-                    result = grooveshark.getSearchResultsEx(SearchSongsResultType.Albums, searchString);
+                    result = normalizeScoreAndPopularity(grooveshark.getSearchResultsEx(SearchSongsResultType.Albums, searchString));
                 } else {
                     throw new IllegalArgumentException("invalid search type: " + searchType);
                 }
@@ -753,7 +798,7 @@ public class SearchResultPane extends TablePane implements Bindable {
                 SearchType searchType = searchParameter.getSearchType();
                 if (searchType == SearchType.General) {
                     String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
-                    return grooveshark.getSearchResultsEx(SearchUsersResultType.Users, searchString);
+                    return normalizeScore(grooveshark.getSearchResultsEx(SearchUsersResultType.Users, searchString));
                 }
                 throw new IllegalArgumentException("invalid search type: " + searchType);
             } catch (Exception ex) {

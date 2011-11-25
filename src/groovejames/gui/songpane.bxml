@@ -78,7 +78,7 @@
                                             bxml:id="songTable"
                                             clickableColumns="2,3"
                                             selectMode="multi"
-                                            sort="[{columnName:'rank', sortDirection:'DESCENDING'}]">
+                                            sort="[{columnName:'scorePercentage', sortDirection:'DESCENDING'}]">
                                         <columns>
                                             <TableView.Column name="trackNum" headerData="#" width="30"/>
                                             <TableView.Column name="songName" headerData="Name" width="220"/>
@@ -89,7 +89,7 @@
                                                     <gui:TimeTableCellRenderer/>
                                                 </cellRenderer>
                                             </TableView.Column>
-                                            <TableView.Column name="rank" headerData="Relevance" width="1*">
+                                            <TableView.Column name="scorePercentage" headerData="Relevance" width="1*">
                                                 <cellRenderer>
                                                     <guicomponents:MeterTableCellRenderer/>
                                                 </cellRenderer>

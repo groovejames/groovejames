@@ -21,11 +21,11 @@ public class GsProxyTest {
         Grooveshark grooveshark = GroovesharkService.connect(httpClientService);
         Song[] songs = grooveshark.getSearchResultsEx(SearchSongsResultType.Songs, "The Cure");
         for (Song song : songs) {
-            System.out.printf("%s (%s) - %s (%s) - %s (%s) - rank:%f%n",
+            System.out.printf("%s (%s) - %s (%s) - %s (%s) - score:%f%n",
                 song.getArtistName(), song.getArtistID(),
                 song.getAlbumName(), song.getAlbumID(),
                 song.getSongName(), song.getSongID(),
-                song.getRank());
+                song.getScore());
         }
 
         long songID = songs[0].getSongID();

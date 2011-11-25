@@ -9,7 +9,8 @@ public class User extends ImageObject {
     private String username;
     private String name;
     private String picture;
-    private double rank;
+    private double score;
+    private double scorePercentage;
 
     public Long getUserID() {
         return userID;
@@ -48,12 +49,20 @@ public class User extends ImageObject {
         return picture;
     }
 
-    public double getRank() {
-        return rank;
+    public double getScore() {
+        return score;
     }
 
-    public void setRank(double rank) {
-        this.rank = max(min(rank, 1.0), 0.0);
+    public void setScore(double score) {
+        this.score = score;
+    }
+
+    public double getScorePercentage() {
+        return scorePercentage;
+    }
+
+    public void setScorePercentage(double scorePercentage) {
+        this.scorePercentage = max(min(scorePercentage, 1.0), 0.0);
     }
 
     @Override

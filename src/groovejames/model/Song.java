@@ -16,7 +16,10 @@ public class Song extends ImageObject {
     private String year;
     private Long trackNum;
     private Long estimateDuration; // in seconds
-    private double rank;
+    private double popularity;
+    private double popularityPercentage;
+    private double score;
+    private double scorePercentage;
 
     public Long getArtistID() {
         return artistID;
@@ -123,12 +126,36 @@ public class Song extends ImageObject {
         this.estimateDuration = estimateDuration;
     }
 
-    public double getRank() {
-        return rank;
+    public double getPopularity() {
+        return popularity;
     }
 
-    public void setRank(double rank) {
-        this.rank = max(min(rank, 1.0), 0.0);
+    public void setPopularity(double popularity) {
+        this.popularity = popularity;
+    }
+
+    public double getPopularityPercentage() {
+        return popularityPercentage;
+    }
+
+    public void setPopularityPercentage(double popularityPercentage) {
+        this.popularityPercentage = max(min(popularityPercentage, 1.0), 0.0);
+    }
+
+    public double getScore() {
+        return score;
+    }
+
+    public void setScore(double score) {
+        this.score = score;
+    }
+
+    public double getScorePercentage() {
+        return scorePercentage;
+    }
+
+    public void setScorePercentage(double scorePercentage) {
+        this.scorePercentage = max(min(scorePercentage, 1.0), 0.0);
     }
 
     @Override

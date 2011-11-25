@@ -23,7 +23,7 @@
                             <guicomponents:ClickableTableView bxml:id="artistTable" selectMode="single"
                                                               clickableColumns="1"
                                                               styles="{font:{bold:true, size:'130%'}, showHorizontalGridLines:false, showVerticalGridLines:false}"
-                                                              sort="[{columnName:'rank', sortDirection:'DESCENDING'}]">
+                                                              sort="[{columnName:'scorePercentage', sortDirection:'DESCENDING'}]">
                                 <columns>
                                     <TableView.Column name="image" width="50">
                                         <cellRenderer>
@@ -35,7 +35,7 @@
                                         </cellRenderer>
                                     </TableView.Column>
                                     <TableView.Column name="artistName" headerData="Artist" width="1*"/>
-                                    <TableView.Column name="rank" headerData="Relevance" width="80">
+                                    <TableView.Column name="scorePercentage" headerData="Relevance" width="80">
                                         <cellRenderer>
                                             <guicomponents:MeterTableCellRenderer/>
                                         </cellRenderer>
