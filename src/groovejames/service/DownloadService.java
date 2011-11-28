@@ -27,8 +27,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -62,7 +60,6 @@ public class DownloadService {
     private final ArrayList<DownloadTask> currentlyRunningDownloads = new ArrayList<DownloadTask>();
     private final FilenameSchemeParser filenameSchemeParser;
 
-    private Grooveshark grooveshark;
     private File downloadDir;
     private long nextSongMustSleepUntil;
 
@@ -72,10 +69,6 @@ public class DownloadService {
         this.executorService = Executors.newFixedThreadPool(numberOfParallelDownloads);
         this.executorServiceForPlay = Executors.newFixedThreadPool(1);
         this.filenameSchemeParser = new FilenameSchemeParser();
-    }
-
-    public void setGrooveshark(Grooveshark grooveshark) {
-        this.grooveshark = grooveshark;
     }
 
     public File getDownloadDir() {
@@ -187,9 +180,7 @@ public class DownloadService {
                 log.info("start download track " + track);
                 track.setStatus(Track.Status.INITIALIZING);
                 fireDownloadStatusChanged();
-                StreamKey streamKey = grooveshark.getStreamKeyFromSongIDEx(
-                    track.getSong().getSongID(),
-                    false, false, Country.GSLITE_DEFAULT_COUNTRY);
+                StreamKey streamKey = Services.getSearchService().getStreamKeyFromSongID(track.getSong().getSongID());
                 track.setStatus(Track.Status.DOWNLOADING);
                 track.setStartDownloadTime(System.currentTimeMillis());
                 fireDownloadStatusChanged();

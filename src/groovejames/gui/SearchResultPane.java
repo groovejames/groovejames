@@ -7,10 +7,10 @@ import groovejames.gui.components.ListIdItem;
 import groovejames.gui.components.TooltipTableMouseListener;
 import groovejames.model.Song;
 import groovejames.model.User;
+import groovejames.service.Services;
 import groovejames.service.search.AlbumSearch;
 import groovejames.service.search.ArtistSearch;
 import groovejames.service.search.SearchParameter;
-import groovejames.service.search.SearchService;
 import groovejames.service.search.SearchType;
 import groovejames.service.search.UserSearch;
 import groovejames.util.FilteredList;
@@ -284,9 +284,6 @@ public class SearchResultPane extends TablePane implements Bindable {
 
     public void setMain(Main main) {
         this.main = main;
-        this.artistpane.artistImageRenderer.setImageGetter(main);
-        this.albumpane.albumImageRenderer.setImageGetter(main);
-        this.peoplepane.peopleImageRenderer.setImageGetter(main);
     }
 
     public SearchParameter getSearchParameter() {
@@ -592,7 +589,7 @@ public class SearchResultPane extends TablePane implements Bindable {
 
         @Override public Song[] execute() throws TaskExecutionException {
             try {
-                return new SearchService(main.getGrooveshark()).searchSongs(searchParameter);
+                return Services.getSearchService().searchSongs(searchParameter);
             } catch (Exception ex) {
                 throw new TaskExecutionException(ex);
             }
@@ -625,7 +622,7 @@ public class SearchResultPane extends TablePane implements Bindable {
 
         @Override public Song[] execute() throws TaskExecutionException {
             try {
-                return new SearchService(main.getGrooveshark()).searchArtists(searchParameter);
+                return Services.getSearchService().searchArtists(searchParameter);
             } catch (Exception ex) {
                 throw new TaskExecutionException(ex);
             }
@@ -646,7 +643,7 @@ public class SearchResultPane extends TablePane implements Bindable {
 
         @Override public Song[] execute() throws TaskExecutionException {
             try {
-                return new SearchService(main.getGrooveshark()).searchAlbums(searchParameter);
+                return Services.getSearchService().searchAlbums(searchParameter);
             } catch (Exception ex) {
                 throw new TaskExecutionException(ex);
             }
@@ -667,7 +664,7 @@ public class SearchResultPane extends TablePane implements Bindable {
 
         @Override public User[] execute() throws TaskExecutionException {
             try {
-                return new SearchService(main.getGrooveshark()).searchPeople(searchParameter);
+                return Services.getSearchService().searchPeople(searchParameter);
             } catch (Exception ex) {
                 throw new TaskExecutionException(ex);
             }

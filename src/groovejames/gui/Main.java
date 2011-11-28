@@ -2,28 +2,19 @@ package groovejames.gui;
 
 import groovejames.gui.components.DefaultTableViewSortListener;
 import groovejames.gui.components.FixedTerraTooltipSkin;
-import groovejames.gui.components.ImageGetter;
 import groovejames.gui.components.TooltipTableMouseListener;
-import groovejames.service.search.GeneralSearch;
-import groovejames.service.search.SearchParameter;
 import groovejames.model.Settings;
 import groovejames.model.Song;
 import groovejames.model.Track;
-import groovejames.service.DownloadService;
-import groovejames.service.Grooveshark;
-import groovejames.service.GroovesharkService;
-import groovejames.service.HttpClientService;
 import groovejames.service.PlayService;
 import groovejames.service.PlayServiceListener;
 import groovejames.service.ProxySettings;
+import groovejames.service.Services;
+import groovejames.service.search.GeneralSearch;
+import groovejames.service.search.SearchParameter;
 import groovejames.util.ConsoleUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.StatusLine;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.pivot.beans.BXML;
 import org.apache.pivot.beans.BXMLSerializer;
 import org.apache.pivot.collections.ArrayList;
@@ -67,14 +58,9 @@ import org.apache.pivot.wtk.Theme;
 import org.apache.pivot.wtk.Tooltip;
 import org.apache.pivot.wtk.Window;
 import org.apache.pivot.wtk.content.ButtonData;
-import org.apache.pivot.wtk.media.Image;
-import org.apache.pivot.wtk.media.Picture;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -90,17 +76,13 @@ import static org.apache.pivot.wtk.ScrollPane.ScrollBarPolicy.AUTO;
 import static org.apache.pivot.wtk.ScrollPane.ScrollBarPolicy.FILL;
 
 @SuppressWarnings({"UnusedDeclaration"})
-public class Main implements Application, ImageGetter {
+public class Main implements Application {
 
     private static final Log log = LogFactory.getLog(Main.class);
 
     private Settings settings;
     private Resources resources;
     private Display display;
-    private HttpClientService httpClientService;
-    private DownloadService downloadService;
-    private PlayService playService;
-    private Grooveshark grooveshark;
     private final ArrayList<Track> downloadTracks = new ArrayList<Track>();
 
     @BXML private Window window;
@@ -153,11 +135,9 @@ public class Main implements Application, ImageGetter {
         this.display = display;
 
         this.settings = loadSettings();
-        this.httpClientService = new HttpClientService();
-        this.downloadService = new DownloadService(httpClientService);
-        this.playService = new PlayService(downloadService);
-        this.playService.setListener(new PlaylistListener());
         this.downloadTracks.getListListeners().add(new TrackListListener());
+
+        Services.getPlayService().setListener(new PlaylistListener());
 
         applySettings();
         initActions();
@@ -185,12 +165,12 @@ public class Main implements Application, ImageGetter {
 
     private void applySettings() {
         if (!isEmpty(settings.getProxyHost())) {
-            httpClientService.setProxySettings(new ProxySettings(settings.getProxyHost(), settings.getProxyPort()));
+            Services.getHttpClientService().setProxySettings(new ProxySettings(settings.getProxyHost(), settings.getProxyPort()));
         } else {
-            httpClientService.setProxySettings(null);
+            Services.getHttpClientService().setProxySettings(null);
         }
-        downloadService.getFilenameSchemeParser().setFilenameScheme(settings.getFilenameScheme());
-        grooveshark = null;
+        Services.getDownloadService().getFilenameSchemeParser().setFilenameScheme(settings.getFilenameScheme());
+        Services.resetGrooveshark();
     }
 
     private void initActions() {
@@ -241,8 +221,8 @@ public class Main implements Application, ImageGetter {
                 return false;
             }
         });
-        playlistTable.getColumns().get(0).setCellRenderer(new PlaylistCellRenderer(playService));
-        playlistTable.setTableData(playService.getPlaylist());
+        playlistTable.getColumns().get(0).setCellRenderer(new PlaylistCellRenderer(Services.getPlayService()));
+        playlistTable.setTableData(Services.getPlayService().getPlaylist());
         playlistTable.getComponentMouseListeners().add(new TooltipTableMouseListener());
         searchField.getComponentKeyListeners().add(new ComponentKeyListener.Adapter() {
             @Override
@@ -311,7 +291,7 @@ public class Main implements Application, ImageGetter {
     }
 
     public boolean shutdown(boolean optional) throws Exception {
-        this.downloadService.shutdown();
+        Services.getDownloadService().shutdown();
         this.display = null;
         return false;
     }
@@ -325,8 +305,7 @@ public class Main implements Application, ImageGetter {
     public void download(Song song) {
         showLowerSplitPane();
         lowerPane.setSelectedIndex(0);
-        downloadService.setGrooveshark(getGrooveshark());
-        Track track = downloadService.download(song);
+        Track track = Services.getDownloadService().download(song);
         List.ItemIterator<Track> it = downloadTracks.iterator();
         //noinspection WhileLoopReplaceableByForEach
         while (it.hasNext()) {
@@ -342,8 +321,7 @@ public class Main implements Application, ImageGetter {
     public void play(Sequence<Song> songs, PlayService.AddMode addMode) {
         showLowerSplitPane();
         lowerPane.setSelectedIndex(1);
-        downloadService.setGrooveshark(getGrooveshark()); // TODO: looks clumsy
-        playService.add(songs, addMode);
+        Services.getPlayService().add(songs, addMode);
     }
 
     // show download/playlist pane if currently collapsed
@@ -353,17 +331,6 @@ public class Main implements Application, ImageGetter {
             SplitRatioTransition transition = new SplitRatioTransition(mainSplitPane, splitRatio, 600, 50);
             transition.start();
         }
-    }
-
-    public synchronized Grooveshark getGrooveshark() {
-        if (grooveshark == null) {
-            try {
-                grooveshark = GroovesharkService.connect(httpClientService);
-            } catch (IOException ex) {
-                showError("Could not connect to GrooveShark", ex);
-            }
-        }
-        return grooveshark;
     }
 
     public void showError(String message, Exception ex) {
@@ -435,25 +402,6 @@ public class Main implements Application, ImageGetter {
             Alert.alert(MessageType.ERROR, "error loading searchresultpane.bxml\n" + ex, window);
         }
         return null;
-    }
-
-    public Image httpGetImage(URI uri) throws IOException {
-        HttpResponse httpResponse = httpClientService.getHttpClient().execute(new HttpGet(uri));
-        HttpEntity httpEntity = httpResponse.getEntity();
-        try {
-            StatusLine statusLine = httpResponse.getStatusLine();
-            int statusCode = statusLine.getStatusCode();
-            if (statusCode == HttpStatus.SC_OK) {
-                InputStream inputStream = httpEntity.getContent();
-                BufferedImage image = ImageIO.read(inputStream);
-                inputStream.close();
-                return new Picture(image);
-            } else {
-                throw new IOException(format("error loading image: uri=%s, status=%s%n", uri, statusLine));
-            }
-        } finally {
-            httpEntity.consumeContent();
-        }
     }
 
     private String getVersionNumberAndDate() {
@@ -547,7 +495,7 @@ public class Main implements Application, ImageGetter {
                 if ((selectedOnly && selectedTracks.indexOf(track) != -1)
                     || (!selectedOnly && successfulOnly && track.getStatus().isSuccessful())
                     || (!selectedOnly && !successfulOnly && track.getStatus().isFinished())) {
-                    downloadService.cancelDownload(track, removeFromDisc);
+                    Services.getDownloadService().cancelDownload(track, removeFromDisc);
                     it.remove();
                     selectedTracks.remove(track);
                 }
@@ -558,33 +506,33 @@ public class Main implements Application, ImageGetter {
 
     private class SongPlayPauseAction extends Action {
         @Override public void perform(Component source) {
-            if (playService.isPaused())
-                playService.resume();
-            else if (playService.isPlaying())
-                playService.pause();
+            if (Services.getPlayService().isPaused())
+                Services.getPlayService().resume();
+            else if (Services.getPlayService().isPlaying())
+                Services.getPlayService().pause();
             else
-                playService.play();
+                Services.getPlayService().play();
         }
     }
 
 
     private class SongNextAction extends Action {
         @Override public void perform(Component source) {
-            playService.skipForward();
+            Services.getPlayService().skipForward();
         }
     }
 
 
     private class SongPreviousAction extends Action {
         @Override public void perform(Component source) {
-            playService.skipBackward();
+            Services.getPlayService().skipBackward();
         }
     }
 
 
     private class SongClearPlaylistAction extends Action {
         @Override public void perform(Component source) {
-            playService.clearPlaylist();
+            Services.getPlayService().clearPlaylist();
             resetPlayInfo();
             updatePlayPauseButton(false);
         }
@@ -711,7 +659,7 @@ public class Main implements Application, ImageGetter {
                 public void run() {
                     if (track.getStatus() == Track.Status.ERROR) {
                         resetPlayInfo();
-                        playService.stop();
+                        Services.getPlayService().stop();
                     } else {
                         updatePlayInfo(track, "Now playing");
                     }

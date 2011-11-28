@@ -1,9 +1,11 @@
 package groovejames.service.search;
 
+import groovejames.model.Country;
 import groovejames.model.SearchSongsResultType;
 import groovejames.model.SearchUsersResultType;
 import groovejames.model.Song;
 import groovejames.model.Songs;
+import groovejames.model.StreamKey;
 import groovejames.model.User;
 import groovejames.service.Grooveshark;
 import org.apache.pivot.collections.ArrayList;
@@ -84,6 +86,10 @@ public class SearchService {
                 throw new IllegalArgumentException("invalid search type: " + searchType);
         }
         return normalizeScoreAndPopularity(result);
+    }
+
+    public StreamKey getStreamKeyFromSongID(long songID) throws Exception {
+        return grooveshark.getStreamKeyFromSongIDEx(songID, /*mobile*/ false, /*prefetch*/ false, Country.GSLITE_DEFAULT_COUNTRY);
     }
 
     public Song[] searchArtists(SearchParameter searchParameter) throws Exception {

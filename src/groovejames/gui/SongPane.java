@@ -36,7 +36,6 @@ public class SongPane extends TablePane implements Bindable {
 
     public void setMain(Main main) {
         this.main = main;
-        this.songAlbumImageRenderer.setImageGetter(main);
     }
 
     @Override public void initialize(Map<String, Object> namespace, URL location, Resources resources) {
