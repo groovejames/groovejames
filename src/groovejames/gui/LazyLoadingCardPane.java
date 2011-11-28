@@ -19,6 +19,7 @@ import org.apache.pivot.wtk.Component;
 import org.apache.pivot.wtk.TableView;
 import org.apache.pivot.wtk.TableViewColumnListener;
 
+import javax.swing.text.AbstractDocument;
 import java.io.IOException;
 import java.net.URL;
 import java.util.prefs.BackingStoreException;
@@ -58,8 +59,8 @@ public class LazyLoadingCardPane extends CardPane implements Bindable {
 
             WtkUtil.setupColumnWidthSaver(content.getTableView(), content.getTableKey(), searchParameter.getSearchType().name());
 
-            GuiAsyncTask<User[]> searchTask = content.getSearchTask(searchParameter);
-            GuiAsyncTaskListener<User[]> asyncTaskListener = new GuiAsyncTaskListener<User[]>();
+            GuiAsyncTask<?> searchTask = content.getSearchTask(searchParameter);
+            GuiAsyncTaskListener asyncTaskListener = new GuiAsyncTaskListener();
             // show activity pane on the tab
             getCardPaneListeners().add(asyncTaskListener);
             setSelectedIndex(0);
@@ -68,15 +69,15 @@ public class LazyLoadingCardPane extends CardPane implements Bindable {
         }
     }
 
-    private class GuiAsyncTaskListener<V> implements TaskListener<V>, CardPaneListener {
+    private class GuiAsyncTaskListener implements TaskListener, CardPaneListener {
         private volatile boolean taskExecuted;
 
-        @Override public void taskExecuted(Task<V> task) {
+        @Override public void taskExecuted(Task task) {
             taskExecuted = true;
             hideActivityPane();
         }
 
-        @Override public void executeFailed(Task<V> task) {
+        @Override public void executeFailed(Task task) {
             taskExecuted = true;
             Exception ex = task.getFault();
             hideActivityPane();

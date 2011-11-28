@@ -68,22 +68,18 @@ public class SearchResultPane extends TablePane implements Bindable {
     @BXML private TabPane tabPane;
     @BXML private CardPane songCardPane;
     @BXML private CardPane artistCardPane;
-    @BXML private CardPane albumCardPane;
     @BXML private Label searchLabel;
 
     @BXML private SongPane songpane;
     @BXML private ArtistPane artistpane;
-    @BXML private AlbumPane albumpane;
 
     private Main main;
     private SearchParameter searchParameter;
     private FilteredList<Song> songList = new FilteredList<Song>();
     private FilteredList<Song> songAlbumList = new FilteredList<Song>();
-    private FilteredList<Song> albumList = new FilteredList<Song>();
     private FilteredList<Song> artistList = new FilteredList<Song>();
     private Long songListSelectedAlbumID;
     private boolean songsLoaded;
-    private boolean albumsLoaded;
     private boolean artistsLoaded;
     private Preferences prefs = Preferences.userNodeForPackage(SearchResultPane.class);
     private Resources resources;
@@ -190,23 +186,6 @@ public class SearchResultPane extends TablePane implements Bindable {
             }
         });
 
-        albumpane.albumTable.setTableData(albumList);
-        albumpane.albumTable.getTableViewSortListeners().add(new DefaultTableViewSortListener());
-        albumpane.albumTable.getComponentMouseListeners().add(new TooltipTableMouseListener());
-        albumpane.albumTable.getClickableTableListeners().add(new ClickableTableListener() {
-            @Override
-            public boolean cellClicked(ClickableTableView source, Object row, int rowIndex, int columnIndex, Mouse.Button button, int clickCount) {
-                TableView.Column column = source.getColumns().get(columnIndex);
-                Song song = (Song) row;
-                if ("albumName".equals(column.getName())) {
-                    main.openSearchTab(new AlbumSearch(song.getAlbumID(), song.getAlbumName(), song.getArtistID(), song.getArtistName()));
-                } else if ("artistName".equals(column.getName())) {
-                    main.openSearchTab(new ArtistSearch(song.getArtistID(), song.getArtistName()));
-                }
-                return false;
-            }
-        });
-
         artistpane.artistTable.setTableData(artistList);
         artistpane.artistTable.getTableViewSortListeners().add(new DefaultTableViewSortListener());
         artistpane.artistTable.getComponentMouseListeners().add(new TooltipTableMouseListener());
@@ -225,19 +204,6 @@ public class SearchResultPane extends TablePane implements Bindable {
         songpane.songSearchInPage.getComponentKeyListeners().add(new ComponentKeyListener.Adapter() {
             @Override public boolean keyTyped(Component searchField, char character) {
                 songList.setFilter(new SongListFilter());
-                return false;
-            }
-        });
-
-        albumpane.albumSearchInPage.getComponentKeyListeners().add(new ComponentKeyListener.Adapter() {
-            @Override public boolean keyTyped(Component searchField, char character) {
-                final String searchString = ((TextInput) searchField).getText().trim();
-                albumList.setFilter(new Filter<Song>() {
-                    @Override public boolean include(Song song) {
-                        return containsIgnoringCase(song.getAlbumName(), searchString)
-                            || containsIgnoringCase(song.getArtistName(), searchString);
-                    }
-                });
                 return false;
             }
         });
@@ -271,6 +237,15 @@ public class SearchResultPane extends TablePane implements Bindable {
                     lazyLoadingCardPane.setContentResource("peopletablepane.bxml");
                     tabPane.getTabs().add(lazyLoadingCardPane);
                     TabPane.setTabData(lazyLoadingCardPane, new ButtonData("People"));
+
+                    bxmlSerializer = new BXMLSerializer();
+                    bxmlSerializer.getNamespace().put("main", main);
+                    lazyLoadingCardPane = (LazyLoadingCardPane) bxmlSerializer.readObject(getClass().getResource("lazyloadingcardpane.bxml"), resources);
+                    lazyLoadingCardPane.setContentResource("albumtablepane.bxml");
+                    tabPane.getTabs().add(lazyLoadingCardPane);
+                    TabPane.setTabData(lazyLoadingCardPane, new ButtonData("Albums"));
+                    tabPane.setSelectedIndex(0);
+
                     tabPane.setSelectedIndex(0);
                 } catch (IOException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -286,7 +261,6 @@ public class SearchResultPane extends TablePane implements Bindable {
                 // sort by popularity
                 songpane.songTable.setSort("popularityPercentage", SortDirection.DESCENDING);
                 // remove unnecessary tabs
-                tabPane.getTabs().remove(albumCardPane);
                 tabPane.getTabs().remove(artistCardPane);
                 tabPane.setSelectedIndex(0);
                 break;
@@ -298,12 +272,10 @@ public class SearchResultPane extends TablePane implements Bindable {
                 // sort by popularity
                 songpane.songTable.setSort("popularityPercentage", SortDirection.DESCENDING);
                 // remove unnecessary tabs
-                tabPane.getTabs().remove(albumCardPane);
                 tabPane.getTabs().remove(artistCardPane);
                 tabPane.setSelectedIndex(0);
                 break;
             case User:
-                tabPane.getTabs().remove(albumCardPane);
                 tabPane.getTabs().remove(artistCardPane);
                 tabPane.setSelectedIndex(0);
                 break;
@@ -313,7 +285,7 @@ public class SearchResultPane extends TablePane implements Bindable {
 
         loadColumnWidthsFromPreferences(songpane.songTable, "songTable");
         loadColumnWidthsFromPreferences(artistpane.artistTable, "artistTable");
-        loadColumnWidthsFromPreferences(albumpane.albumTable, "albumTable");
+//        loadColumnWidthsFromPreferences(albumpane.albumTable, "albumTable");
     }
 
     public String getLabel() {
@@ -340,10 +312,6 @@ public class SearchResultPane extends TablePane implements Bindable {
         artistList.setSource(new ArrayList<Song>(artists));
     }
 
-    public void setAlbums(Song[] albums) {
-        albumList.setSource(new ArrayList<Song>(albums));
-    }
-
     public void startSearch() {
         Component selectedTab = tabPane.getSelectedTab();
         if (selectedTab == null)
@@ -352,8 +320,6 @@ public class SearchResultPane extends TablePane implements Bindable {
             loadSongs();
         else if (selectedTab == artistCardPane)
             loadArtists();
-        else if (selectedTab == albumCardPane)
-            loadAlbums();
         else if (selectedTab instanceof LazyLoadingCardPane)
             try {
                 ((LazyLoadingCardPane)selectedTab).load(searchParameter);
@@ -402,13 +368,6 @@ public class SearchResultPane extends TablePane implements Bindable {
         if (!artistsLoaded) {
             artistsLoaded = true;
             executeGuiAsyncTask(new SearchArtistsTask(), artistCardPane);
-        }
-    }
-
-    private void loadAlbums() {
-        if (!albumsLoaded) {
-            albumsLoaded = true;
-            executeGuiAsyncTask(new SearchAlbumsTask(), albumCardPane);
         }
     }
 
@@ -593,24 +552,4 @@ public class SearchResultPane extends TablePane implements Bindable {
         }
     }
 
-
-    private class SearchAlbumsTask extends GuiAsyncTask<Song[]> {
-        public SearchAlbumsTask() {
-            super("searching for albums named \"" + searchParameter.getSimpleSearchString() + "\"");
-            setAlbums(new Song[]{});
-        }
-
-        @Override public Song[] execute() throws TaskExecutionException {
-            try {
-                return Services.getSearchService().searchAlbums(searchParameter);
-            } catch (Exception ex) {
-                throw new TaskExecutionException(ex);
-            }
-        }
-
-        @Override protected void taskExecuted() {
-            Song[] result = getResult();
-            setAlbums(result);
-        }
-    }
 }
