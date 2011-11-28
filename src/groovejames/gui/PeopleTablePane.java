@@ -3,7 +3,6 @@ package groovejames.gui;
 import groovejames.gui.components.ClickableTableListener;
 import groovejames.gui.components.ClickableTableView;
 import groovejames.gui.components.DefaultTableViewSortListener;
-import groovejames.gui.components.ImageObjectCellRenderer;
 import groovejames.gui.components.TooltipTableMouseListener;
 import groovejames.model.User;
 import groovejames.service.Services;
@@ -28,7 +27,7 @@ import java.net.URL;
 
 import static groovejames.util.Util.containsIgnoringCase;
 
-public class PeopleTablePane extends TablePane implements Bindable {
+public class PeopleTablePane extends TablePane implements Bindable, CardPaneContent {
 
     private Main main;
     private FilteredList<User> peopleList = new FilteredList<User>();
@@ -68,7 +67,15 @@ public class PeopleTablePane extends TablePane implements Bindable {
         });
     }
 
-    public GuiAsyncTask<User[]> getSearchTask(final SearchParameter searchParameter) {
+    @Override public TableView getTableView() {
+        return peopleTable;
+    }
+
+    @Override public String getTableKey() {
+        return "peopleTable";
+    }
+
+    @Override public GuiAsyncTask<User[]> getSearchTask(final SearchParameter searchParameter) {
         return new GuiAsyncTask<User[]>(
             "searching for people named \"" + searchParameter.getSimpleSearchString() + "\"") {
 

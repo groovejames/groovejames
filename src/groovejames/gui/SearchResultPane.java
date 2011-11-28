@@ -113,7 +113,7 @@ public class SearchResultPane extends TablePane implements Bindable {
                     // redistribute space among some of the columns
                     if (songpane.songTable.getUserData().get("dontRedistributeColumnWidths") != Boolean.TRUE) {
                         if (songpane.songSplitPane.getWidth() > 0) {
-                            ArrayList<TableView.Column> columns = getColumns(songpane.songTable, "songName", "artistName", "albumName");
+                            ArrayList<TableView.Column> columns = WtkUtil.getColumns(songpane.songTable, "songName", "artistName", "albumName");
                             int d = (int) (((songpane.songSplitPane.getWidth() * 0.25) + 6.0) / columns.getLength()) * (groupByAlbum ? -1 : 1);
                             for (TableView.Column column : columns) {
                                 if (!column.isRelative()) {
@@ -314,7 +314,6 @@ public class SearchResultPane extends TablePane implements Bindable {
         loadColumnWidthsFromPreferences(songpane.songTable, "songTable");
         loadColumnWidthsFromPreferences(artistpane.artistTable, "artistTable");
         loadColumnWidthsFromPreferences(albumpane.albumTable, "albumTable");
-//        loadColumnWidthsFromPreferences(peopletablepane.peopleTable, "peopleTable"); // TODO later
     }
 
     public String getLabel() {
@@ -416,7 +415,7 @@ public class SearchResultPane extends TablePane implements Bindable {
     private void loadColumnWidthsFromPreferences(final TableView tableView, final String tablePrefName) {
         try {
             Preferences columnPrefs = getPrefsForTable(tablePrefName).node("columns");
-            ArrayList<TableView.Column> columns = getColumns(tableView, columnPrefs.keys());
+            ArrayList<TableView.Column> columns = WtkUtil.getColumns(tableView, columnPrefs.keys());
             for (TableView.Column column : columns) {
                 if (!column.isRelative()) {
                     int storedWidth = columnPrefs.getInt(column.getName(), column.getWidth());
@@ -456,20 +455,8 @@ public class SearchResultPane extends TablePane implements Bindable {
     }
 
     private static void removeColumn(TableView tableView, String columnNameToRemove) {
-        TableView.Column columnToRemove = getColumns(tableView, columnNameToRemove).get(0);
+        TableView.Column columnToRemove = WtkUtil.getColumns(tableView, columnNameToRemove).get(0);
         tableView.getColumns().remove(columnToRemove);
-    }
-
-    private static ArrayList<TableView.Column> getColumns(TableView tableView, String... names) {
-        ArrayList<TableView.Column> result = new ArrayList<TableView.Column>();
-        for (String name : names) {
-            for (TableView.Column column : tableView.getColumns()) {
-                if (name.equals(column.getName())) {
-                    result.add(column);
-                }
-            }
-        }
-        return result;
     }
 
     private static ArrayList<Song> filterAlbums(ArrayList<Song> songs) {
