@@ -6,23 +6,23 @@ import groovejames.gui.components.DefaultTableViewSortListener;
 import groovejames.gui.components.ListIdItem;
 import groovejames.gui.components.TooltipTableMouseListener;
 import groovejames.model.Song;
-import groovejames.model.User;
 import groovejames.service.Services;
 import groovejames.service.search.AlbumSearch;
 import groovejames.service.search.ArtistSearch;
 import groovejames.service.search.SearchParameter;
 import groovejames.service.search.SearchType;
-import groovejames.service.search.UserSearch;
 import groovejames.util.FilteredList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pivot.beans.BXML;
+import org.apache.pivot.beans.BXMLSerializer;
 import org.apache.pivot.beans.Bindable;
 import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.collections.HashSet;
 import org.apache.pivot.collections.Map;
 import org.apache.pivot.collections.Sequence;
 import org.apache.pivot.collections.immutable.ImmutableList;
+import org.apache.pivot.serialization.SerializationException;
 import org.apache.pivot.util.Filter;
 import org.apache.pivot.util.Resources;
 import org.apache.pivot.util.Vote;
@@ -51,6 +51,7 @@ import org.apache.pivot.wtk.TableViewSelectionListener;
 import org.apache.pivot.wtk.TextInput;
 import org.apache.pivot.wtk.content.ButtonData;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Comparator;
 import java.util.prefs.BackingStoreException;
@@ -68,13 +69,11 @@ public class SearchResultPane extends TablePane implements Bindable {
     @BXML private CardPane songCardPane;
     @BXML private CardPane artistCardPane;
     @BXML private CardPane albumCardPane;
-    @BXML private CardPane peopleCardPane;
     @BXML private Label searchLabel;
 
     @BXML private SongPane songpane;
     @BXML private ArtistPane artistpane;
     @BXML private AlbumPane albumpane;
-    @BXML private PeoplePane peoplepane;
 
     private Main main;
     private SearchParameter searchParameter;
@@ -82,18 +81,20 @@ public class SearchResultPane extends TablePane implements Bindable {
     private FilteredList<Song> songAlbumList = new FilteredList<Song>();
     private FilteredList<Song> albumList = new FilteredList<Song>();
     private FilteredList<Song> artistList = new FilteredList<Song>();
-    private FilteredList<User> peopleList = new FilteredList<User>();
     private Long songListSelectedAlbumID;
     private boolean songsLoaded;
     private boolean albumsLoaded;
     private boolean artistsLoaded;
-    private boolean peopleLoaded;
     private Preferences prefs = Preferences.userNodeForPackage(SearchResultPane.class);
+    private Resources resources;
 
     public SearchResultPane() {
     }
 
     @Override public void initialize(Map<String, Object> namespace, URL location, Resources resources) {
+        this.main = (Main) namespace.get("main");
+        this.resources = resources;
+
         tabPane.getTabPaneSelectionListeners().add(new TabPaneSelectionListener.Adapter() {
             @Override public void selectedIndexChanged(TabPane tabPane, int previousSelectedIndex) {
                 startSearch();
@@ -221,21 +222,6 @@ public class SearchResultPane extends TablePane implements Bindable {
             }
         });
 
-        peoplepane.peopleTable.setTableData(peopleList);
-        peoplepane.peopleTable.getTableViewSortListeners().add(new DefaultTableViewSortListener());
-        peoplepane.peopleTable.getComponentMouseListeners().add(new TooltipTableMouseListener());
-        peoplepane.peopleTable.getClickableTableListeners().add(new ClickableTableListener() {
-            @Override
-            public boolean cellClicked(ClickableTableView source, Object row, int rowIndex, int columnIndex, Mouse.Button button, int clickCount) {
-                TableView.Column column = source.getColumns().get(columnIndex);
-                if ("username".equals(column.getName())) {
-                    User user = (User) row;
-                    main.openSearchTab(new UserSearch(user.getUserID(), user.getUsername()));
-                }
-                return false;
-            }
-        });
-
         songpane.songSearchInPage.getComponentKeyListeners().add(new ComponentKeyListener.Adapter() {
             @Override public boolean keyTyped(Component searchField, char character) {
                 songList.setFilter(new SongListFilter());
@@ -267,23 +253,6 @@ public class SearchResultPane extends TablePane implements Bindable {
                 return false;
             }
         });
-
-        peoplepane.peopleSearchInPage.getComponentKeyListeners().add(new ComponentKeyListener.Adapter() {
-            @Override public boolean keyTyped(Component searchField, char character) {
-                final String searchString = ((TextInput) searchField).getText().trim();
-                peopleList.setFilter(new Filter<User>() {
-                    @Override public boolean include(User user) {
-                        return containsIgnoringCase(user.getUsername(), searchString)
-                            || containsIgnoringCase(user.getName(), searchString);
-                    }
-                });
-                return false;
-            }
-        });
-    }
-
-    public void setMain(Main main) {
-        this.main = main;
     }
 
     public SearchParameter getSearchParameter() {
@@ -295,6 +264,18 @@ public class SearchResultPane extends TablePane implements Bindable {
         this.searchLabel.setText(getLabel());
         switch (searchParameter.getSearchType()) {
             case General:
+                LazyLoadingCardPane lazyLoadingCardPane = null;
+                try {
+                    BXMLSerializer bxmlSerializer = new BXMLSerializer();
+                    bxmlSerializer.getNamespace().put("main", main);
+                    lazyLoadingCardPane = (LazyLoadingCardPane) bxmlSerializer.readObject(getClass().getResource("lazyloadingcardpane.bxml"), resources);
+                } catch (IOException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                } catch (SerializationException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+                lazyLoadingCardPane.setContentResource("peopletablepane.bxml");
+                tabPane.getTabs().add(lazyLoadingCardPane);
                 tabPane.setSelectedIndex(0);
                 break;
             case Artist:
@@ -307,7 +288,6 @@ public class SearchResultPane extends TablePane implements Bindable {
                 // remove unnecessary tabs
                 tabPane.getTabs().remove(albumCardPane);
                 tabPane.getTabs().remove(artistCardPane);
-                tabPane.getTabs().remove(peopleCardPane);
                 tabPane.setSelectedIndex(0);
                 break;
             case Album:
@@ -320,13 +300,11 @@ public class SearchResultPane extends TablePane implements Bindable {
                 // remove unnecessary tabs
                 tabPane.getTabs().remove(albumCardPane);
                 tabPane.getTabs().remove(artistCardPane);
-                tabPane.getTabs().remove(peopleCardPane);
                 tabPane.setSelectedIndex(0);
                 break;
             case User:
                 tabPane.getTabs().remove(albumCardPane);
                 tabPane.getTabs().remove(artistCardPane);
-                tabPane.getTabs().remove(peopleCardPane);
                 tabPane.setSelectedIndex(0);
                 break;
             default:
@@ -336,7 +314,7 @@ public class SearchResultPane extends TablePane implements Bindable {
         loadColumnWidthsFromPreferences(songpane.songTable, "songTable");
         loadColumnWidthsFromPreferences(artistpane.artistTable, "artistTable");
         loadColumnWidthsFromPreferences(albumpane.albumTable, "albumTable");
-        loadColumnWidthsFromPreferences(peoplepane.peopleTable, "peopleTable");
+//        loadColumnWidthsFromPreferences(peopletablepane.peopleTable, "peopleTable"); // TODO later
     }
 
     public String getLabel() {
@@ -367,24 +345,26 @@ public class SearchResultPane extends TablePane implements Bindable {
         albumList.setSource(new ArrayList<Song>(albums));
     }
 
-    public void setPeople(User[] people) {
-        peopleList.setSource(new ArrayList<User>(people));
-    }
-
     public void startSearch() {
         Component selectedTab = tabPane.getSelectedTab();
+        if (selectedTab == null)
+            return;
         if (selectedTab == songCardPane)
             loadSongs();
         else if (selectedTab == artistCardPane)
             loadArtists();
         else if (selectedTab == albumCardPane)
             loadAlbums();
-        else if (selectedTab == peopleCardPane)
-            loadPeople();
-        /*
+        else if (selectedTab instanceof LazyLoadingCardPane)
+            try {
+                ((LazyLoadingCardPane)selectedTab).load(searchParameter);
+            } catch (SerializationException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (IOException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
         else
             throw new IllegalStateException("illegal branch: " + selectedTab);
-        */
     }
 
     private void setSongsGroupByAlbum(boolean groupByAlbum) {
@@ -430,13 +410,6 @@ public class SearchResultPane extends TablePane implements Bindable {
         if (!albumsLoaded) {
             albumsLoaded = true;
             executeGuiAsyncTask(new SearchAlbumsTask(), albumCardPane);
-        }
-    }
-
-    private void loadPeople() {
-        if (!peopleLoaded) {
-            peopleLoaded = true;
-            executeGuiAsyncTask(new SearchPeopleTask(), peopleCardPane);
         }
     }
 
@@ -555,7 +528,6 @@ public class SearchResultPane extends TablePane implements Bindable {
         @Override public void executeFailed(Task<V> task) {
             taskExecuted = true;
             Exception ex = task.getFault();
-            log.error("error in GuiAsyncTask", ex);
             hideActivityPane();
             main.showError("Error: " + ((GuiAsyncTask) task).getDescription(), ex);
         }
@@ -652,27 +624,6 @@ public class SearchResultPane extends TablePane implements Bindable {
         @Override protected void taskExecuted() {
             Song[] result = getResult();
             setAlbums(result);
-        }
-    }
-
-
-    private class SearchPeopleTask extends GuiAsyncTask<User[]> {
-        public SearchPeopleTask() {
-            super("searching for people named \"" + searchParameter.getSimpleSearchString() + "\"");
-            setPeople(new User[]{});
-        }
-
-        @Override public User[] execute() throws TaskExecutionException {
-            try {
-                return Services.getSearchService().searchPeople(searchParameter);
-            } catch (Exception ex) {
-                throw new TaskExecutionException(ex);
-            }
-        }
-
-        @Override protected void taskExecuted() {
-            User[] result = getResult();
-            setPeople(result);
         }
     }
 }

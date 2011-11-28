@@ -45,17 +45,6 @@
                         </BoxPane>
                         <bxml:include bxml:id="songpane" src="songpane.bxml" inline="false" main="$main"/>
                     </CardPane>
-                    <CardPane bxml:id="peopleCardPane" styles="{selectionChangeEffect: 'crossfade'}">
-                        <TabPane.tabData>
-                            <content:ButtonData text="People"/>
-                        </TabPane.tabData>
-                        <BoxPane styles="{horizontalAlignment:'center', verticalAlignment:'center'}">
-                            <ActivityIndicator active="false"
-                                               styles="%main.activityIndicator.styles"
-                                               preferredWidth="120" preferredHeight="120"/>
-                        </BoxPane>
-                        <bxml:include bxml:id="peoplepane" src="peoplepane.bxml" inline="false"/>
-                    </CardPane>
                 </tabs>
             </TabPane>
         </TablePane.Row>

@@ -334,6 +334,7 @@ public class Main implements Application {
     }
 
     public void showError(String message, Exception ex) {
+        log.error(message, ex);
         TextArea errorText = new TextArea();
         errorText.setEditable(false);
         errorText.getStyles().put("wrapText", true);
@@ -358,7 +359,6 @@ public class Main implements Application {
         if (idx < 0) {
             final SearchResultPane searchResultPane = createSearchResultPane();
             if (searchResultPane != null) {
-                searchResultPane.setMain(Main.this);
                 searchResultPane.setSearchParameter(searchParameter);
                 idx = tabPane.getTabs().add(searchResultPane);
                 TabPane.setTabData(searchResultPane, searchResultPane.getShortLabel());

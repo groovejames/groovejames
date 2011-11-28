@@ -15,6 +15,10 @@ public abstract class GuiAsyncTask<V> extends Task<V> {
 
     public GuiAsyncTask(String description) {
         this.description = description;
+        beforeExecute();
+    }
+
+    protected void beforeExecute() {
     }
 
     public String getDescription() {
