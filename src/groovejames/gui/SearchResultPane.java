@@ -264,19 +264,19 @@ public class SearchResultPane extends TablePane implements Bindable {
         this.searchLabel.setText(getLabel());
         switch (searchParameter.getSearchType()) {
             case General:
-                LazyLoadingCardPane lazyLoadingCardPane = null;
                 try {
                     BXMLSerializer bxmlSerializer = new BXMLSerializer();
                     bxmlSerializer.getNamespace().put("main", main);
-                    lazyLoadingCardPane = (LazyLoadingCardPane) bxmlSerializer.readObject(getClass().getResource("lazyloadingcardpane.bxml"), resources);
+                    LazyLoadingCardPane lazyLoadingCardPane = (LazyLoadingCardPane) bxmlSerializer.readObject(getClass().getResource("lazyloadingcardpane.bxml"), resources);
+                    lazyLoadingCardPane.setContentResource("peopletablepane.bxml");
+                    tabPane.getTabs().add(lazyLoadingCardPane);
+                    TabPane.setTabData(lazyLoadingCardPane, new ButtonData("People"));
+                    tabPane.setSelectedIndex(0);
                 } catch (IOException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 } catch (SerializationException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
-                lazyLoadingCardPane.setContentResource("peopletablepane.bxml");
-                tabPane.getTabs().add(lazyLoadingCardPane);
-                tabPane.setSelectedIndex(0);
                 break;
             case Artist:
                 // remove "Artist" column
