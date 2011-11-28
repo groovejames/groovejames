@@ -1,4 +1,4 @@
-package groovejames.gui.search;
+package groovejames.service.search;
 
 public class ArtistSearch implements SearchParameter {
 
