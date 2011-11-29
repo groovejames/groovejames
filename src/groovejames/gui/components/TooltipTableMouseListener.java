@@ -6,7 +6,7 @@ import org.apache.pivot.wtk.ComponentMouseListener;
 import org.apache.pivot.wtk.Platform;
 import org.apache.pivot.wtk.TableView;
 
-import java.awt.*;
+import java.awt.Font;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 
@@ -41,7 +41,7 @@ public class TooltipTableMouseListener extends ComponentMouseListener.Adapter {
                 int columnWidth = tableView.getColumnBounds(col).width;
                 int stringWidth = getStringWidth(font, text);
                 if (stringWidth > columnWidth - 4 /*cellpadding*/) {
-                    tableView.setTooltipText(text);
+                    tableView.setTooltipText(text); // TODO word wrap text, e.g. text = Util.wordWrap(text, 80)
                 }
             }
         }

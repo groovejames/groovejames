@@ -2,6 +2,7 @@ package groovejames.service;
 
 import groovejames.model.Country;
 import groovejames.model.Playlist;
+import groovejames.model.SearchPlaylistsResultType;
 import groovejames.model.SearchSongsResultType;
 import groovejames.model.SearchUsersResultType;
 import groovejames.model.Song;
@@ -170,6 +171,26 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
     }
 
     @Override
+    public Playlist[] getResultsFromSearch(@Param("type") SearchPlaylistsResultType type, @Param("query") String query) {
+        Playlist playlist1 = new Playlist();
+        playlist1.setPlaylistID(1L);
+        playlist1.setName("Willi Wonka's Playlist");
+        playlist1.setAbout("This is a very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very long playlist description.");
+        playlist1.setUserID(300L);
+        playlist1.setArtists("Depeche Mode, Dead Kennedys, Beck");
+        playlist1.setScore(40954.0);
+
+        Playlist playlist2 = new Playlist();
+        playlist2.setPlaylistID(2L);
+        playlist2.setName("Mad Hatter's playlist");
+        playlist2.setUserID(302L);
+        playlist2.setArtists("Depeche Mode, Beck");
+        playlist2.setScore(4322323.3);
+
+        return new Playlist[]{playlist1, playlist2};
+    }
+
+    @Override
     public Songs albumGetSongs(Long albumID, int offset, boolean isVerified) {
         return artistGetSongs(null, 0, false);
     }
@@ -180,6 +201,11 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         songs.setSongs(getSearchResultsEx(SearchSongsResultType.Songs, null));
         songs.setHasMore(false);
         return songs;
+    }
+
+    @Override
+    public Songs playlistGetSongs(@Param("playlistID") long playlistID) throws Exception {
+        return artistGetSongs(null, 0, false);
     }
 
     @Override
@@ -197,7 +223,13 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
 
     @Override
     public Playlist[] userGetPlaylists(long userID) {
-        return new Playlist[0];
+        Playlist[] arr = getResultsFromSearch(SearchPlaylistsResultType.Playlists, "");
+        if (userID == 300L)
+            return new Playlist[]{arr[0]}; // Willi Wonka's Playlist
+        else if (userID == 302L)
+            return new Playlist[]{arr[1]}; // Mad Hatters Playlist
+        else
+            return new Playlist[]{};
     }
 
     @Override

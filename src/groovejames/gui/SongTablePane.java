@@ -23,7 +23,6 @@ import org.apache.pivot.collections.immutable.ImmutableList;
 import org.apache.pivot.util.Filter;
 import org.apache.pivot.util.Resources;
 import org.apache.pivot.util.concurrent.TaskExecutionException;
-import org.apache.pivot.wtk.ApplicationContext;
 import org.apache.pivot.wtk.Button;
 import org.apache.pivot.wtk.ButtonPressListener;
 import org.apache.pivot.wtk.Component;
@@ -211,7 +210,6 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
 
         WtkUtil.setupColumnWidthSaver(songTable, "songTable", searchParameter.getSearchType().name());
 
-        // TODO: maybe there's a better place for this
         if (searchParameter.getSearchType() == SearchType.Artist) {
             // remove "Artist" column
             WtkUtil.removeColumn(songTable, "artistName");
@@ -226,6 +224,11 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
             WtkUtil.removeColumn(songTable, "scorePercentage");
             // sort by popularity (instead of score)
             songTable.setSort("popularityPercentage", SortDirection.DESCENDING);
+        } else if (searchParameter.getSearchType() == SearchType.Playlist) {
+            // remove "Relevance" column because it is always 0 if we search for playlist's songs
+            WtkUtil.removeColumn(songTable, "scorePercentage");
+            // sort by track number (instead of score)
+            songTable.setSort("trackNum", SortDirection.ASCENDING);
         }
     }
 
@@ -253,17 +256,11 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
             @Override protected void taskExecuted() {
                 Song[] result = getResult();
                 setSongs(result);
-                if (searchParameter.getSearchType() == SearchType.General
-                    || searchParameter.getSearchType() == SearchType.Artist
-                    || searchParameter.getSearchType() == SearchType.User) {
-                    ApplicationContext.queueCallback(new Runnable() {
-                        @Override public void run() {
-                            boolean groupByAlbum = prefs.node("songTable").node(searchParameter.getSearchType().name()).getBoolean("groupByAlbum", true);
-                            songTable.getUserData().put("dontRedistributeColumnWidths", Boolean.TRUE);
-                            songGroupByButton.setSelectedIndex(groupByAlbum ? 0 : 1);
-                            songTable.getUserData().put("dontRedistributeColumnWidths", Boolean.FALSE);
-                        }
-                    });
+                if (searchParameter.getSearchType() != SearchType.Album) {
+                    boolean groupByAlbum = prefs.node("songTable").node(searchParameter.getSearchType().name()).getBoolean("groupByAlbum", true);
+                    songTable.getUserData().put("dontRedistributeColumnWidths", Boolean.TRUE);
+                    songGroupByButton.setSelectedIndex(groupByAlbum ? 0 : 1);
+                    songTable.getUserData().put("dontRedistributeColumnWidths", Boolean.FALSE);
                 }
             }
 

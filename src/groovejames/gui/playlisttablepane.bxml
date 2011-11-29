@@ -1,0 +1,55 @@
+<gui:PlaylistTablePane xmlns="org.apache.pivot.wtk"
+                       xmlns:bxml="http://pivot.apache.org/bxml"
+                       xmlns:content="org.apache.pivot.wtk.content"
+                       xmlns:gui="groovejames.gui"
+                       xmlns:guicomponents="groovejames.gui.components"
+                       styles="{verticalSpacing:6}">
+    <columns>
+        <TablePane.Column width="1*"/>
+    </columns>
+    <rows>
+        <TablePane.Row>
+            <BoxPane styles="{fill:true, horizontalAlignment:'right'}">
+                <TextInput bxml:id="playlistSearchInPage" prompt="Search in page..."/>
+            </BoxPane>
+        </TablePane.Row>
+        <TablePane.Row height="1*">
+            <Border>
+                <content>
+                    <ScrollPane horizontalScrollBarPolicy="fill_to_capacity" verticalScrollBarPolicy="fill_to_capacity">
+                        <view>
+                            <guicomponents:ClickableTableView
+                                    bxml:id="playlistTable" selectMode="single"
+                                    clickableColumns="1"
+                                    styles="{showHorizontalGridLines:false, showVerticalGridLines:false}"
+                                    sort="[{columnName:'name', sortDirection:'ASCENDING'}]">
+                                <columns>
+                                    <TableView.Column name="image" width="50">
+                                        <cellRenderer>
+                                            <guicomponents:ImageObjectCellRenderer
+                                                    bxml:id="playlistImageRenderer"
+                                                    preferredHeight="40"
+                                                    urlPrefix="http://beta.grooveshark.com/static/userimages/m"
+                                                    defaultImage="@unknownSong.png"/>
+                                        </cellRenderer>
+                                    </TableView.Column>
+                                    <TableView.Column name="name" headerData="Name" width="200"/>
+                                    <TableView.Column name="about" headerData="Description" width="1*">
+                                        <cellRenderer>
+                                            <content:TableViewTextAreaCellRenderer/>
+                                        </cellRenderer>
+                                    </TableView.Column>
+                                </columns>
+                            </guicomponents:ClickableTableView>
+                        </view>
+                        <columnHeader>
+                            <TableViewHeader tableView="$playlistTable"
+                                             styles="{columnsResizable:true}"
+                                             sortMode="single_column"/>
+                        </columnHeader>
+                    </ScrollPane>
+                </content>
+            </Border>
+        </TablePane.Row>
+    </rows>
+</gui:PlaylistTablePane>

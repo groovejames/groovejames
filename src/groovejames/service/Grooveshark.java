@@ -2,6 +2,7 @@ package groovejames.service;
 
 import groovejames.model.Country;
 import groovejames.model.Playlist;
+import groovejames.model.SearchPlaylistsResultType;
 import groovejames.model.SearchSongsResultType;
 import groovejames.model.SearchUsersResultType;
 import groovejames.model.Song;
@@ -23,6 +24,9 @@ public interface Grooveshark {
                                                     @Param("query") String query)
         throws Exception;
 
+    @ResultPath("result") Playlist[] getResultsFromSearch(@Param("type") SearchPlaylistsResultType type,
+                                                          @Param("query") String query);
+
     Songs albumGetSongs(@Param("albumID") Long albumID,
                         @Param("offset") int offset,
                         @Param("isVerified") boolean isVerified)
@@ -32,6 +36,9 @@ public interface Grooveshark {
     Songs artistGetSongs(@Param("artistID") String artistID,
                          @Param("offset") int offset,
                          @Param("isVerified") boolean isVerified)
+        throws Exception;
+
+    Songs playlistGetSongs(@Param("playlistID") long playlistID)
         throws Exception;
 
     Song[] getFavorites(@Param("userID") String userID,

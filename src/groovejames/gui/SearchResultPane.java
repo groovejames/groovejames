@@ -57,6 +57,7 @@ public class SearchResultPane extends TablePane implements Bindable {
                 addTab("artisttablepane.bxml", "Artists");
                 addTab("albumtablepane.bxml", "Albums");
                 addTab("peopletablepane.bxml", "People");
+                addTab("playlisttablepane.bxml", "Playlists");
                 break;
             case Artist:
                 addTab("songtablepane.bxml", "Songs");
@@ -66,6 +67,10 @@ public class SearchResultPane extends TablePane implements Bindable {
                 break;
             case User:
                 addTab("songtablepane.bxml", "Library");
+                addTab("playlisttablepane.bxml", "Playlists");
+                break;
+            case Playlist:
+                addTab("songtablepane.bxml", "Songs");
                 break;
             default:
                 throw new IllegalStateException("illegal branch: " + searchParameter.getSearchType());

@@ -1,6 +1,8 @@
 package groovejames.service.search;
 
 import groovejames.model.Country;
+import groovejames.model.Playlist;
+import groovejames.model.SearchPlaylistsResultType;
 import groovejames.model.SearchSongsResultType;
 import groovejames.model.SearchUsersResultType;
 import groovejames.model.Song;
@@ -25,11 +27,12 @@ public class SearchService {
         SearchType searchType = searchParameter.getSearchType();
         Song[] result;
         switch (searchType) {
-            case General:
+            case General: {
                 // search for song names via string search
                 String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
                 result = grooveshark.getSearchResultsEx(SearchSongsResultType.Songs, searchString);
                 break;
+            }
             case Album: {
                 // search for songs of the given album
                 Long albumID = ((AlbumSearch) searchParameter).getAlbumID();
@@ -82,8 +85,20 @@ public class SearchService {
                 result = filterDuplicateSongs(allSongs);
                 break;
             }
-            default:
+            case Playlist: {
+                Long playlistID = ((PlaylistSearch) searchParameter).getPlaylistID();
+                Songs songs = grooveshark.playlistGetSongs(playlistID);
+                result = songs.getSongs();
+                // renumber tracks in playlist order
+                long trackNum = 1L;
+                for (Song song : result) {
+                    song.setTrackNum(trackNum++);
+                }
+                break;
+            }
+            default: {
                 throw new IllegalArgumentException("invalid search type: " + searchType);
+            }
         }
         return normalizeScoreAndPopularity(result);
     }
@@ -127,6 +142,24 @@ public class SearchService {
             case General:
                 String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
                 result = normalizeScore(grooveshark.getSearchResultsEx(SearchUsersResultType.Users, searchString));
+                break;
+            default:
+                throw new IllegalArgumentException("invalid search type: " + searchType);
+        }
+        return result;
+    }
+
+    public Playlist[] searchPlaylists(SearchParameter searchParameter) throws Exception {
+        SearchType searchType = searchParameter.getSearchType();
+        Playlist[] result;
+        switch (searchType) {
+            case General:
+                String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
+                result = grooveshark.getResultsFromSearch(SearchPlaylistsResultType.Playlists, searchString);
+                break;
+            case User:
+                Long userID = ((UserSearch) searchParameter).getUserID();
+                result = grooveshark.userGetPlaylists(userID);
                 break;
             default:
                 throw new IllegalArgumentException("invalid search type: " + searchType);
