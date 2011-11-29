@@ -66,12 +66,8 @@ public class ArtistTablePane extends TablePane implements Bindable, CardPaneCont
         });
     }
 
-    @Override public TableView getTableView() {
-        return artistTable;
-    }
-
-    @Override public String getTableKey() {
-        return "artistTable";
+    @Override public void afterLoad(SearchParameter searchParameter) {
+        WtkUtil.setupColumnWidthSaver(artistTable, "artistTable", searchParameter.getSearchType().name());
     }
 
     @Override public GuiAsyncTask<Song[]> getSearchTask(final SearchParameter searchParameter) {

@@ -70,12 +70,8 @@ public class AlbumTablePane extends TablePane implements Bindable, CardPaneConte
         });
     }
 
-    @Override public TableView getTableView() {
-        return albumTable;
-    }
-
-    @Override public String getTableKey() {
-        return "albumTable";
+    @Override public void afterLoad(SearchParameter searchParameter) {
+        WtkUtil.setupColumnWidthSaver(albumTable, "albumTable", searchParameter.getSearchType().name());
     }
 
     @Override public GuiAsyncTask<Song[]> getSearchTask(final SearchParameter searchParameter) {

@@ -67,12 +67,8 @@ public class PeopleTablePane extends TablePane implements Bindable, CardPaneCont
         });
     }
 
-    @Override public TableView getTableView() {
-        return peopleTable;
-    }
-
-    @Override public String getTableKey() {
-        return "peopleTable";
+    @Override public void afterLoad(SearchParameter searchParameter) {
+        WtkUtil.setupColumnWidthSaver(peopleTable, "peopleTable", searchParameter.getSearchType().name());
     }
 
     @Override public GuiAsyncTask<User[]> getSearchTask(final SearchParameter searchParameter) {

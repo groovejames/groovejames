@@ -28,6 +28,11 @@ public class WtkUtil {
         return result;
     }
 
+    public static void removeColumn(TableView tableView, String columnNameToRemove) {
+        TableView.Column columnToRemove = getColumns(tableView, columnNameToRemove).get(0);
+        tableView.getColumns().remove(columnToRemove);
+    }
+
     public static void setupColumnWidthSaver(final TableView tableView, final String tableKey, final String subKey) {
         try {
             Preferences columnPrefs = prefs.node(tableKey).node(subKey).node("columns");

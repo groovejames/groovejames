@@ -11,21 +11,7 @@
             <Label bxml:id="searchLabel" styles="%searchresultpane.searchLabel.styles"/>
         </TablePane.Row>
         <TablePane.Row height="1*">
-            <TabPane bxml:id="tabPane" selectedIndex="0">
-                <tabs>
-                    <CardPane bxml:id="songCardPane" styles="{selectionChangeEffect: 'crossfade'}">
-                        <TabPane.tabData>
-                            <content:ButtonData text="Songs"/>
-                        </TabPane.tabData>
-                        <BoxPane styles="{horizontalAlignment:'center', verticalAlignment:'center'}">
-                            <ActivityIndicator active="false"
-                                               styles="%main.activityIndicator.styles"
-                                               preferredWidth="120" preferredHeight="120"/>
-                        </BoxPane>
-                        <bxml:include bxml:id="songpane" src="songpane.bxml" inline="false" main="$main"/>
-                    </CardPane>
-                </tabs>
-            </TabPane>
+            <TabPane bxml:id="tabPane"/>
         </TablePane.Row>
     </rows>
 </gui:SearchResultPane>

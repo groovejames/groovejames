@@ -1,6 +1,5 @@
 package groovejames.gui;
 
-import groovejames.model.User;
 import groovejames.service.search.SearchParameter;
 import org.apache.pivot.beans.BXML;
 import org.apache.pivot.beans.BXMLSerializer;
@@ -14,6 +13,7 @@ import org.apache.pivot.util.concurrent.TaskListener;
 import org.apache.pivot.wtk.ActivityIndicator;
 import org.apache.pivot.wtk.CardPane;
 import org.apache.pivot.wtk.CardPaneListener;
+import org.apache.pivot.wtk.Component;
 
 import java.io.IOException;
 import java.net.URL;
@@ -42,20 +42,31 @@ public class LazyLoadingCardPane extends CardPane implements Bindable {
     public void load(SearchParameter searchParameter) throws SerializationException, IOException {
         if (!loaded) {
             loaded = true;
+
+            // show activity pane on the tab
             activityIndicator.setActive(true);
+            setSelectedIndex(0);
+
             BXMLSerializer serializer = new BXMLSerializer();
             serializer.getNamespace().put("main", main);
-            PeopleTablePane content = (PeopleTablePane) serializer.readObject(getClass().getResource(contentResource), resources);
-            add(content);
+            Component component = (Component) serializer.readObject(getClass().getResource(contentResource), resources);
+            add(component);
 
-            GuiAsyncTask<User[]> searchTask = content.getSearchTask(searchParameter);
-            GuiAsyncTaskListener<User[]> asyncTaskListener = new GuiAsyncTaskListener<User[]>();
-            // show activity pane on the tab
-            getCardPaneListeners().add(asyncTaskListener);
-            setSelectedIndex(0);
+            CardPaneContent content = (CardPaneContent) component;
+            content.afterLoad(searchParameter);
+
             // execute task
-            searchTask.execute(asyncTaskListener);
+            GuiAsyncTask<?> searchTask = content.getSearchTask(searchParameter);
+            GuiAsyncTaskListener asyncTaskListener = executeTask(searchTask);
+            getCardPaneListeners().add(asyncTaskListener);
         }
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private GuiAsyncTaskListener executeTask(GuiAsyncTask<?> searchTask) {
+        GuiAsyncTaskListener asyncTaskListener = new GuiAsyncTaskListener();
+        searchTask.execute(asyncTaskListener);
+        return asyncTaskListener;
     }
 
     private class GuiAsyncTaskListener<V> implements TaskListener<V>, CardPaneListener {
