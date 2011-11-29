@@ -1,18 +1,18 @@
-<gui:PeoplePane xmlns="org.apache.pivot.wtk"
-                xmlns:bxml="http://pivot.apache.org/bxml"
-                xmlns:collections="org.apache.pivot.collections"
-                xmlns:content="org.apache.pivot.wtk.content"
-                xmlns:gui="groovejames.gui"
-                xmlns:guicomponents="groovejames.gui.components"
-                xmlns:model="groovejames.model"
-                styles="{verticalSpacing:6}">
+<gui:AlbumTablePane xmlns="org.apache.pivot.wtk"
+                    xmlns:bxml="http://pivot.apache.org/bxml"
+                    xmlns:collections="org.apache.pivot.collections"
+                    xmlns:content="org.apache.pivot.wtk.content"
+                    xmlns:gui="groovejames.gui"
+                    xmlns:guicomponents="groovejames.gui.components"
+                    xmlns:model="groovejames.model"
+                    styles="{verticalSpacing:6}">
     <columns>
         <TablePane.Column width="1*"/>
     </columns>
     <rows>
         <TablePane.Row>
             <BoxPane styles="{fill:true, horizontalAlignment:'right'}">
-                <TextInput bxml:id="peopleSearchInPage" prompt="Search in page..."/>
+                <TextInput bxml:id="albumSearchInPage" prompt="Search in page..."/>
             </BoxPane>
         </TablePane.Row>
         <TablePane.Row height="1*">
@@ -20,38 +20,40 @@
                 <content>
                     <ScrollPane horizontalScrollBarPolicy="fill_to_capacity" verticalScrollBarPolicy="fill_to_capacity">
                         <view>
-                            <guicomponents:ClickableTableView bxml:id="peopleTable" selectMode="single"
-                                                              clickableColumns="1"
+                            <guicomponents:ClickableTableView bxml:id="albumTable" selectMode="single"
+                                                              clickableColumns="1,2"
                                                               styles="{font:{bold:true, size:'130%'}, showHorizontalGridLines:false, showVerticalGridLines:false}"
                                                               sort="[{columnName:'scorePercentage', sortDirection:'DESCENDING'}]">
                                 <columns>
                                     <TableView.Column name="image" width="50">
                                         <cellRenderer>
                                             <guicomponents:ImageObjectCellRenderer
-                                                    bxml:id="peopleImageRenderer"
+                                                    bxml:id="albumImageRenderer"
                                                     preferredHeight="40"
-                                                    urlPrefix="http://beta.grooveshark.com/static/userimages/m"
-                                                    defaultImage="@unknownUser.png"/>
+                                                    urlPrefix="http://beta.grooveshark.com/static/amazonart/m"
+                                                    defaultImage="@unknownSong.png"/>
                                         </cellRenderer>
                                     </TableView.Column>
-                                    <TableView.Column name="username" headerData="Username" width="1*"/>
-                                    <TableView.Column name="name" headerData="Name" width="1*"/>
+                                    <TableView.Column name="albumName" headerData="Album" width="300"/>
+                                    <TableView.Column name="artistName" headerData="Artist" width="1*"/>
                                     <TableView.Column name="scorePercentage" headerData="Relevance" width="80">
                                         <cellRenderer>
                                             <guicomponents:MeterTableCellRenderer/>
                                         </cellRenderer>
                                     </TableView.Column>
+                                    <!--<TableView.Column name="dummy" width="1*"/>-->
                                 </columns>
                             </guicomponents:ClickableTableView>
                         </view>
                         <columnHeader>
-                            <TableViewHeader tableView="$peopleTable"
+                            <TableViewHeader tableView="$albumTable"
                                              styles="{columnsResizable:true}"
-                                             sortMode="single_column"/>
+                                             sortMode="multi_column"
+                                             tooltipText="Shift-click to sort on multiple columns"/>
                         </columnHeader>
                     </ScrollPane>
                 </content>
             </Border>
         </TablePane.Row>
     </rows>
-</gui:PeoplePane>
+</gui:AlbumTablePane>

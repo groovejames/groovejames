@@ -73,6 +73,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
             song1.setTrackNum(1L);
             song1.setEstimateDuration(278L);
             song1.setScore(10000.0);
+            song1.setPopularity(43049344.0);
 
             Song song2 = new Song();
             song2.setSongID(1001L);
@@ -84,6 +85,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
             song2.setTrackNum(2L);
             song2.setEstimateDuration(328L);
             song2.setScore(8500.0);
+            song2.setPopularity(42042352.0);
 
             Song song3 = new Song();
             song3.setSongID(1002L);
@@ -95,6 +97,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
             song3.setTrackNum(1L);
             song3.setEstimateDuration(60L);
             song3.setScore(5000.0);
+            song3.setPopularity(41320393.0);
 
             Song song4 = new Song();
             song4.setSongID(1003L);
@@ -106,6 +109,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
             song4.setTrackNum(2L);
             song4.setEstimateDuration(2032L);
             song4.setScore(0.0);
+            song4.setPopularity(40584948.0);
 
             Song song5 = new Song();
             song5.setSongID(1004L);

@@ -9,9 +9,9 @@ public class AlbumSearch implements SearchParameter {
 
     public AlbumSearch(Long albumID, String albumName, Long artistID, String artistName) {
         this.albumID = albumID;
-        this.albumName = albumName;
-        this.artistName = artistName;
+        this.albumName = albumName != null ? albumName : "";
         this.artistID = artistID;
+        this.artistName = artistName != null ? artistName : "";
     }
 
     @Override

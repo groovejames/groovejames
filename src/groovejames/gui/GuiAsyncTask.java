@@ -6,7 +6,6 @@ import org.apache.pivot.util.concurrent.TaskListener;
 import org.apache.pivot.wtk.ApplicationContext;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public abstract class GuiAsyncTask<V> extends Task<V> {
@@ -15,6 +14,10 @@ public abstract class GuiAsyncTask<V> extends Task<V> {
 
     public GuiAsyncTask(String description) {
         this.description = description;
+        beforeExecute();
+    }
+
+    protected void beforeExecute() {
     }
 
     public String getDescription() {
