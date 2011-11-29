@@ -1,13 +1,19 @@
 package groovejames.service.search;
 
+import groovejames.util.Util;
+
+import static java.lang.String.format;
+
 public class UserSearch implements SearchParameter {
 
     private final Long userID;
     private final String username;
+    private final String name;
 
-    public UserSearch(Long userID, String username) {
+    public UserSearch(Long userID, String username, String name) {
         this.userID = userID;
         this.username = username;
+        this.name = name;
     }
 
     @Override
@@ -17,7 +23,7 @@ public class UserSearch implements SearchParameter {
 
     @Override
     public String getLabel() {
-        return "User: " + username;
+        return format("User: %s", Util.isEmpty(name) ? username : name);
     }
 
     @Override
@@ -36,6 +42,10 @@ public class UserSearch implements SearchParameter {
 
     public String getUsername() {
         return username;
+    }
+
+    public String getName() {
+        return name;
     }
 
     @Override

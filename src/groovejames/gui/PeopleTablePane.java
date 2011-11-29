@@ -45,9 +45,9 @@ public class PeopleTablePane extends TablePane implements Bindable, CardPaneCont
             @Override
             public boolean cellClicked(ClickableTableView source, Object row, int rowIndex, int columnIndex, Mouse.Button button, int clickCount) {
                 TableView.Column column = source.getColumns().get(columnIndex);
-                if ("username".equals(column.getName())) {
+                if ("username".equals(column.getName()) || "name".equals(column.getName())) {
                     User user = (User) row;
-                    main.openSearchTab(new UserSearch(user.getUserID(), user.getUsername()));
+                    main.openSearchTab(new UserSearch(user.getUserID(), user.getUsername(), user.getName()));
                 }
                 return false;
             }
