@@ -13,16 +13,6 @@
         <TablePane.Row height="1*">
             <TabPane bxml:id="tabPane" selectedIndex="0">
                 <tabs>
-                    <CardPane bxml:id="artistCardPane" styles="{selectionChangeEffect: 'crossfade'}">
-                        <TabPane.tabData>
-                            <content:ButtonData text="Artists"/>
-                        </TabPane.tabData>
-                        <BoxPane styles="{horizontalAlignment:'center', verticalAlignment:'center'}">
-                            <ActivityIndicator active="false" styles="%main.activityIndicator.styles"
-                                               preferredWidth="120" preferredHeight="120"/>
-                        </BoxPane>
-                        <bxml:include bxml:id="artistpane" src="artistpane.bxml" inline="false"/>
-                    </CardPane>
                     <CardPane bxml:id="songCardPane" styles="{selectionChangeEffect: 'crossfade'}">
                         <TabPane.tabData>
                             <content:ButtonData text="Songs"/>

@@ -5,7 +5,6 @@ import groovejames.service.search.SearchParameter;
 import org.apache.pivot.beans.BXML;
 import org.apache.pivot.beans.BXMLSerializer;
 import org.apache.pivot.beans.Bindable;
-import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.collections.Map;
 import org.apache.pivot.serialization.SerializationException;
 import org.apache.pivot.util.Resources;
@@ -15,15 +14,9 @@ import org.apache.pivot.util.concurrent.TaskListener;
 import org.apache.pivot.wtk.ActivityIndicator;
 import org.apache.pivot.wtk.CardPane;
 import org.apache.pivot.wtk.CardPaneListener;
-import org.apache.pivot.wtk.Component;
-import org.apache.pivot.wtk.TableView;
-import org.apache.pivot.wtk.TableViewColumnListener;
 
-import javax.swing.text.AbstractDocument;
 import java.io.IOException;
 import java.net.URL;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
 
 public class LazyLoadingCardPane extends CardPane implements Bindable {
 
@@ -52,15 +45,11 @@ public class LazyLoadingCardPane extends CardPane implements Bindable {
             activityIndicator.setActive(true);
             BXMLSerializer serializer = new BXMLSerializer();
             serializer.getNamespace().put("main", main);
-            Component component = (Component) serializer.readObject(getClass().getResource(contentResource), resources);
-            add(component);
+            PeopleTablePane content = (PeopleTablePane) serializer.readObject(getClass().getResource(contentResource), resources);
+            add(content);
 
-            CardPaneContent content = (CardPaneContent) component;
-
-            WtkUtil.setupColumnWidthSaver(content.getTableView(), content.getTableKey(), searchParameter.getSearchType().name());
-
-            GuiAsyncTask<?> searchTask = content.getSearchTask(searchParameter);
-            GuiAsyncTaskListener asyncTaskListener = new GuiAsyncTaskListener();
+            GuiAsyncTask<User[]> searchTask = content.getSearchTask(searchParameter);
+            GuiAsyncTaskListener<User[]> asyncTaskListener = new GuiAsyncTaskListener<User[]>();
             // show activity pane on the tab
             getCardPaneListeners().add(asyncTaskListener);
             setSelectedIndex(0);
@@ -69,15 +58,15 @@ public class LazyLoadingCardPane extends CardPane implements Bindable {
         }
     }
 
-    private class GuiAsyncTaskListener implements TaskListener, CardPaneListener {
+    private class GuiAsyncTaskListener<V> implements TaskListener<V>, CardPaneListener {
         private volatile boolean taskExecuted;
 
-        @Override public void taskExecuted(Task task) {
+        @Override public void taskExecuted(Task<V> task) {
             taskExecuted = true;
             hideActivityPane();
         }
 
-        @Override public void executeFailed(Task task) {
+        @Override public void executeFailed(Task<V> task) {
             taskExecuted = true;
             Exception ex = task.getFault();
             hideActivityPane();

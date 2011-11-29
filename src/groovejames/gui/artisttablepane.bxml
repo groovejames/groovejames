@@ -1,11 +1,11 @@
-<gui:ArtistPane xmlns="org.apache.pivot.wtk"
-                xmlns:bxml="http://pivot.apache.org/bxml"
-                xmlns:collections="org.apache.pivot.collections"
-                xmlns:content="org.apache.pivot.wtk.content"
-                xmlns:gui="groovejames.gui"
-                xmlns:guicomponents="groovejames.gui.components"
-                xmlns:model="groovejames.model"
-                styles="{verticalSpacing:6}">
+<gui:ArtistTablePane xmlns="org.apache.pivot.wtk"
+                     xmlns:bxml="http://pivot.apache.org/bxml"
+                     xmlns:collections="org.apache.pivot.collections"
+                     xmlns:content="org.apache.pivot.wtk.content"
+                     xmlns:gui="groovejames.gui"
+                     xmlns:guicomponents="groovejames.gui.components"
+                     xmlns:model="groovejames.model"
+                     styles="{verticalSpacing:6}">
     <columns>
         <TablePane.Column width="1*"/>
     </columns>
@@ -54,4 +54,4 @@
             </Border>
         </TablePane.Row>
     </rows>
-</gui:ArtistPane>
+</gui:ArtistTablePane>
