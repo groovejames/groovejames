@@ -1,5 +1,6 @@
 package groovejames.service.search;
 
+import groovejames.model.AutocompleteType;
 import groovejames.model.Country;
 import groovejames.model.Playlist;
 import groovejames.model.SearchPlaylistsResultType;
@@ -10,10 +11,11 @@ import groovejames.model.Songs;
 import groovejames.model.StreamKey;
 import groovejames.model.User;
 import groovejames.service.Grooveshark;
-import org.apache.pivot.collections.ArrayList;
-import org.apache.pivot.collections.HashSet;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 
 public class SearchService {
 
@@ -21,6 +23,15 @@ public class SearchService {
 
     public SearchService(Grooveshark grooveshark) {
         this.grooveshark = grooveshark;
+    }
+
+    public List<String> getAutocomplete(String query) {
+        Song[] autocomplete = grooveshark.getAutocomplete(AutocompleteType.artist, query);
+        ArrayList<String> result = new ArrayList<String>(autocomplete.length);
+        for (Song s : autocomplete) {
+            result.add(s.getArtistName());
+        }
+        return result;
     }
 
     public Song[] searchSongs(SearchParameter searchParameter) throws Exception {
@@ -177,7 +188,7 @@ public class SearchService {
                 allSongsIds.add(songID);
             }
         }
-        return resultList.toArray(Song[].class);
+        return resultList.toArray(new Song[resultList.size()]);
     }
 
     private Song[] normalizeScoreAndPopularity(Song[] songs) {

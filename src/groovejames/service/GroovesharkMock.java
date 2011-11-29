@@ -1,5 +1,6 @@
 package groovejames.service;
 
+import groovejames.model.AutocompleteType;
 import groovejames.model.Country;
 import groovejames.model.Playlist;
 import groovejames.model.SearchPlaylistsResultType;
@@ -45,8 +46,8 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
     }
 
     @Override
-    public Song[] getAutocomplete(@Param("type") SearchSongsResultType type, @Param("query") String query) {
-        return getSearchResultsEx(type, query);
+    public Song[] getAutocomplete(AutocompleteType type, String query) {
+        return getSearchResultsEx(SearchSongsResultType.Artists, query);
     }
 
     @Override

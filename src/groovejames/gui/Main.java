@@ -2,6 +2,8 @@ package groovejames.gui;
 
 import groovejames.gui.components.DefaultTableViewSortListener;
 import groovejames.gui.components.FixedTerraTooltipSkin;
+import groovejames.gui.components.SuggestionPopupTextInputContentListener;
+import groovejames.gui.components.SuggestionsProvider;
 import groovejames.gui.components.TooltipTableMouseListener;
 import groovejames.model.Settings;
 import groovejames.model.Song;
@@ -22,6 +24,7 @@ import org.apache.pivot.collections.List;
 import org.apache.pivot.collections.ListListener;
 import org.apache.pivot.collections.Map;
 import org.apache.pivot.collections.Sequence;
+import org.apache.pivot.collections.adapter.ListAdapter;
 import org.apache.pivot.serialization.SerializationException;
 import org.apache.pivot.util.Resources;
 import org.apache.pivot.wtk.Action;
@@ -54,7 +57,6 @@ import org.apache.pivot.wtk.TabPaneListener;
 import org.apache.pivot.wtk.TableView;
 import org.apache.pivot.wtk.TextArea;
 import org.apache.pivot.wtk.TextInput;
-import org.apache.pivot.wtk.TextInputContentListener;
 import org.apache.pivot.wtk.Theme;
 import org.apache.pivot.wtk.Tooltip;
 import org.apache.pivot.wtk.Window;
@@ -234,20 +236,22 @@ public class Main implements Application {
                 return false;  //do not consume this event
             }
         });
-        // TODO autocomplete see http://svn.apache.org/repos/asf/pivot/trunk/demos/src/org/apache/pivot/demos/suggest/SuggestionDemo.java
-        searchField.getTextInputContentListeners().add(new TextInputContentListener.Adapter() {
-            @Override public void textInserted(TextInput textInput, int index, int count) {
-                super.textInserted(textInput, index, count);    //To change body of overridden methods use File | Settings | File Templates.
-            }
+        searchField.getTextInputContentListeners().add(new SuggestionPopupTextInputContentListener(
+            new SuggestionsProvider.Adapter<String>() {
+                @Override
+                public List<String> getSuggestions(String query) throws Exception {
+                    if (query.length() > 3) {
+                        return new ListAdapter<String>(Services.getSearchService().getAutocomplete(query));
+                    } else {
+                        return null;
+                    }
+                }
 
-            @Override public void textChanged(TextInput textInput) {
-                super.textChanged(textInput);    //To change body of overridden methods use File | Settings | File Templates.
-            }
-
-            @Override public void textRemoved(TextInput textInput, int index, int count) {
-                super.textRemoved(textInput, index, count);    //To change body of overridden methods use File | Settings | File Templates.
-            }
-        });
+                @Override
+                public void accepted(String text) {
+                    doSearch();
+                }
+            }));
         searchButton.getButtonPressListeners().add(new ButtonPressListener() {
             @Override
             public void buttonPressed(Button button) {
