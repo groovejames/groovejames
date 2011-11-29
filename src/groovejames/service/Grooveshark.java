@@ -16,6 +16,9 @@ public interface Grooveshark {
     final String CLIENT_REVISION = System.getProperty("grooveshark.client.revision", "20110722");
     final String SECRET = System.getProperty("grooveshark.secret", "neverGonnaGiveYouUp");
 
+    Song[] getAutocomplete(@Param("type") SearchSongsResultType type,
+                           @Param("query") String query);
+
     @ResultPath("result") Song[] getSearchResultsEx(@Param("type") SearchSongsResultType type,
                                                     @Param("query") String query)
         throws Exception;

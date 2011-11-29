@@ -45,6 +45,11 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
     }
 
     @Override
+    public Song[] getAutocomplete(@Param("type") SearchSongsResultType type, @Param("query") String query) {
+        return getSearchResultsEx(type, query);
+    }
+
+    @Override
     public Song[] getSearchResultsEx(SearchSongsResultType type, String query) {
         if (type == SearchSongsResultType.Artists) {
             Song song1 = new Song();
