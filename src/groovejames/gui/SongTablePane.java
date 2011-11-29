@@ -114,8 +114,7 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
                 if ("artistName".equals(column.getName())) {
                     main.openSearchTab(new ArtistSearch(song.getArtistID(), song.getArtistName()));
                 } else if ("albumName".equals(column.getName())) {
-                    main.openSearchTab(new AlbumSearch(
-                        song.getAlbumID(), song.getAlbumName(), song.getArtistID(), song.getArtistName()));
+                    main.openSearchTab(new AlbumSearch(song.getAlbumID(), song.getAlbumName(), song.getArtistID(), song.getArtistName()));
                 }
                 return false;
             }

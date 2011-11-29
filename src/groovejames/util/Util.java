@@ -41,8 +41,7 @@ public class Util {
         try {
             DESKeySpec passwdKeySpec = new DESKeySpec(hexStringToBytes(desKey));
             desSecretKey = SecretKeyFactory.getInstance("DES").generateSecret(passwdKeySpec);
-        }
-        catch (NoSuchAlgorithmException ex) {
+        } catch (NoSuchAlgorithmException ex) {
             throw new RuntimeException("no DES", ex);
         } catch (InvalidKeyException ex) {
             throw new RuntimeException("invalid key", ex);
@@ -85,8 +84,7 @@ public class Util {
             desCipher.init(Cipher.ENCRYPT_MODE, desSecretKey);
             byte[] desEncryptedData = desCipher.doFinal(plainValue.getBytes());
             return bytesToHexString(desEncryptedData);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -96,8 +94,7 @@ public class Util {
             Cipher desCipher = Cipher.getInstance("DES");
             desCipher.init(Cipher.DECRYPT_MODE, desSecretKey);
             return new String(desCipher.doFinal(hexStringToBytes(encryptedValue)));
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -155,13 +152,12 @@ public class Util {
     }
 
     public static boolean containsIgnoringCase(String s, String searchString) {
-        return s == null || searchString == null || searchString.isEmpty() || !s.isEmpty()
-                && s.toLowerCase().contains(searchString.toLowerCase());
+        return searchString == null || searchString.isEmpty()
+            || (s != null && (!s.isEmpty() && s.toLowerCase().contains(searchString.toLowerCase())));
     }
 
     public static int compareNullSafe(String s1, String s2) {
-        return s1 == null ? s2 == null ? 0 : Integer.MIN_VALUE
-                : s2 == null ? Integer.MAX_VALUE : s1.compareTo(s2);
+        return s1 == null ? s2 == null ? 0 : Integer.MIN_VALUE : s2 == null ? Integer.MAX_VALUE : s1.compareTo(s2);
     }
 
     public static String capitalize(String name) {

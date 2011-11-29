@@ -53,86 +53,41 @@ public class SearchResultPane extends TablePane implements Bindable {
         this.searchLabel.setText(getLabel());
         switch (searchParameter.getSearchType()) {
             case General:
-                try {
-                    BXMLSerializer bxmlSerializer = new BXMLSerializer();
-                    bxmlSerializer.getNamespace().put("main", main);
-                    LazyLoadingCardPane lazyLoadingCardPane = (LazyLoadingCardPane) bxmlSerializer.readObject(getClass().getResource("lazyloadingcardpane.bxml"), resources);
-                    lazyLoadingCardPane.setContentResource("songtablepane.bxml");
-                    tabPane.getTabs().add(lazyLoadingCardPane);
-                    TabPane.setTabData(lazyLoadingCardPane, new ButtonData("Songs"));
-
-                    bxmlSerializer = new BXMLSerializer();
-                    bxmlSerializer.getNamespace().put("main", main);
-                    lazyLoadingCardPane = (LazyLoadingCardPane) bxmlSerializer.readObject(getClass().getResource("lazyloadingcardpane.bxml"), resources);
-                    lazyLoadingCardPane.setContentResource("artisttablepane.bxml");
-                    tabPane.getTabs().add(lazyLoadingCardPane);
-                    TabPane.setTabData(lazyLoadingCardPane, new ButtonData("Artists"));
-
-                    bxmlSerializer = new BXMLSerializer();
-                    bxmlSerializer.getNamespace().put("main", main);
-                    lazyLoadingCardPane = (LazyLoadingCardPane) bxmlSerializer.readObject(getClass().getResource("lazyloadingcardpane.bxml"), resources);
-                    lazyLoadingCardPane.setContentResource("albumtablepane.bxml");
-                    tabPane.getTabs().add(lazyLoadingCardPane);
-                    TabPane.setTabData(lazyLoadingCardPane, new ButtonData("Albums"));
-
-                    bxmlSerializer = new BXMLSerializer();
-                    bxmlSerializer.getNamespace().put("main", main);
-                    lazyLoadingCardPane = (LazyLoadingCardPane) bxmlSerializer.readObject(getClass().getResource("lazyloadingcardpane.bxml"), resources);
-                    lazyLoadingCardPane.setContentResource("peopletablepane.bxml");
-                    tabPane.getTabs().add(lazyLoadingCardPane);
-                    TabPane.setTabData(lazyLoadingCardPane, new ButtonData("People"));
-                } catch (IOException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                } catch (SerializationException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
+                addTab("songtablepane.bxml", "Songs");
+                addTab("artisttablepane.bxml", "Artists");
+                addTab("albumtablepane.bxml", "Albums");
+                addTab("peopletablepane.bxml", "People");
                 break;
             case Artist:
-                try {
-                    BXMLSerializer bxmlSerializer = new BXMLSerializer();
-                    bxmlSerializer.getNamespace().put("main", main);
-                    LazyLoadingCardPane lazyLoadingCardPane = (LazyLoadingCardPane) bxmlSerializer.readObject(getClass().getResource("lazyloadingcardpane.bxml"), resources);
-                    lazyLoadingCardPane.setContentResource("songtablepane.bxml");
-                    tabPane.getTabs().add(lazyLoadingCardPane);
-                    TabPane.setTabData(lazyLoadingCardPane, new ButtonData("Songs"));
-                } catch (IOException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                } catch (SerializationException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
+                addTab("songtablepane.bxml", "Songs");
                 break;
             case Album:
-                try {
-                    BXMLSerializer bxmlSerializer = new BXMLSerializer();
-                    bxmlSerializer.getNamespace().put("main", main);
-                    LazyLoadingCardPane lazyLoadingCardPane = (LazyLoadingCardPane) bxmlSerializer.readObject(getClass().getResource("lazyloadingcardpane.bxml"), resources);
-                    lazyLoadingCardPane.setContentResource("songtablepane.bxml");
-                    tabPane.getTabs().add(lazyLoadingCardPane);
-                    TabPane.setTabData(lazyLoadingCardPane, new ButtonData("Songs"));
-                } catch (IOException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                } catch (SerializationException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
+                addTab("songtablepane.bxml", "Songs");
                 break;
             case User:
-                try {
-                    BXMLSerializer bxmlSerializer = new BXMLSerializer();
-                    bxmlSerializer.getNamespace().put("main", main);
-                    LazyLoadingCardPane lazyLoadingCardPane = (LazyLoadingCardPane) bxmlSerializer.readObject(getClass().getResource("lazyloadingcardpane.bxml"), resources);
-                    lazyLoadingCardPane.setContentResource("songtablepane.bxml");
-                    tabPane.getTabs().add(lazyLoadingCardPane);
-                    TabPane.setTabData(lazyLoadingCardPane, new ButtonData("Library"));
-                } catch (IOException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                } catch (SerializationException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
+                addTab("songtablepane.bxml", "Library");
                 break;
             default:
                 throw new IllegalStateException("illegal branch: " + searchParameter.getSearchType());
         }
         tabPane.setSelectedIndex(0);
+    }
+
+    private void addTab(String contentResource, String tabTitle) {
+        try {
+            LazyLoadingCardPane lazyLoadingCardPane = createNewLazyLoadingCardPane();
+            lazyLoadingCardPane.setContentResource(contentResource);
+            tabPane.getTabs().add(lazyLoadingCardPane);
+            TabPane.setTabData(lazyLoadingCardPane, new ButtonData(tabTitle));
+        } catch (Exception ex) {
+            main.showError("could not add tab " + tabTitle + " using " + contentResource, ex);
+        }
+    }
+
+    private LazyLoadingCardPane createNewLazyLoadingCardPane() throws SerializationException, IOException {
+        BXMLSerializer bxmlSerializer = new BXMLSerializer();
+        bxmlSerializer.getNamespace().put("main", main);
+        return (LazyLoadingCardPane) bxmlSerializer.readObject(getClass().getResource("lazyloadingcardpane.bxml"), resources);
     }
 
     public String getLabel() {
@@ -149,10 +104,8 @@ public class SearchResultPane extends TablePane implements Bindable {
         if (selectedCardPane != null) {
             try {
                 selectedCardPane.load(searchParameter);
-            } catch (SerializationException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            } catch (IOException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (Exception ex) {
+                main.showError("could not open " + searchParameter.getShortLabel(), ex);
             }
         }
     }
