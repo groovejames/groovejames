@@ -41,7 +41,7 @@ public class AlbumTablePane extends TablePane implements Bindable, CardPaneConte
 
         albumTable.setTableData(albumList);
         albumTable.getTableViewSortListeners().add(new DefaultTableViewSortListener());
-        albumTable.getComponentMouseListeners().add(new TooltipTableMouseListener());
+        TooltipTableMouseListener.install(albumTable);
         albumTable.getClickableTableListeners().add(new ClickableTableListener() {
             @Override
             public boolean cellClicked(ClickableTableView source, Object row, int rowIndex, int columnIndex, Mouse.Button button, int clickCount) {

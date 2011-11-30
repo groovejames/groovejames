@@ -40,7 +40,7 @@ public class ArtistTablePane extends TablePane implements Bindable, CardPaneCont
 
         artistTable.setTableData(artistList);
         artistTable.getTableViewSortListeners().add(new DefaultTableViewSortListener());
-        artistTable.getComponentMouseListeners().add(new TooltipTableMouseListener());
+        TooltipTableMouseListener.install(artistTable);
         artistTable.getClickableTableListeners().add(new ClickableTableListener() {
             @Override
             public boolean cellClicked(ClickableTableView source, Object row, int rowIndex, int columnIndex, Mouse.Button button, int clickCount) {

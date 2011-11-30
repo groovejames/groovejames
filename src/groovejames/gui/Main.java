@@ -208,7 +208,7 @@ public class Main implements Application {
             "reloadGUI"));
         downloadsTable.setTableData(downloadTracks);
         downloadsTable.getTableViewSortListeners().add(new DefaultTableViewSortListener());
-        downloadsTable.getComponentMouseListeners().add(new TooltipTableMouseListener());
+        TooltipTableMouseListener.install(downloadsTable);
         downloadsTable.getComponentMouseButtonListeners().add(new ComponentMouseButtonListener.Adapter() {
             @Override
             public boolean mouseClick(Component component, Mouse.Button button, int x, int y, int count) {
@@ -226,7 +226,7 @@ public class Main implements Application {
         });
         playlistTable.getColumns().get(0).setCellRenderer(new PlaylistCellRenderer(Services.getPlayService()));
         playlistTable.setTableData(Services.getPlayService().getPlaylist());
-        playlistTable.getComponentMouseListeners().add(new TooltipTableMouseListener());
+        TooltipTableMouseListener.install(playlistTable);
         searchField.getComponentKeyListeners().add(new ComponentKeyListener.Adapter() {
             @Override
             public boolean keyTyped(Component searchField, char character) {

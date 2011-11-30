@@ -40,7 +40,7 @@ public class PlaylistTablePane extends TablePane implements Bindable, CardPaneCo
 
         playlistTable.setTableData(playlistList);
         playlistTable.getTableViewSortListeners().add(new DefaultTableViewSortListener());
-        playlistTable.getComponentMouseListeners().add(new TooltipTableMouseListener());
+        TooltipTableMouseListener.install(playlistTable);
         playlistTable.getClickableTableListeners().add(new ClickableTableListener() {
             @Override
             public boolean cellClicked(ClickableTableView source, Object row, int rowIndex, int columnIndex, Mouse.Button button, int clickCount) {
@@ -59,7 +59,7 @@ public class PlaylistTablePane extends TablePane implements Bindable, CardPaneCo
                 playlistList.setFilter(new Filter<Playlist>() {
                     @Override public boolean include(Playlist playlist) {
                         return containsIgnoringCase(playlist.getName(), searchString)
-                            || containsIgnoringCase(playlist.getAbout(), searchString);
+                            || containsIgnoringCase(playlist.getArtists(), searchString);
                     }
                 });
                 return false;

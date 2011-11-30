@@ -40,7 +40,7 @@ public class PeopleTablePane extends TablePane implements Bindable, CardPaneCont
 
         peopleTable.setTableData(peopleList);
         peopleTable.getTableViewSortListeners().add(new DefaultTableViewSortListener());
-        peopleTable.getComponentMouseListeners().add(new TooltipTableMouseListener());
+        TooltipTableMouseListener.install(peopleTable);
         peopleTable.getClickableTableListeners().add(new ClickableTableListener() {
             @Override
             public boolean cellClicked(ClickableTableView source, Object row, int rowIndex, int columnIndex, Mouse.Button button, int clickCount) {

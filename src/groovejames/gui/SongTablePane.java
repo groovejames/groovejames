@@ -93,7 +93,7 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
         });
 
         songAlbumTable.setTableData(songAlbumList);
-        songAlbumTable.getComponentMouseListeners().add(new TooltipTableMouseListener());
+        TooltipTableMouseListener.install(songAlbumTable);
         songAlbumTable.getTableViewSelectionListeners().add(new TableViewSelectionListener.Adapter() {
             @Override public void selectedRangesChanged(TableView tableView, Sequence<Span> previousSelectedRanges) {
                 int idx = songAlbumTable.getSelectedIndex();
@@ -104,7 +104,7 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
 
         songTable.setTableData(songList);
         songTable.getTableViewSortListeners().add(new DefaultTableViewSortListener());
-        songTable.getComponentMouseListeners().add(new TooltipTableMouseListener());
+        TooltipTableMouseListener.install(songTable);
         songTable.getClickableTableListeners().add(new ClickableTableListener() {
             @Override
             public boolean cellClicked(ClickableTableView source, Object row, int rowIndex, int columnIndex, Mouse.Button button, int clickCount) {
