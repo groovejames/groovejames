@@ -213,7 +213,7 @@ public class Util {
         return coercedValue;
     }
 
-    public static String toErrorString(Throwable t) {
+    public static String toErrorString(Throwable t, String separator) {
         StringBuilder result = new StringBuilder();
         while (true) {
             if (t instanceof TaskExecutionException) {
@@ -225,7 +225,7 @@ public class Util {
                 if (!isEmpty(t.getMessage()))
                     result.append(": ").append(t.getMessage());
                 if (t.getCause() != t && t.getCause() != null) {
-                    result.append("\nReason: ");
+                    result.append(separator);
                     t = t.getCause();
                 } else {
                     break;

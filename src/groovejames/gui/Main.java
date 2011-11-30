@@ -237,7 +237,7 @@ public class Main implements Application {
             }
         });
         searchField.getTextInputContentListeners().add(new SuggestionPopupTextInputContentListener(
-            new SuggestionsProvider.Adapter<String>() {
+            new SuggestionsProvider<String>() {
                 @Override
                 public List<String> getSuggestions(String query) throws Exception {
                     if (query.length() > 3) {
@@ -250,6 +250,11 @@ public class Main implements Application {
                 @Override
                 public void accepted(String text) {
                     doSearch();
+                }
+
+                @Override
+                public void executeGetSuggestionsFailed(String query, Exception exception) {
+                    log.error(format("could not autocomplete '%s': %s", query, toErrorString(exception, "; reason: ")));
                 }
             }));
         searchButton.getButtonPressListeners().add(new ButtonPressListener() {
@@ -357,7 +362,7 @@ public class Main implements Application {
         TextArea errorText = new TextArea();
         errorText.setEditable(false);
         errorText.getStyles().put("wrapText", true);
-        errorText.setText(toErrorString(ex));
+        errorText.setText(toErrorString(ex, "\nReason: "));
         ScrollPane scrollPane = new ScrollPane(FILL, AUTO);
         scrollPane.setPreferredHeight(300);
         scrollPane.setMaximumHeight(300);
