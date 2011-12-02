@@ -15,7 +15,7 @@ public class GsProxyTest {
         System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.impl.client", "DEBUG");
 
         HttpClientService httpClientService = new HttpClientService();
-        httpClientService.setProxySettings(new ProxySettings("bns04px-vm", 80));
+//        httpClientService.setProxySettings(new ProxySettings("myproxy", 80));
         Grooveshark grooveshark = GroovesharkService.connect(httpClientService);
 
         String tokenForSong = grooveshark.getTokenForSong(21866197, Country.GSLITE_GERMAN_COUNTRY);
