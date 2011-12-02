@@ -1,0 +1,31 @@
+/* Based on Pivot's original TerraTheme_dark.json. */
+{
+    font: "Verdana 11",
+
+    colorMultiplier: 0.2,
+
+    colors: [
+        "#f2f2f2",
+        "#2b2b2b",
+        "#6c6968",
+        "#0a0a0a",
+        "#f0751c",
+        "#ff7300",
+        "#ffe480",
+        "#c13719"
+    ],
+
+    messageIcons: {
+        error: "message_type-error-32x32.png",
+        warning: "message_type-warning-32x32.png",
+        question: "message_type-question-32x32.png",
+        info: "message_type-info-32x32.png"
+    },
+
+    smallMessageIcons: {
+        error: "message_type-error-16x16.png",
+        warning: "message_type-warning-16x16.png",
+        question: "message_type-question-16x16.png",
+        info: "message_type-info-16x16.png"
+    }
+}
