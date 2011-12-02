@@ -137,7 +137,7 @@ public class Main implements Application {
         // fix a bug in Pivot: replace the Tooltip skin class to set the background color of tooltips properly
         Theme.getTheme().set(Tooltip.class, FixedTerraTooltipSkin.class);
 
-        this.resources = new Resources("groovejames.gui.main");
+        this.resources = new Resources("groovejames.gui.resources");
         this.display = display;
 
         this.settings = loadSettings();
@@ -204,7 +204,7 @@ public class Main implements Application {
     }
 
     private void initComponents() {
-        window.setIcon(getClass().getResource("butler-48.png"));
+        window.setIcon(getClass().getResource("images/butler-48.png"));
         window.getActionMappings().add(new Window.ActionMapping(
             new Keyboard.KeyStroke(Keyboard.KeyCode.R, Platform.getCommandModifier().getMask()),
             "reloadGUI"));
@@ -627,7 +627,7 @@ public class Main implements Application {
 
     private void updatePlayPauseButton(boolean isPlaying) {
         String iconResourceName = isPlaying ? "player_pause.png" : "player_play.png";
-        ((ButtonData) songPlayPauseButton.getButtonData()).setIcon(getClass().getResource(iconResourceName));
+        ((ButtonData) songPlayPauseButton.getButtonData()).setIcon(getClass().getResource("images/" + iconResourceName));
         songPlayPauseButton.repaint();
     }
 

@@ -31,7 +31,7 @@
                                                     bxml:id="peopleImageRenderer"
                                                     preferredHeight="40"
                                                     urlPrefix="http://beta.grooveshark.com/static/userimages/m"
-                                                    defaultImage="@unknownUser.png"/>
+                                                    defaultImage="@images/unknownUser.png"/>
                                         </cellRenderer>
                                     </TableView.Column>
                                     <TableView.Column name="username" headerData="Username" width="200"/>

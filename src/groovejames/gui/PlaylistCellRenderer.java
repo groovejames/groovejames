@@ -14,7 +14,7 @@ public class PlaylistCellRenderer extends TableViewImageCellRenderer {
     public PlaylistCellRenderer(PlayService playService) {
         this.playService = playService;
         try {
-            this.pointerImage = Image.load(getClass().getResource("pointer.png"));
+            this.pointerImage = Image.load(getClass().getResource("images/pointer.png"));
         } catch (TaskExecutionException ex) {
             throw new RuntimeException(ex);
         }

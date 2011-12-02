@@ -30,7 +30,7 @@
                                                     bxml:id="playlistImageRenderer"
                                                     preferredHeight="40"
                                                     urlPrefix="http://images.grooveshark.com/static/playlists/30_"
-                                                    defaultImage="@unknownSong.png"/>
+                                                    defaultImage="@images/unknownSong.png"/>
                                         </cellRenderer>
                                     </TableView.Column>
                                     <TableView.Column name="name" headerData="Name" width="300"/>

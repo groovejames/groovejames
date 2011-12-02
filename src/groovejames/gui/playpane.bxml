@@ -18,22 +18,22 @@
         <TablePane.Row>
             <PushButton bxml:id="songPlayPauseButton" action="songPlayPause" tooltipText="Play/Pause" styles="{toolbar: true}">
                 <buttonData>
-                    <content:ButtonData icon="@player_play.png"/>
+                    <content:ButtonData icon="@images/player_play.png"/>
                 </buttonData>
             </PushButton>
             <PushButton action="songPrevious" tooltipText="Skip to previous song" styles="{toolbar: true}">
                 <buttonData>
-                    <content:ButtonData icon="@player_rew.png"/>
+                    <content:ButtonData icon="@images/player_rew.png"/>
                 </buttonData>
             </PushButton>
             <PushButton action="songNext" tooltipText="Skip to next song" styles="{toolbar: true}">
                 <buttonData>
-                    <content:ButtonData icon="@player_fwd.png"/>
+                    <content:ButtonData icon="@images/player_fwd.png"/>
                 </buttonData>
             </PushButton>
             <PushButton action="songClearPlaylist" tooltipText="Clear playlist (remove all songs)" styles="{toolbar: true}">
                 <buttonData>
-                    <content:ButtonData icon="@trash.png"/>
+                    <content:ButtonData icon="@images/trash.png"/>
                 </buttonData>
             </PushButton>
             <Label bxml:id="nowPlayingLabel" styles="{verticalAlignment:'center', font:{bold:true,size:'120%'}}"/>

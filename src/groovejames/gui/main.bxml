@@ -34,7 +34,7 @@
                                                    styles="%main.searchField.styles"/>
                                         <PushButton bxml:id="searchButton" styles="%main.searchButton.styles">
                                             <buttonData>
-                                                <content:ButtonData icon="@search.png"/>
+                                                <content:ButtonData icon="@images/search.png"/>
                                             </buttonData>
                                         </PushButton>
                                     </TablePane.Row>

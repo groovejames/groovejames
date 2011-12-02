@@ -3,9 +3,6 @@
        xmlns:gjvalidation="groovejames.gui.validation"
        xmlns:content="org.apache.pivot.wtk.content"
        xmlns:bxml="http://pivot.apache.org/bxml">
-    <bxml:define>
-        <bxml:include bxml:id="styles" src="styles.json"/>
-    </bxml:define>
     <content>
         <TablePane styles="{verticalSpacing:8}">
             <columns>
@@ -71,8 +68,8 @@
                                 <Label bxml:id="errorLabel" styles="{color:'red'}"/>
                              </BoxPane>
                             <BoxPane styles="{horizontalAlignment:'right', verticalAlignment:'center'}">
-                                <PushButton bxml:id="okButton" buttonData="OK" styles="$styles.commandButton"/>
-                                <PushButton bxml:id="cancelButton" buttonData="Cancel" styles="$styles.commandButton"/>
+                                <PushButton bxml:id="okButton" buttonData="OK" styles="%commandButton"/>
+                                <PushButton bxml:id="cancelButton" buttonData="Cancel" styles="%commandButton"/>
                             </BoxPane>
                         </TablePane.Row>
                     </TablePane>

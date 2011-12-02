@@ -31,7 +31,7 @@
                                                     bxml:id="albumImageRenderer"
                                                     preferredHeight="40"
                                                     urlPrefix="http://beta.grooveshark.com/static/amazonart/m"
-                                                    defaultImage="@unknownSong.png"/>
+                                                    defaultImage="@images/unknownSong.png"/>
                                         </cellRenderer>
                                     </TableView.Column>
                                     <TableView.Column name="albumName" headerData="Album" width="300"/>
