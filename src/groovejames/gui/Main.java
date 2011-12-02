@@ -63,6 +63,7 @@ import org.apache.pivot.wtk.Tooltip;
 import org.apache.pivot.wtk.Window;
 import org.apache.pivot.wtk.content.ButtonData;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -157,6 +158,7 @@ public class Main implements Application {
         Preferences prefs = Preferences.userNodeForPackage(Settings.class);
         settings.setProxyHost(prefs.get("proxyHost", settings.getProxyHost()));
         settings.setProxyPort(prefs.getInt("proxyPort", settings.getProxyPort()));
+        settings.setDownloadLocation(prefs.get("downloadLocation", settings.getDownloadLocation()));
         settings.setFilenameScheme(prefs.get("filenameScheme", settings.getFilenameScheme()));
         return settings;
     }
@@ -165,15 +167,13 @@ public class Main implements Application {
         Preferences prefs = Preferences.userNodeForPackage(Settings.class);
         prefs.put("proxyHost", settings.getProxyHost());
         prefs.putInt("proxyPort", settings.getProxyPort());
+        prefs.put("downloadLocation", settings.getDownloadLocation());
         prefs.put("filenameScheme", settings.getFilenameScheme());
     }
 
     private void applySettings() {
-        if (!isEmpty(settings.getProxyHost())) {
-            Services.getHttpClientService().setProxySettings(new ProxySettings(settings.getProxyHost(), settings.getProxyPort()));
-        } else {
-            Services.getHttpClientService().setProxySettings(null);
-        }
+        Services.getHttpClientService().setProxySettings(!isEmpty(settings.getProxyHost()) ? new ProxySettings(settings.getProxyHost(), settings.getProxyPort()) : null);
+        Services.getDownloadService().setDownloadDir(new File(settings.getDownloadLocation()));
         Services.getDownloadService().getFilenameSchemeParser().setFilenameScheme(settings.getFilenameScheme());
         Services.resetGrooveshark();
     }

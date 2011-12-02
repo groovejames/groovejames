@@ -1,6 +1,5 @@
 package groovejames.service;
 
-import groovejames.model.Country;
 import groovejames.model.FileStore;
 import groovejames.model.MemoryStore;
 import groovejames.model.Song;
@@ -40,7 +39,7 @@ public class DownloadService {
 
     private static final int downloadBufferSize = 10240;
 
-    private static final File defaultDownloadDir;
+    public static final File defaultDownloadDir;
 
     static {
         String downloadDir = System.getProperty("downloadDir");
@@ -89,7 +88,7 @@ public class DownloadService {
 
     public synchronized Track download(Song song, DownloadListener downloadListener) {
         File file = new File(downloadDir, filenameSchemeParser.parse(song));
-        Store store = new FileStore(file);
+        Store store = new FileStore(file, downloadDir);
         return download(song, store, downloadListener, false);
     }
 
@@ -130,7 +129,7 @@ public class DownloadService {
         if (downloadTask != null) {
             downloadWasInterrupted = downloadTask.abort();
             if (deleteStore) {
-                downloadTask.track.getStore().deleteStore(downloadDir);
+                downloadTask.track.getStore().deleteStore();
             }
             downloadTask.track.setStatus(Track.Status.CANCELLED);
             downloadTask.fireDownloadStatusChanged();
@@ -200,7 +199,7 @@ public class DownloadService {
                     track.setStatus(Track.Status.ERROR);
                     track.setFault(ex);
                 }
-                track.getStore().deleteStore(downloadDir);
+                track.getStore().deleteStore();
                 fireDownloadStatusChanged();
             } finally {
                 track.setStopDownloadTime(System.currentTimeMillis());

@@ -2,7 +2,6 @@ package groovejames.model;
 
 import groovejames.util.ByteBuffer;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -26,7 +25,7 @@ public class MemoryStore implements Store {
     @Override public void writeTrackInfo(Track track) {
     }
 
-    @Override public void deleteStore(File downloadDir) {
+    @Override public void deleteStore() {
     }
 
     @Override public String getDescription() {

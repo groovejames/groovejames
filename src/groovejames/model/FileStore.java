@@ -24,9 +24,11 @@ public class FileStore implements Store {
     private static final Object directoryDeleteLock = new Object();
 
     private final File file;
+    private final File downloadDir;
 
-    public FileStore(File file) {
+    public FileStore(File file, File downloadDir) {
         this.file = file;
+        this.downloadDir = downloadDir;
     }
 
     @Override public OutputStream getOutputStream() throws IOException {
@@ -95,7 +97,7 @@ public class FileStore implements Store {
         }
     }
 
-    @Override public void deleteStore(File downloadDir) {
+    @Override public void deleteStore() {
         if (file.exists()) {
             if (file.delete())
                 log.debug("deleted: " + file);

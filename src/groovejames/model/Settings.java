@@ -1,11 +1,13 @@
 package groovejames.model;
 
+import groovejames.service.DownloadService;
 import groovejames.service.FilenameSchemeParser;
 
 public class Settings {
 
     private String proxyHost;
     private int proxyPort = 80;
+    private String downloadLocation = DownloadService.defaultDownloadDir.getAbsolutePath();
     private String filenameScheme = FilenameSchemeParser.DEFAULT_FILENAME_SCHEME;
 
     public String getProxyHost() {
@@ -22,6 +24,14 @@ public class Settings {
 
     public void setProxyPort(int proxyPort) {
         this.proxyPort = proxyPort;
+    }
+
+    public String getDownloadLocation() {
+        return downloadLocation;
+    }
+
+    public void setDownloadLocation(String downloadLocation) {
+        this.downloadLocation = downloadLocation;
     }
 
     public String getFilenameScheme() {

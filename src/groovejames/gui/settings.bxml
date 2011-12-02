@@ -41,6 +41,11 @@
                                     <content:ButtonData text="Download"/>
                                 </TabPane.tabData>
                                 <sections>
+                                    <Form.Section heading="Location">
+                                        <TextInput bxml:id="downloadLocation" textKey="downloadLocation"
+                                                   Form.label="Folder" Form.required="true"/>
+                                        <Label preferredWidth="300" styles="{wrapText:true}" text="Where to store the downloaded files. The folder will be created if it doesn't exist."/>
+                                    </Form.Section>
                                     <Form.Section heading="Filename scheme">
                                         <TextInput bxml:id="filenameScheme" textKey="filenameScheme"
                                                    Form.label="Scheme" Form.required="true">

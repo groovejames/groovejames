@@ -1,6 +1,5 @@
 package groovejames.model;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -15,7 +14,7 @@ public interface Store {
 
     void writeTrackInfo(Track track) throws IOException;
 
-    void deleteStore(File downloadDir);
+    void deleteStore();
 
     String getDescription();
 
