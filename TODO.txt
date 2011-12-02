@@ -1,5 +1,3 @@
-- mp3 player: play/pause is buggy
-- mp3 player: seek forward/backward
-- people -> favorites : getFavorites()
-  "parameters":{"ofWhat":"Songs","userID":2230842},"method":"getFavorites"
-  "result":[{"Name":"Bound To Be That Way","SongID":"2518","Flags":"0","ArtistID":"7685","ArtistName":"Do Make Say Think","AlbumID":"139885","AlbumName":"You, You're A History In Rust","CoverArtFilename":"311c6a8eeb18b07ae91355723d92f06e.png","TSFavorited":"2010-02-03 04:20:15","EstimateDuration":"456","IsVerified":"0","Popularity":"0","TrackNum":"1"},{"N...
+- mp3 player: skip to next song sometimes stalls (or you have to wait until the background download is finished)
+- mp3 player: add seek forward/backward
+- watch clipboard for grooveshark and last.fm urls
