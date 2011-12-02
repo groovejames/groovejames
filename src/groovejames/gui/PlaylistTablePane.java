@@ -3,6 +3,7 @@ package groovejames.gui;
 import groovejames.gui.components.ClickableTableListener;
 import groovejames.gui.components.ClickableTableView;
 import groovejames.gui.components.DefaultTableViewSortListener;
+import groovejames.gui.components.TableSelectAllKeyListener;
 import groovejames.gui.components.TooltipTableMouseListener;
 import groovejames.model.Playlist;
 import groovejames.service.Services;
@@ -38,9 +39,10 @@ public class PlaylistTablePane extends TablePane implements Bindable, CardPaneCo
     @Override public void initialize(Map<String, Object> namespace, URL location, Resources resources) {
         this.main = (Main) namespace.get("main");
 
+        TooltipTableMouseListener.install(playlistTable);
         playlistTable.setTableData(playlistList);
         playlistTable.getTableViewSortListeners().add(new DefaultTableViewSortListener());
-        TooltipTableMouseListener.install(playlistTable);
+        playlistTable.getComponentKeyListeners().add(new TableSelectAllKeyListener());
         playlistTable.getClickableTableListeners().add(new ClickableTableListener() {
             @Override
             public boolean cellClicked(ClickableTableView source, Object row, int rowIndex, int columnIndex, Mouse.Button button, int clickCount) {

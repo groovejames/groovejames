@@ -4,6 +4,7 @@ import groovejames.gui.components.ClickableTableListener;
 import groovejames.gui.components.ClickableTableView;
 import groovejames.gui.components.DefaultTableViewSortListener;
 import groovejames.gui.components.ListIdItem;
+import groovejames.gui.components.TableSelectAllKeyListener;
 import groovejames.gui.components.TooltipTableMouseListener;
 import groovejames.model.Song;
 import groovejames.service.PlayService;
@@ -102,9 +103,10 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
             }
         });
 
+        TooltipTableMouseListener.install(songTable);
         songTable.setTableData(songList);
         songTable.getTableViewSortListeners().add(new DefaultTableViewSortListener());
-        TooltipTableMouseListener.install(songTable);
+        songTable.getComponentKeyListeners().add(new TableSelectAllKeyListener());
         songTable.getClickableTableListeners().add(new ClickableTableListener() {
             @Override
             public boolean cellClicked(ClickableTableView source, Object row, int rowIndex, int columnIndex, Mouse.Button button, int clickCount) {
@@ -118,7 +120,6 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
                 return false;
             }
         });
-
         songTable.getTableViewSelectionListeners().add(new TableViewSelectionListener() {
             @Override public void selectedRangeAdded(TableView tableView, int rangeStart, int rangeEnd) {
                 selectionChanged(tableView);

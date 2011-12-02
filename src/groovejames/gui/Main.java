@@ -4,6 +4,7 @@ import groovejames.gui.components.DefaultTableViewSortListener;
 import groovejames.gui.components.FixedTerraTooltipSkin;
 import groovejames.gui.components.SuggestionPopupTextInputContentListener;
 import groovejames.gui.components.SuggestionsProvider;
+import groovejames.gui.components.TableSelectAllKeyListener;
 import groovejames.gui.components.TooltipTableMouseListener;
 import groovejames.model.Settings;
 import groovejames.model.Song;
@@ -207,9 +208,11 @@ public class Main implements Application {
         window.getActionMappings().add(new Window.ActionMapping(
             new Keyboard.KeyStroke(Keyboard.KeyCode.R, Platform.getCommandModifier().getMask()),
             "reloadGUI"));
+
+        TooltipTableMouseListener.install(downloadsTable);
         downloadsTable.setTableData(downloadTracks);
         downloadsTable.getTableViewSortListeners().add(new DefaultTableViewSortListener());
-        TooltipTableMouseListener.install(downloadsTable);
+        downloadsTable.getComponentKeyListeners().add(new TableSelectAllKeyListener());
         downloadsTable.getComponentMouseButtonListeners().add(new ComponentMouseButtonListener.Adapter() {
             @Override
             public boolean mouseClick(Component component, Mouse.Button button, int x, int y, int count) {
@@ -225,9 +228,12 @@ public class Main implements Application {
                 return false;
             }
         });
+
+        TooltipTableMouseListener.install(playlistTable);
         playlistTable.getColumns().get(0).setCellRenderer(new PlaylistCellRenderer(Services.getPlayService()));
         playlistTable.setTableData(Services.getPlayService().getPlaylist());
-        TooltipTableMouseListener.install(playlistTable);
+        playlistTable.getComponentKeyListeners().add(new TableSelectAllKeyListener());
+
         searchField.getComponentKeyListeners().add(new ComponentKeyListener.Adapter() {
             @Override
             public boolean keyTyped(Component searchField, char character) {
@@ -264,6 +270,7 @@ public class Main implements Application {
                 doSearch();
             }
         });
+
         final Action tabCloseAction = new Action() {
             @Override
             public void perform(Component source) {
@@ -281,6 +288,7 @@ public class Main implements Application {
             }
         };
         tabCloseAllAction.setEnabled(false);
+
         tabPane.setMenuHandler(new MenuHandler.Adapter() {
             @Override
             public boolean configureContextMenu(Component component, Menu menu, int x, int y) {
