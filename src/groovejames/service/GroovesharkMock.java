@@ -177,7 +177,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
     }
 
     @Override
-    public Playlist[] getResultsFromSearch(@Param("type") SearchPlaylistsResultType type, @Param("query") String query) {
+    public Playlist[] getResultsFromSearch(SearchPlaylistsResultType type, String query) {
         Playlist playlist1 = new Playlist();
         playlist1.setPlaylistID(1L);
         playlist1.setName("Willi Wonka's Playlist");
@@ -209,7 +209,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
     }
 
     @Override
-    public Songs playlistGetSongs(@Param("playlistID") long playlistID) throws Exception {
+    public Songs playlistGetSongs(long playlistID) throws Exception {
         return artistGetSongs(null, 0, false);
     }
 
@@ -240,5 +240,15 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
     @Override
     public StreamKey getStreamKeyFromSongIDEx(long songID, boolean mobile, boolean prefetch, Country country) {
         return new StreamKey("dummystreamkey-" + songID, "dummystreamserver.com", songID);
+    }
+
+    @Override
+    public String getTokenForSong(long songID, Country country) throws Exception {
+        return null;
+    }
+
+    @Override
+    public Song getSongFromToken(String token, Country country) throws Exception {
+        return null;
     }
 }

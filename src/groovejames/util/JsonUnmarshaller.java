@@ -24,6 +24,8 @@ public class JsonUnmarshaller {
         try {
             if (type.isArray())
                 return unmarshallArray(jsonResult, type.getComponentType());
+            else if (jsonResult != null && jsonResult instanceof String)
+                return Util.coerce((String) jsonResult, type);
             else
                 return unmarshallObject(jsonResult, type);
         } catch (Exception ex) {
@@ -67,8 +69,8 @@ public class JsonUnmarshaller {
                         writeMethod.invoke(result, valueToSet);
                     } catch (Exception ex) {
                         throw new RuntimeException("cannot set property " + propertyName + " to value " + value
-                        + " (value type: " + value.getClass().getName() + ", property type: " + propertyDescriptor.getPropertyType().getName()
-                        + " , coerced type: " + valueToSet.getClass().getName() + ")", ex);
+                            + " (value type: " + value.getClass().getName() + ", property type: " + propertyDescriptor.getPropertyType().getName()
+                            + " , coerced type: " + valueToSet.getClass().getName() + ")", ex);
                     }
                     usedPropertyNames.add(propertyName);
                 }

@@ -1,9 +1,7 @@
 package groovejames.service;
 
 import groovejames.model.Country;
-import groovejames.model.SearchSongsResultType;
 import groovejames.model.Song;
-import groovejames.model.StreamKey;
 
 public class GsProxyTest {
 
@@ -17,8 +15,16 @@ public class GsProxyTest {
         System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.impl.client", "DEBUG");
 
         HttpClientService httpClientService = new HttpClientService();
-//        httpClientService.setProxySettings(new ProxySettings("myproxy", 8080));
+        httpClientService.setProxySettings(new ProxySettings("bns04px-vm", 80));
         Grooveshark grooveshark = GroovesharkService.connect(httpClientService);
+
+        String tokenForSong = grooveshark.getTokenForSong(21866197, Country.GSLITE_GERMAN_COUNTRY);
+        System.out.println(tokenForSong);
+
+        Song song = grooveshark.getSongFromToken(tokenForSong, Country.GSLITE_GERMAN_COUNTRY);
+        System.out.println(song);
+
+        /*
         Song[] songs = grooveshark.getSearchResultsEx(SearchSongsResultType.Songs, "The Cure");
         for (Song song : songs) {
             System.out.printf("%s (%s) - %s (%s) - %s (%s) - score:%f%n",
@@ -32,5 +38,6 @@ public class GsProxyTest {
         StreamKey streamKey = grooveshark.getStreamKeyFromSongIDEx(songID,
             false, false, Country.GSLITE_GERMAN_COUNTRY);
         System.out.printf("%n%nstream key for song #0 id=%s: %s%n", songID, streamKey);
+        */
     }
 }

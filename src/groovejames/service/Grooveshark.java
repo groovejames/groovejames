@@ -18,7 +18,8 @@ public interface Grooveshark {
     final String SECRET = System.getProperty("grooveshark.secret", "neverGonnaGiveYouUp");
 
     Song[] getAutocomplete(@Param("type") AutocompleteType type,
-                           @Param("query") String query);
+                           @Param("query") String query)
+        throws Exception;
 
     @ResultPath("result") Song[] getSearchResultsEx(@Param("type") SearchSongsResultType type,
                                                     @Param("query") String query)
@@ -29,7 +30,8 @@ public interface Grooveshark {
         throws Exception;
 
     @ResultPath("result") Playlist[] getResultsFromSearch(@Param("type") SearchPlaylistsResultType type,
-                                                          @Param("query") String query);
+                                                          @Param("query") String query)
+        throws Exception;
 
     Songs albumGetSongs(@Param("albumID") Long albumID,
                         @Param("offset") int offset,
@@ -53,7 +55,8 @@ public interface Grooveshark {
                                 @Param("page") int page)
         throws Exception;
 
-    @ResultPath("Playlists") Playlist[] userGetPlaylists(@Param("userID") long userID);
+    @ResultPath("Playlists") Playlist[] userGetPlaylists(@Param("userID") long userID)
+        throws Exception;
 
     @Header(clientName = "jsqueue", clientRevision = "20110722.01", secret = "neverGonnaLetYouDown")
     StreamKey getStreamKeyFromSongIDEx(@Param("songID") long songID,
@@ -62,4 +65,9 @@ public interface Grooveshark {
                                        @Param("country") Country country)
         throws Exception;
 
+    @ResultPath("Token") String getTokenForSong(@Param("songID") long songID, @Param("country") Country country)
+        throws Exception;
+
+    Song getSongFromToken(@Param("token") String token, @Param("country") Country country)
+        throws Exception;
 }

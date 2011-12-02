@@ -1,3 +1,17 @@
 - mp3 player: skip to next song sometimes stalls (or you have to wait until the background download is finished)
 - mp3 player: add seek forward/backward
 - watch clipboard for grooveshark and last.fm urls
+  - gs artist url:   http://grooveshark.com/artist/K+d+Lang/428326 <-- that's the artist id
+                     http://grooveshark.com/#/artist/K+d+Lang/428326
+  - gs album url:    http://grooveshark.com/album/Hymns+Of+The+49th+Parallel/1426903 <-- that's the album id
+                     http://grooveshark.com/#/album/Hymns+Of+The+49th+Parallel/1426903
+  - gs song url:     http://grooveshark.com/s/Hallelujah/3fFFhG?src=5
+                     "http://grooveshark.com/s/" + songname + getTokenForSong(songID) + "?src=5"
+  - gs playlist url: http://grooveshark.com/#/playlist/K+D+LANG/8690613
+  - gs user url:     http://grooveshark.com/#/user/Sheila+Nicholls/932298
+  - gs song token to song: getSongFromToken(token, country)
+
+  - lastfm song url:   http://www.lastfm.de/music/Isobel%2BCampbell%2B%2526%2BMark%2BLanegan/_/Get+Behind+Me
+                       http://www.lastfm.de/music/Kid%2BCreole%2B%2526%2BThe%2BCoconuts/_/Annie%2C+I%27m+Not+Your+Daddy
+                       (Kid Creole & The Coconuts - Annie, I'm Not Your Daddy)
+  - lastfm artist url: http://www.lastfm.de/music/Kid%2BCreole%2B%2526%2BThe%2BCoconuts (Kid Creole & The Coconuts)

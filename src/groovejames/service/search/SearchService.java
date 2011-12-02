@@ -25,7 +25,7 @@ public class SearchService {
         this.grooveshark = grooveshark;
     }
 
-    public List<String> getAutocomplete(String query) {
+    public List<String> getAutocomplete(String query) throws Exception {
         Song[] autocomplete = grooveshark.getAutocomplete(AutocompleteType.artist, query);
         ArrayList<String> result = new ArrayList<String>(autocomplete.length);
         for (Song s : autocomplete) {
