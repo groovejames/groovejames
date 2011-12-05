@@ -4,7 +4,7 @@
         bxml:id="window"
         xmlns="org.apache.pivot.wtk"
         xmlns:content="org.apache.pivot.wtk.content"
-        xmlns:gui="groovejames.gui"
+        xmlns:guicomponents="groovejames.gui.components"
         xmlns:bxml="http://pivot.apache.org/bxml">
     <content>
         <TablePane styles="%main.tablePane.styles">
@@ -26,6 +26,7 @@
                                 <columns>
                                     <TablePane.Column width="1*"/>
                                     <TablePane.Column width="-1"/>
+                                    <TablePane.Column width="-1"/>
                                 </columns>
                                 <rows>
                                     <TablePane.Row>
@@ -37,6 +38,14 @@
                                                 <content:ButtonData icon="@images/search.png"/>
                                             </buttonData>
                                         </PushButton>
+                                        <guicomponents:ToggleButton bxml:id="clipboardButton" toggleButton="true" tooltipText="Toggle watch clipboard for music URLs">
+                                            <buttonData>
+                                                <content:ButtonData icon="@images/watch-clipboard-not.png"/>
+                                            </buttonData>
+                                            <selectedButtonData>
+                                                <content:ButtonData icon="@images/watch-clipboard.png"/>
+                                            </selectedButtonData>
+                                        </guicomponents:ToggleButton>
                                     </TablePane.Row>
                                 </rows>
                             </TablePane>                            
