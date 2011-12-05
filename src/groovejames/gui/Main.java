@@ -28,6 +28,7 @@ import org.apache.pivot.collections.Sequence;
 import org.apache.pivot.collections.adapter.ListAdapter;
 import org.apache.pivot.serialization.SerializationException;
 import org.apache.pivot.util.Resources;
+import org.apache.pivot.util.concurrent.TaskExecutionException;
 import org.apache.pivot.wtk.Action;
 import org.apache.pivot.wtk.Alert;
 import org.apache.pivot.wtk.Application;
@@ -62,10 +63,12 @@ import org.apache.pivot.wtk.Theme;
 import org.apache.pivot.wtk.Tooltip;
 import org.apache.pivot.wtk.Window;
 import org.apache.pivot.wtk.content.ButtonData;
+import org.apache.pivot.wtk.media.Image;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -204,7 +207,11 @@ public class Main implements Application {
     }
 
     private void initComponents() {
-        window.setIcon(getClass().getResource("images/butler-48.png"));
+        window.getIcons().add(getIcon("images/butler-128.png"));
+        window.getIcons().add(getIcon("images/butler-16.png"));
+        window.getIcons().add(getIcon("images/butler-32.png"));
+        window.getIcons().add(getIcon("images/butler-48.png"));
+        window.getIcons().add(getIcon("images/butler-64.png"));
         window.getActionMappings().add(new Window.ActionMapping(
             new Keyboard.KeyStroke(Keyboard.KeyCode.R, Platform.getCommandModifier().getMask()),
             "reloadGUI"));
@@ -470,6 +477,26 @@ public class Main implements Application {
             }
         }
         return properties;
+    }
+
+    private static Image getIcon(String iconResource) {
+        if (iconResource == null) {
+            throw new IllegalArgumentException("iconResource is null");
+        }
+        URL iconURL = Main.class.getResource(iconResource);
+        if (iconURL == null) {
+            throw new IllegalArgumentException("iconResource not found: " + iconResource);
+        }
+        Image icon = (Image) ApplicationContext.getResourceCache().get(iconURL);
+        if (icon == null) {
+            try {
+                icon = Image.load(iconURL);
+            } catch (TaskExecutionException ex) {
+                throw new IllegalArgumentException(ex);
+            }
+            ApplicationContext.getResourceCache().put(iconURL, icon);
+        }
+        return icon;
     }
 
 
