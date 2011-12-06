@@ -50,7 +50,7 @@ public class AlbumTablePane extends TablePane implements Bindable, CardPaneConte
                 TableView.Column column = source.getColumns().get(columnIndex);
                 Song song = (Song) row;
                 if ("albumName".equals(column.getName())) {
-                    main.openSearchTab(new AlbumSearch(song.getAlbumID(), song.getAlbumName(), song.getArtistID(), song.getArtistName()));
+                    main.openSearchTab(new AlbumSearch(song.getAlbumID(), song.getAlbumName(), song.getArtistName()));
                 } else if ("artistName".equals(column.getName())) {
                     main.openSearchTab(new ArtistSearch(song.getArtistID(), song.getArtistName()));
                 }

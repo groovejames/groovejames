@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URLDecoder;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.MessageDigest;
@@ -379,5 +380,18 @@ public class Util {
         }
         sb.append(sec);
         return sb.toString();
+    }
+
+    public static String decodeURL(String s) {
+        String r = s, p = null;
+        while (!r.equals(p)) {
+            p = r;
+            try {
+                r = URLDecoder.decode(r, "UTF-8");
+            } catch (UnsupportedEncodingException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+        return r;
     }
 }

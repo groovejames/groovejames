@@ -1,5 +1,10 @@
 package groovejames.gui;
 
+import groovejames.gui.clipboard.GroovesharkAlbumClipboardListener;
+import groovejames.gui.clipboard.GroovesharkArtistClipboardListener;
+import groovejames.gui.clipboard.GroovesharkPlaylistClipboardListener;
+import groovejames.gui.clipboard.GroovesharkUserClipboardListener;
+import groovejames.gui.clipboard.WatchClipboardTask;
 import groovejames.gui.components.DefaultTableViewSortListener;
 import groovejames.gui.components.FixedTerraTooltipSkin;
 import groovejames.gui.components.SuggestionPopupTextInputContentListener;
@@ -91,6 +96,7 @@ public class Main implements Application {
     private Settings settings;
     private Resources resources;
     private Display display;
+    private WatchClipboardTask watchClipboardTask;
     private final ArrayList<Track> downloadTracks = new ArrayList<Track>();
 
     @BXML private Window window;
@@ -99,6 +105,7 @@ public class Main implements Application {
     @BXML private TabPane lowerPane;
     @BXML private TextInput searchField;
     @BXML private PushButton searchButton;
+    @BXML private PushButton clipboardButton;
     @BXML private TableView downloadsTable;
     @BXML private TableView playlistTable;
     @BXML private Label nowPlayingLabel;
@@ -277,6 +284,15 @@ public class Main implements Application {
                 doSearch();
             }
         });
+        clipboardButton.getButtonPressListeners().add(new ButtonPressListener() {
+            @Override
+            public void buttonPressed(Button button) {
+                if (button.isSelected())
+                    startWatchingClipboard();
+                else
+                    stopWatchingClipboard();
+            }
+        });
 
         final Action tabCloseAction = new Action() {
             @Override
@@ -421,6 +437,7 @@ public class Main implements Application {
         } else {
             tabPane.setSelectedIndex(idx);
         }
+        display.getHostWindow().toFront();
     }
 
     private int findSearchResultPane(SearchParameter searchParameter) {
@@ -477,6 +494,22 @@ public class Main implements Application {
             }
         }
         return properties;
+    }
+
+    private void startWatchingClipboard() {
+        stopWatchingClipboard();
+        watchClipboardTask = new WatchClipboardTask();
+        watchClipboardTask.addClipboardListener(new GroovesharkArtistClipboardListener(this));
+        watchClipboardTask.addClipboardListener(new GroovesharkAlbumClipboardListener(this));
+        watchClipboardTask.addClipboardListener(new GroovesharkPlaylistClipboardListener(this));
+        watchClipboardTask.addClipboardListener(new GroovesharkUserClipboardListener(this));
+        watchClipboardTask.start();
+    }
+
+    private void stopWatchingClipboard() {
+        if (watchClipboardTask != null)
+            watchClipboardTask.interrupt();
+        watchClipboardTask = null;
     }
 
     private static Image getIcon(String iconResource) {

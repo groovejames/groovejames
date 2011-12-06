@@ -1,17 +1,21 @@
 package groovejames.service.search;
 
+import static groovejames.util.Util.isEmpty;
+
 public class AlbumSearch implements SearchParameter {
 
     private final Long albumID;
     private final String albumName;
-    private final Long artistID;
     private final String artistName;
 
-    public AlbumSearch(Long albumID, String albumName, Long artistID, String artistName) {
+    public AlbumSearch(Long albumID, String albumName) {
+        this(albumID, albumName, null);
+    }
+
+    public AlbumSearch(Long albumID, String albumName, String artistName) {
         this.albumID = albumID;
         this.albumName = albumName != null ? albumName : "";
-        this.artistID = artistID;
-        this.artistName = artistName != null ? artistName : "";
+        this.artistName = artistName;
     }
 
     @Override
@@ -21,12 +25,12 @@ public class AlbumSearch implements SearchParameter {
 
     @Override
     public String getLabel() {
-        return "Album: \"" + albumName + "\" by " + artistName;
+        return "Album: \"" + albumName + "\"" + (isEmpty(artistName) ? "" : " by " + artistName);
     }
 
     @Override
     public String getSimpleSearchString() {
-        return albumName + " by " + artistName;
+        return albumName + (isEmpty(artistName) ? "" : " by " + artistName);
     }
 
     @Override
@@ -42,10 +46,6 @@ public class AlbumSearch implements SearchParameter {
         return albumName;
     }
 
-    public Long getArtistID() {
-        return artistID;
-    }
-
     public String getArtistName() {
         return artistName;
     }
@@ -55,13 +55,11 @@ public class AlbumSearch implements SearchParameter {
         if (this == o) return true;
         if (!(o instanceof AlbumSearch)) return false;
         AlbumSearch that = (AlbumSearch) o;
-        return albumID.equals(that.albumID) && artistID.equals(that.artistID);
+        return albumID.equals(that.albumID);
     }
 
     @Override
     public int hashCode() {
-        int result = albumID.hashCode();
-        result = 31 * result + artistID.hashCode();
-        return result;
+        return albumID.hashCode();
     }
 }
