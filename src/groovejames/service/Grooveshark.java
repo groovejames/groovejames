@@ -2,6 +2,7 @@ package groovejames.service;
 
 import groovejames.model.AutocompleteType;
 import groovejames.model.Country;
+import groovejames.model.ItemByPageNameResult;
 import groovejames.model.Playlist;
 import groovejames.model.SearchPlaylistsResultType;
 import groovejames.model.SearchSongsResultType;
@@ -69,5 +70,8 @@ public interface Grooveshark {
         throws Exception;
 
     Song getSongFromToken(@Param("token") String token, @Param("country") Country country)
+        throws Exception;
+
+    ItemByPageNameResult getItemByPageName(@Param("name") String name)
         throws Exception;
 }

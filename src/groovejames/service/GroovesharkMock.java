@@ -2,6 +2,7 @@ package groovejames.service;
 
 import groovejames.model.AutocompleteType;
 import groovejames.model.Country;
+import groovejames.model.ItemByPageNameResult;
 import groovejames.model.Playlist;
 import groovejames.model.SearchPlaylistsResultType;
 import groovejames.model.SearchSongsResultType;
@@ -249,6 +250,11 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
 
     @Override
     public Song getSongFromToken(String token, Country country) throws Exception {
+        return null;
+    }
+
+    @Override
+    public ItemByPageNameResult getItemByPageName(String name) throws Exception {
         return null;
     }
 }
