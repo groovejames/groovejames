@@ -2,17 +2,9 @@ package groovejames.model;
 
 public class ItemByPageNameResult {
 
-    private String type;
+    // either artist or song gets filled
     private Artist artist;
     private Song song;
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 
     public Artist getArtist() {
         return artist;

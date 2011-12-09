@@ -1,12 +1,6 @@
 - mp3 player: skip to next song sometimes stalls (or you have to wait until the background download is finished)
 - mp3 player: add seek forward/backward
 - watch clipboard for grooveshark and last.fm urls
-  - gs artist url:
-      http://grooveshark.com/theblackkeys
-      how to get artist id:
-        "method":"getItemByPageName","parameters":{"name":"sharon_jones_and_the_dap_kings"}
-        "result":{"type":"artist","artist":{"ArtistID":"413383","ArtistNameID":"279878","Name":"Sharon Jones and the Dap-Kings","SortName":"Sharon Jones and the Dap-Kings","CoverArtFilename":"413383.jpg","IsVerified":"1","Picture":""}}}
-
   - gs song url:
       http://grooveshark.com/s/Hallelujah/3fFFhG?src=5
       "http://grooveshark.com/s/" + songname + getTokenForSong(songID) + "?src=5"

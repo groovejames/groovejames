@@ -1,7 +1,9 @@
 package groovejames.service.search;
 
+import groovejames.model.Artist;
 import groovejames.model.AutocompleteType;
 import groovejames.model.Country;
+import groovejames.model.ItemByPageNameResult;
 import groovejames.model.Playlist;
 import groovejames.model.SearchPlaylistsResultType;
 import groovejames.model.SearchSongsResultType;
@@ -11,6 +13,8 @@ import groovejames.model.Songs;
 import groovejames.model.StreamKey;
 import groovejames.model.User;
 import groovejames.service.Grooveshark;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,6 +22,8 @@ import java.util.HashSet;
 import java.util.List;
 
 public class SearchService {
+
+    private static final Log log = LogFactory.getLog(SearchService.class);
 
     private final Grooveshark grooveshark;
 
@@ -63,7 +69,22 @@ public class SearchService {
             }
             case Artist: {
                 // search for all songs of the given artist
-                String artistID = ((ArtistSearch) searchParameter).getArtistID().toString();
+                String artistID;
+                if (searchParameter instanceof ArtistURLNameSearch) {
+                    // if we only got an url page name then we have to search for the artist ID first, using getItemByPageName()
+                    String artistURLName = ((ArtistURLNameSearch) searchParameter).getArtistURLName();
+                    ItemByPageNameResult itemByPageName = grooveshark.getItemByPageName(artistURLName);
+                    Artist artist = itemByPageName.getArtist();
+                    if (artist == null) {
+                        log.error("no artist found for name=" + artistURLName);
+                        result = new Song[]{};
+                        break;
+                    }
+                    artistID = artist.getArtistID();
+                } else {
+                    // if we get an ArtistSearch instance we already have the artist ID
+                    artistID = ((ArtistSearch) searchParameter).getArtistID().toString();
+                }
                 java.util.ArrayList<Song> allSongs = new java.util.ArrayList<Song>();
                 Songs songs = grooveshark.artistGetSongs(artistID, 0, true);
                 allSongs.addAll(Arrays.asList(songs.getSongs()));
