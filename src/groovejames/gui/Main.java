@@ -248,16 +248,7 @@ public class Main implements Application {
         playlistTable.setTableData(Services.getPlayService().getPlaylist());
         playlistTable.getComponentKeyListeners().add(new TableSelectAllKeyListener());
 
-        searchField.getComponentKeyListeners().add(new ComponentKeyListener.Adapter() {
-            @Override
-            public boolean keyTyped(Component searchField, char character) {
-                if (character == Keyboard.KeyCode.ENTER) {
-                    doSearch();
-                }
-                return false;  //do not consume this event
-            }
-        });
-        searchField.getTextInputContentListeners().add(new SuggestionPopupTextInputContentListener(
+        final SuggestionPopupTextInputContentListener suggestionPopupTextInputContentListener = new SuggestionPopupTextInputContentListener(
             new SuggestionsProvider<String>() {
                 @Override
                 public List<String> getSuggestions(String query) throws Exception {
@@ -277,7 +268,20 @@ public class Main implements Application {
                 public void executeGetSuggestionsFailed(String query, Exception exception) {
                     log.error(format("could not autocomplete '%s': %s", query, toErrorString(exception, "; reason: ")));
                 }
-            }));
+            });
+        searchField.getTextInputContentListeners().add(suggestionPopupTextInputContentListener);
+        searchField.getComponentKeyListeners().add(new ComponentKeyListener.Adapter() {
+            @Override
+            public boolean keyTyped(Component searchField, char character) {
+                if (character == Keyboard.KeyCode.ENTER) {
+                    if (suggestionPopupTextInputContentListener.getSuggestionPopup() != null) {
+                        suggestionPopupTextInputContentListener.getSuggestionPopup().close();
+                    }
+                    doSearch();
+                }
+                return false;  //do not consume this event
+            }
+        });
         searchButton.getButtonPressListeners().add(new ButtonPressListener() {
             @Override
             public void buttonPressed(Button button) {

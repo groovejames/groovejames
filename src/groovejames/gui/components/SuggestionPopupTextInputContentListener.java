@@ -41,6 +41,10 @@ public class SuggestionPopupTextInputContentListener extends TextInputContentLis
         return this;
     }
 
+    public SuggestionPopup getSuggestionPopup() {
+        return suggestionPopup;
+    }
+
     @Override
     public void textInserted(TextInput textInput, int index, int count) {
         getSuggestions(textInput);
