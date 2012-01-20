@@ -4,8 +4,6 @@ import groovejames.model.Country;
 import groovejames.util.JsonMarshaller;
 import groovejames.util.JsonUnmarshaller;
 import groovejames.util.Util;
-
-import static groovejames.util.Util.gunzip;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
@@ -31,6 +29,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.UUID;
+
+import static groovejames.util.Util.gunzip;
 
 class GroovesharkProxy implements InvocationHandler {
 
@@ -176,18 +176,17 @@ class GroovesharkProxy implements InvocationHandler {
     }
 
     private String createToken(String methodName, String clientName, String clientRevision, String secret)
-        throws IOException, ParseException
-    {
+        throws IOException, ParseException {
         String communicationToken = getCommunicationToken(clientName, clientRevision);
         String sixRandomLettersAndNumbers = Util.createRandomLettersAndNumbersOfLength(6);
         String s = String.format("%s:%s:%s:%s",
-                methodName, communicationToken, secret, sixRandomLettersAndNumbers);
+            methodName, communicationToken, secret, sixRandomLettersAndNumbers);
         s = Util.sha1(s);
         return sixRandomLettersAndNumbers + s;
     }
 
     private String getSessionID() throws IOException {
-        HttpGet httpGet = new HttpGet("http://listen.grooveshark.com");
+        HttpGet httpGet = new HttpGet("http://html5.grooveshark.com");
         try {
             HttpResponse response = httpClientService.getHttpClient().execute(httpGet);
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
@@ -214,8 +213,7 @@ class GroovesharkProxy implements InvocationHandler {
 
     @SuppressWarnings("unchecked")
     private CommunicationToken fetchNewCommunicationToken(String clientName, String clientRevision)
-        throws IOException, ParseException
-    {
+        throws IOException, ParseException {
         JSONObject jsonObject = new JSONObject();
         JSONObject jsonHeaderObject = new JSONObject();
         jsonHeaderObject.put("client", clientName);
