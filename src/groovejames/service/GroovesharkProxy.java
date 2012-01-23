@@ -10,9 +10,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HTTP;
 import org.json.simple.JSONObject;
@@ -27,6 +25,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.UUID;
 
@@ -55,7 +54,7 @@ class GroovesharkProxy implements InvocationHandler {
         this.sessionID = getSessionID();
     }
 
-    @SuppressWarnings({"unchecked"})
+    @Override @SuppressWarnings({"unchecked"})
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         if (methodsOfClassObject.contains(method))
             return null;
@@ -186,22 +185,39 @@ class GroovesharkProxy implements InvocationHandler {
     }
 
     private String getSessionID() throws IOException {
-        HttpGet httpGet = new HttpGet("http://html5.grooveshark.com");
+        // create a random PHP session id, something like "fae7efe67e55c2cb1d1777de4cc079b3" or "10bcda1a8690b74a4934b32dc6c13b06"
+        // it is a random number of 16 bytes as a 32 char hex string
+        StringBuilder sb = new StringBuilder();
+        Random r = new Random();
+        for (int i = 0; i < 16; i++) {
+            int b = r.nextInt(256);
+            if (b < 10) sb.append('0');
+            sb.append(Integer.toHexString(b));
+        }
+        String sessionID = sb.toString();
+        if (sessionID.length() != 32)
+            throw new AssertionError("invalid session id: " + sessionID + "; length=" + sessionID.length());
+        return sessionID;
+        /*
+        // formerly: get a new PHPSESSID cookie from grooveshark.com
+        String uri = "http://grooveshark.com";
+        HttpGet httpGet = new HttpGet(uri);
         try {
             HttpResponse response = httpClientService.getHttpClient().execute(httpGet);
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
                 throw new IOException("could not get session cookie (" + response.getStatusLine() + ")");
             }
             for (Cookie cookie : httpClientService.getHttpClient().getCookieStore().getCookies()) {
-//                log.info("cookie: " + cookie);
+                log.info("cookie: " + cookie);
                 if ("PHPSESSID".equals(cookie.getName())) {
                     return cookie.getValue();
                 }
             }
+            throw new IOException("could not find PHPSESSID cookie at " + uri);
         } finally {
             httpGet.abort();
         }
-        return null;
+        */
     }
 
     private synchronized String getCommunicationToken(String clientName, String clientRevision) throws IOException, ParseException {
