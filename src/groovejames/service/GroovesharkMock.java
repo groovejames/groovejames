@@ -48,11 +48,11 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
 
     @Override
     public Song[] getAutocomplete(AutocompleteType type, String query) {
-        return getSearchResultsEx(SearchSongsResultType.Artists, query);
+        return getResultsFromSearch(SearchSongsResultType.Artists, query);
     }
 
     @Override
-    public Song[] getSearchResultsEx(SearchSongsResultType type, String query) {
+    public Song[] getResultsFromSearch(SearchSongsResultType type, String query) {
         if (type == SearchSongsResultType.Artists) {
             Song song1 = new Song();
             song1.setArtistID(1L);
@@ -155,7 +155,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
     }
 
     @Override
-    public User[] getSearchResultsEx(SearchUsersResultType type, String query) {
+    public User[] getResultsFromSearch(SearchUsersResultType type, String query) {
         User user1 = new User();
         user1.setUserID(300L);
         user1.setUsername("wwonka");
@@ -204,7 +204,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
     @Override
     public Songs artistGetSongs(String artistID, int offset, boolean isVerified) {
         Songs songs = new Songs();
-        songs.setSongs(getSearchResultsEx(SearchSongsResultType.Songs, null));
+        songs.setSongs(getResultsFromSearch(SearchSongsResultType.Songs, null));
         songs.setHasMore(false);
         return songs;
     }
@@ -216,13 +216,13 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
 
     @Override
     public Song[] getFavorites(String userID, SearchSongsResultType ofWhat) {
-        return getSearchResultsEx(SearchSongsResultType.Songs, null);
+        return getResultsFromSearch(SearchSongsResultType.Songs, null);
     }
 
     @Override
     public Songs userGetSongsInLibrary(String userID, int page) throws Exception {
         Songs songs = new Songs();
-        songs.setSongs(getSearchResultsEx(SearchSongsResultType.Songs, null));
+        songs.setSongs(getResultsFromSearch(SearchSongsResultType.Songs, null));
         songs.setHasMore(false);
         return songs;
     }

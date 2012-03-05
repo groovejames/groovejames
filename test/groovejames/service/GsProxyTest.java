@@ -25,7 +25,7 @@ public class GsProxyTest {
         System.out.println(song);
 
         /*
-        Song[] songs = grooveshark.getSearchResultsEx(SearchSongsResultType.Songs, "The Cure");
+        Song[] songs = grooveshark.getResultsFromSearch(SearchSongsResultType.Songs, "The Cure");
         for (Song song : songs) {
             System.out.printf("%s (%s) - %s (%s) - %s (%s) - score:%f%n",
                 song.getArtistName(), song.getArtistID(),

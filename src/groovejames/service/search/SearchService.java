@@ -47,7 +47,7 @@ public class SearchService {
             case General: {
                 // search for song names via string search
                 String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
-                result = grooveshark.getSearchResultsEx(SearchSongsResultType.Songs, searchString);
+                result = grooveshark.getResultsFromSearch(SearchSongsResultType.Songs, searchString);
                 break;
             }
             case Album: {
@@ -145,7 +145,7 @@ public class SearchService {
         switch (searchType) {
             case General:
                 String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
-                result = normalizeScoreAndPopularity(grooveshark.getSearchResultsEx(SearchSongsResultType.Artists, searchString));
+                result = normalizeScoreAndPopularity(grooveshark.getResultsFromSearch(SearchSongsResultType.Artists, searchString));
                 break;
             default:
                 throw new IllegalArgumentException("invalid search type: " + searchType);
@@ -159,7 +159,7 @@ public class SearchService {
         switch (searchType) {
             case General:
                 String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
-                result = normalizeScoreAndPopularity(grooveshark.getSearchResultsEx(SearchSongsResultType.Albums, searchString));
+                result = normalizeScoreAndPopularity(grooveshark.getResultsFromSearch(SearchSongsResultType.Albums, searchString));
                 break;
             default:
                 throw new IllegalArgumentException("invalid search type: " + searchType);
@@ -173,7 +173,7 @@ public class SearchService {
         switch (searchType) {
             case General:
                 String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
-                result = normalizeScore(grooveshark.getSearchResultsEx(SearchUsersResultType.Users, searchString));
+                result = normalizeScore(grooveshark.getResultsFromSearch(SearchUsersResultType.Users, searchString));
                 break;
             default:
                 throw new IllegalArgumentException("invalid search type: " + searchType);
