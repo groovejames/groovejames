@@ -18,8 +18,7 @@ public interface Grooveshark {
     final String CLIENT_REVISION = System.getProperty("grooveshark.client.revision", "20120312");
 
     // hint: search for "$.Class.extend("GS.Controllers.ServiceController" in app-<version>.js
-//    final String SECRET = System.getProperty("grooveshark.secret", "circlesAndSquares");
-    final String SECRET = System.getProperty("grooveshark.secret", "breakfastBurritos");
+    final String SECRET = System.getProperty("grooveshark.secret", "circlesAndSquares");
 
     Song[] getAutocomplete(@Param("type") AutocompleteType type,
                            @Param("query") String query)
@@ -63,7 +62,6 @@ public interface Grooveshark {
         throws Exception;
 
     // hint: class com.grooveshark.jsQueue.Service in JSQueue.swf
-//    @Header(clientName = "jsqueue", clientRevision = "20120312.01", secret = "closeButNoCigar")
     @Header(clientName = "jsqueue", clientRevision = "20120312.05", secret = "circlesAndSquares") StreamKey getStreamKeyFromSongIDEx(@Param("songID") long songID,
                                                                                                                                      @Param("type") long type,
                                                                                                                                      @Param("mobile") boolean mobile,
