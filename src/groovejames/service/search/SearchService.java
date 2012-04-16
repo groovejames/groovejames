@@ -136,7 +136,7 @@ public class SearchService {
     }
 
     public StreamKey getStreamKeyFromSongID(long songID) throws Exception {
-        return grooveshark.getStreamKeyFromSongIDEx(songID, /*mobile*/ false, /*prefetch*/ false, Country.GSLITE_DEFAULT_COUNTRY);
+        return grooveshark.getStreamKeyFromSongIDEx(songID, /*type*/ 0, /*mobile*/ false, /*prefetch*/ false, Country.DEFAULT_COUNTRY);
     }
 
     public Song[] searchArtists(SearchParameter searchParameter) throws Exception {

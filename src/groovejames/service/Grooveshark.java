@@ -15,8 +15,11 @@ import groovejames.model.User;
 public interface Grooveshark {
 
     final String CLIENT_NAME = System.getProperty("grooveshark.client.name", "htmlshark");
-    final String CLIENT_REVISION = System.getProperty("grooveshark.client.revision", "20120227");
-    final String SECRET = System.getProperty("grooveshark.secret", "makeAllTheMoney");
+    final String CLIENT_REVISION = System.getProperty("grooveshark.client.revision", "20120312");
+
+    // hint: search for "$.Class.extend("GS.Controllers.ServiceController" in app-<version>.js
+//    final String SECRET = System.getProperty("grooveshark.secret", "circlesAndSquares");
+    final String SECRET = System.getProperty("grooveshark.secret", "breakfastBurritos");
 
     Song[] getAutocomplete(@Param("type") AutocompleteType type,
                            @Param("query") String query)
@@ -59,10 +62,13 @@ public interface Grooveshark {
     @ResultPath("Playlists") Playlist[] userGetPlaylists(@Param("userID") long userID)
         throws Exception;
 
-    @Header(clientName = "jsqueue", clientRevision = "20120227.01", secret = "dolphinBubbles") StreamKey getStreamKeyFromSongIDEx(@Param("songID") long songID,
-                                                                                                                                  @Param("mobile") boolean mobile,
-                                                                                                                                  @Param("prefetch") boolean prefetch,
-                                                                                                                                  @Param("country") Country country)
+    // hint: class com.grooveshark.jsQueue.Service in JSQueue.swf
+//    @Header(clientName = "jsqueue", clientRevision = "20120312.01", secret = "closeButNoCigar")
+    @Header(clientName = "jsqueue", clientRevision = "20120312.05", secret = "circlesAndSquares") StreamKey getStreamKeyFromSongIDEx(@Param("songID") long songID,
+                                                                                                                                     @Param("type") long type,
+                                                                                                                                     @Param("mobile") boolean mobile,
+                                                                                                                                     @Param("prefetch") boolean prefetch,
+                                                                                                                                     @Param("country") Country country)
         throws Exception;
 
     @ResultPath("Token") String getTokenForSong(@Param("songID") long songID, @Param("country") Country country)

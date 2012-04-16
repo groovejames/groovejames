@@ -18,10 +18,10 @@ public class GsProxyTest {
 //        httpClientService.setProxySettings(new ProxySettings("myproxy", 80));
         Grooveshark grooveshark = GroovesharkService.connect(httpClientService);
 
-        String tokenForSong = grooveshark.getTokenForSong(21866197, Country.GSLITE_GERMAN_COUNTRY);
+        String tokenForSong = grooveshark.getTokenForSong(21866197, Country.DEFAULT_COUNTRY);
         System.out.println(tokenForSong);
 
-        Song song = grooveshark.getSongFromToken(tokenForSong, Country.GSLITE_GERMAN_COUNTRY);
+        Song song = grooveshark.getSongFromToken(tokenForSong, Country.DEFAULT_COUNTRY);
         System.out.println(song);
 
         /*
@@ -36,7 +36,7 @@ public class GsProxyTest {
 
         long songID = songs[0].getSongID();
         StreamKey streamKey = grooveshark.getStreamKeyFromSongIDEx(songID,
-            false, false, Country.GSLITE_GERMAN_COUNTRY);
+            false, false, Country.GERMAN_COUNTRY);
         System.out.printf("%n%nstream key for song #0 id=%s: %s%n", songID, streamKey);
         */
     }

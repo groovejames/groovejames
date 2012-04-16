@@ -79,7 +79,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
             song1.setAlbumName("Odelay");
             song1.setSongName("New Pollution");
             song1.setTrackNum(1L);
-            song1.setEstimateDuration(278L);
+            song1.setEstimateDuration(278.0);
             song1.setScore(10000.0);
             song1.setPopularity(43049344.0);
 
@@ -91,7 +91,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
             song2.setAlbumName("Odelay");
             song2.setSongName("Devil's Haircut");
             song2.setTrackNum(2L);
-            song2.setEstimateDuration(328L);
+            song2.setEstimateDuration(328.0);
             song2.setScore(8500.0);
             song2.setPopularity(42042352.0);
 
@@ -103,7 +103,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
             song3.setAlbumName("Black Celebration");
             song3.setSongName("Black Celebration");
             song3.setTrackNum(1L);
-            song3.setEstimateDuration(60L);
+            song3.setEstimateDuration(60.0);
             song3.setScore(5000.0);
             song3.setPopularity(41320393.0);
 
@@ -115,7 +115,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
             song4.setAlbumName("Black Celebration");
             song4.setSongName("Flies on the windscreen");
             song4.setTrackNum(2L);
-            song4.setEstimateDuration(2032L);
+            song4.setEstimateDuration(2032.0);
             song4.setScore(0.0);
             song4.setPopularity(40584948.0);
 
@@ -127,7 +127,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
             song5.setAlbumName("Black Celebration");
             song5.setSongName("A Question Of Lust");
             song5.setTrackNum(3L);
-            song5.setEstimateDuration(30L);
+            song5.setEstimateDuration(30.0);
             song5.setScore(0.0);
 
             Song song6 = new Song();
@@ -137,7 +137,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
             song6.setAlbumID(3L);
             song6.setSongName("track1");
             song6.setTrackNum(1L);
-            song6.setEstimateDuration(37L);
+            song6.setEstimateDuration(37.0);
             song6.setScore(0.0);
 
             Song song7 = new Song();
@@ -147,7 +147,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
             song7.setAlbumID(3L);
             song7.setSongName("track2");
             song7.setTrackNum(2L);
-            song7.setEstimateDuration(28L);
+            song7.setEstimateDuration(28.0);
             song7.setScore(0.0);
 
             return new Song[]{song1, song2, song3, song4, song5, song6, song7};
@@ -239,7 +239,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
     }
 
     @Override
-    public StreamKey getStreamKeyFromSongIDEx(long songID, boolean mobile, boolean prefetch, Country country) {
+    public StreamKey getStreamKeyFromSongIDEx(long songID, long type, boolean mobile, boolean prefetch, Country country) {
         return new StreamKey("dummystreamkey-" + songID, "dummystreamserver.com", songID);
     }
 

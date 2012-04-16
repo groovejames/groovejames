@@ -15,7 +15,7 @@ public class Song extends ImageObject {
     private String coverArtFilename;
     private String year;
     private Long trackNum;
-    private Long estimateDuration; // in seconds
+    private Double estimateDuration; // in seconds
     private double popularity;
     private double popularityPercentage;
     private double score;
@@ -113,7 +113,7 @@ public class Song extends ImageObject {
      *
      * @return the estimate duration, in seconds, or {@code null} if duration is unknown
      */
-    public Long getEstimateDuration() {
+    public Double getEstimateDuration() {
         return estimateDuration;
     }
 
@@ -122,7 +122,7 @@ public class Song extends ImageObject {
      *
      * @param estimateDuration the estimate duration, in seconds, or {@code null} if duration is unknown
      */
-    public void setEstimateDuration(Long estimateDuration) {
+    public void setEstimateDuration(Double estimateDuration) {
         this.estimateDuration = estimateDuration;
     }
 

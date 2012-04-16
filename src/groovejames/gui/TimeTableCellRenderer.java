@@ -2,10 +2,11 @@ package groovejames.gui;
 
 import groovejames.model.Song;
 import groovejames.model.Track;
-import static groovejames.util.Util.durationToString;
 import org.apache.pivot.wtk.HorizontalAlignment;
 import org.apache.pivot.wtk.TableView;
 import org.apache.pivot.wtk.content.TableViewCellRenderer;
+
+import static groovejames.util.Util.durationToString;
 
 public class TimeTableCellRenderer extends TableViewCellRenderer {
 
@@ -25,7 +26,7 @@ public class TimeTableCellRenderer extends TableViewCellRenderer {
         return durationToString(getDuration(row));
     }
 
-    private Long getDuration(Object row) {
+    private Double getDuration(Object row) {
         if (row == null)
             return null;
         else if (row instanceof Song)

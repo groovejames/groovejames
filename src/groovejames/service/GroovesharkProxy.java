@@ -98,7 +98,7 @@ class GroovesharkProxy implements InvocationHandler {
         jsonHeader.put("session", sessionID);
         jsonHeader.put("uuid", uuid.toString().toUpperCase());
         jsonHeader.put("token", token);
-        jsonHeader.put("country", JsonMarshaller.marshall(Country.GSLITE_GERMAN_COUNTRY));
+        jsonHeader.put("country", JsonMarshaller.marshall(Country.DEFAULT_COUNTRY));
         jsonRequest.put("header", jsonHeader);
 
         if (log.isDebugEnabled())
@@ -235,6 +235,7 @@ class GroovesharkProxy implements InvocationHandler {
         jsonHeaderObject.put("client", clientName);
         jsonHeaderObject.put("clientRevision", clientRevision);
         jsonHeaderObject.put("privacy", 0);
+        jsonHeaderObject.put("country", JsonMarshaller.marshall(Country.DEFAULT_COUNTRY));
         jsonHeaderObject.put("session", sessionID);
         jsonHeaderObject.put("uuid", uuid.toString().toUpperCase());
         JSONObject jsonParametersObject = new JSONObject();

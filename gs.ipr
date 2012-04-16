@@ -395,9 +395,6 @@
         <ADDITIONAL_INDENT_OPTIONS fileType="haml">
           <option name="INDENT_SIZE" value="2" />
         </ADDITIONAL_INDENT_OPTIONS>
-        <ADDITIONAL_INDENT_OPTIONS fileType="yml">
-          <option name="INDENT_SIZE" value="2" />
-        </ADDITIONAL_INDENT_OPTIONS>
         <codeStyleSettings language="Groovy">
           <option name="METHOD_ANNOTATION_WRAP" value="1" />
           <option name="CLASS_ANNOTATION_WRAP" value="1" />

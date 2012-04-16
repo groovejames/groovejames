@@ -697,13 +697,13 @@ public class Main implements Application {
 
     private void updatePlayProgress(Track track, int audioPosition) {
         audioPosition = max(audioPosition, 0);
-        Long estimateDuration = track.getSong().getEstimateDuration();
-        if (estimateDuration != null && estimateDuration > 0L) {
+        Double estimateDuration = track.getSong().getEstimateDuration();
+        if (estimateDuration != null && estimateDuration > 0.0) {
             double percentage = (double) audioPosition / (estimateDuration * 1000L);
             playProgress.setPercentage(min(max(percentage, 0.0), 1.0));
-            playProgress.setText(format("%s / %s", durationToString(audioPosition / 1000L), durationToString(estimateDuration)));
+            playProgress.setText(format("%s / %s", durationToString(audioPosition / 1000.0), durationToString(estimateDuration)));
         } else {
-            playProgress.setText(durationToString(audioPosition / 1000L));
+            playProgress.setText(durationToString(audioPosition / 1000.0));
         }
     }
 
