@@ -7,7 +7,20 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pivot.beans.BXMLSerializer;
 import org.apache.pivot.util.Resources;
 import org.apache.pivot.util.Vote;
-import org.apache.pivot.wtk.*;
+import org.apache.pivot.wtk.Alert;
+import org.apache.pivot.wtk.Button;
+import org.apache.pivot.wtk.ButtonPressListener;
+import org.apache.pivot.wtk.ButtonStateListener;
+import org.apache.pivot.wtk.Checkbox;
+import org.apache.pivot.wtk.Form;
+import org.apache.pivot.wtk.Label;
+import org.apache.pivot.wtk.MessageType;
+import org.apache.pivot.wtk.Sheet;
+import org.apache.pivot.wtk.SheetCloseListener;
+import org.apache.pivot.wtk.SheetStateListener;
+import org.apache.pivot.wtk.TextInput;
+import org.apache.pivot.wtk.TextInputContentListener;
+import org.apache.pivot.wtk.Window;
 
 public class SettingsDialog {
 
@@ -35,6 +48,7 @@ public class SettingsDialog {
 
         final Form networkForm = (Form) serializer.getNamespace().get("networkForm");
         final Form downloadForm = (Form) serializer.getNamespace().get("downloadForm");
+        final Checkbox proxyEnabled = (Checkbox) serializer.getNamespace().get("proxyEnabled");
         final TextInput proxyHost = (TextInput) serializer.getNamespace().get("proxyHost");
         final TextInput proxyPort = (TextInput) serializer.getNamespace().get("proxyPort");
         final Button okButton = (Button) serializer.getNamespace().get("okButton");
@@ -44,6 +58,17 @@ public class SettingsDialog {
 
         networkForm.load(settings);
         downloadForm.load(settings);
+
+        proxyHost.setEnabled(settings.isProxyEnabled());
+        proxyPort.setEnabled(settings.isProxyEnabled());
+
+        proxyEnabled.getButtonStateListeners().add(new ButtonStateListener() {
+            @Override
+            public void stateChanged(Button button, Button.State previousState) {
+                proxyHost.setEnabled(button.isSelected());
+                proxyPort.setEnabled(button.isSelected());
+            }
+        });
 
         filenameScheme.getTextInputContentListeners().add(new TextInputContentListener.Adapter() {
             @Override

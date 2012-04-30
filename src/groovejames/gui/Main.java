@@ -166,6 +166,7 @@ public class Main implements Application {
     private Settings loadSettings() {
         Settings settings = new Settings();
         Preferences prefs = Preferences.userNodeForPackage(Settings.class);
+        settings.setProxyEnabled(prefs.getBoolean("proxyEnabled", settings.isProxyEnabled()));
         settings.setProxyHost(prefs.get("proxyHost", settings.getProxyHost()));
         settings.setProxyPort(prefs.getInt("proxyPort", settings.getProxyPort()));
         settings.setDownloadLocation(prefs.get("downloadLocation", settings.getDownloadLocation()));
@@ -175,6 +176,7 @@ public class Main implements Application {
 
     private void saveSettings() {
         Preferences prefs = Preferences.userNodeForPackage(Settings.class);
+        prefs.putBoolean("proxyEnabled", settings.isProxyEnabled());
         prefs.put("proxyHost", settings.getProxyHost());
         prefs.putInt("proxyPort", settings.getProxyPort());
         prefs.put("downloadLocation", settings.getDownloadLocation());
@@ -182,7 +184,7 @@ public class Main implements Application {
     }
 
     private void applySettings() {
-        Services.getHttpClientService().setProxySettings(!isEmpty(settings.getProxyHost()) ? new ProxySettings(settings.getProxyHost(), settings.getProxyPort()) : null);
+        Services.getHttpClientService().setProxySettings(settings.isProxyEnabled() && !isEmpty(settings.getProxyHost()) ? new ProxySettings(settings.getProxyHost(), settings.getProxyPort()) : null);
         Services.getDownloadService().setDownloadDir(new File(settings.getDownloadLocation()));
         Services.getDownloadService().getFilenameSchemeParser().setFilenameScheme(settings.getFilenameScheme());
         Services.resetGrooveshark();

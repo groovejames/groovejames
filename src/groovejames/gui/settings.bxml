@@ -21,6 +21,7 @@
                                 </TabPane.tabData>
                                 <sections>
                                     <Form.Section heading="Proxy">
+                                        <Checkbox bxml:id="proxyEnabled" selectedKey="proxyEnabled" Form.label="Enabled"/>
                                         <TextInput bxml:id="proxyHost" textKey="proxyHost" Form.label="HTTP Proxy"/>
                                         <TextInput bxml:id="proxyPort" textKey="proxyPort" Form.label="Port"
                                                    strictValidation="true" maximumLength="5">
@@ -50,7 +51,8 @@
                                                 <gjvalidation:FilenameSchemeTextValidator/>
                                             </validator>
                                         </TextInput>
-                                        <Label preferredWidth="300" styles="{wrapText:true}" text="This is a format string for file path of downloaded files. Use / to create a subdirectory. Use &lt;Artist&gt; to insert the artist's name, &lt;Album&gt; to insert the album title, &lt;Title&gt; to insert the track's name, &lt;#&gt; to insert the track number (if any). Use &lt;##&gt; or &lt;###&gt; to pad the track number with leading zeroes. &lt;ALBUM&gt; inserts the album name in uppercase, &lt;album&gt; in lowercase (likewise for &lt;Artist&gt; and &lt;Title&gt;). &lt;Album?text&gt; inserts 'text' only if the album name is not empty (likewise for &lt;Artist&gt;, &lt;Title&gt; and &lt;#&gt;)."/>
+                                        <Label preferredWidth="300" styles="{wrapText:true}"
+                                               text="This is a format string for file path of downloaded files. Use / to create a subdirectory. Use &lt;Artist&gt; to insert the artist's name, &lt;Album&gt; to insert the album title, &lt;Title&gt; to insert the track's name, &lt;#&gt; to insert the track number (if any). Use &lt;##&gt; or &lt;###&gt; to pad the track number with leading zeroes. &lt;ALBUM&gt; inserts the album name in uppercase, &lt;album&gt; in lowercase (likewise for &lt;Artist&gt; and &lt;Title&gt;). &lt;Album?text&gt; inserts 'text' only if the album name is not empty (likewise for &lt;Artist&gt;, &lt;Title&gt; and &lt;#&gt;)."/>
                                     </Form.Section>
                                 </sections>
                             </Form>
@@ -66,7 +68,7 @@
                         <TablePane.Row>
                             <BoxPane styles="{horizontalAlignment:'left', verticalAlignment:'center'}">
                                 <Label bxml:id="errorLabel" styles="{color:'red'}"/>
-                             </BoxPane>
+                            </BoxPane>
                             <BoxPane styles="{horizontalAlignment:'right', verticalAlignment:'center'}">
                                 <PushButton bxml:id="okButton" buttonData="OK" styles="%commandButton"/>
                                 <PushButton bxml:id="cancelButton" buttonData="Cancel" styles="%commandButton"/>

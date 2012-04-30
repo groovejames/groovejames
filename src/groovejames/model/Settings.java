@@ -5,10 +5,19 @@ import groovejames.service.FilenameSchemeParser;
 
 public class Settings {
 
+    private boolean proxyEnabled = false;
     private String proxyHost;
     private int proxyPort = 80;
     private String downloadLocation = DownloadService.defaultDownloadDir.getAbsolutePath();
     private String filenameScheme = FilenameSchemeParser.DEFAULT_FILENAME_SCHEME;
+
+    public boolean isProxyEnabled() {
+        return proxyEnabled;
+    }
+
+    public void setProxyEnabled(boolean proxyEnabled) {
+        this.proxyEnabled = proxyEnabled;
+    }
 
     public String getProxyHost() {
         return proxyHost;
