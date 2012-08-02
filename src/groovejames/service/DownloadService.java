@@ -35,7 +35,7 @@ public class DownloadService {
 
     private static final Log log = LogFactory.getLog(DownloadService.class);
 
-    private static final int numberOfParallelDownloads = Integer.getInteger("numberOfParallelDownloads", 10);
+    private static final int numberOfParallelDownloads = Integer.getInteger("numberOfParallelDownloads", 1);
 
     private static final int downloadBufferSize = 10240;
 
