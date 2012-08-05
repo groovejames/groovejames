@@ -191,7 +191,7 @@ class GroovesharkProxy implements InvocationHandler {
         Random r = new Random();
         for (int i = 0; i < 16; i++) {
             int b = r.nextInt(256);
-            if (b < 10) sb.append('0');
+            if (b < 16) sb.append('0');
             sb.append(Integer.toHexString(b));
         }
         String sessionID = sb.toString();
