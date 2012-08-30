@@ -675,7 +675,7 @@ public class Main implements Application {
                             downloadsTable.repaint();
                         }
                     }
-                }, 0, 100);
+                }, 0, 500);
             }
         }
     }
