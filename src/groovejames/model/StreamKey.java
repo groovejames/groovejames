@@ -7,7 +7,7 @@ public class StreamKey {
     private Long streamServerID;
 
     /** length of stream, in microseconds. */
-    private String uSecs;
+    private long uSecs;
 
     public StreamKey() {
     }
@@ -42,11 +42,11 @@ public class StreamKey {
         this.streamServerID = streamServerID;
     }
 
-    public String getuSecs() {
+    public long getuSecs() {
         return uSecs;
     }
 
-    public void setuSecs(String uSecs) {
+    public void setuSecs(long uSecs) {
         this.uSecs = uSecs;
     }
 

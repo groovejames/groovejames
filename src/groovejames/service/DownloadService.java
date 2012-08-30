@@ -183,6 +183,8 @@ public class DownloadService {
                 StreamKey streamKey = Services.getSearchService().getStreamKeyFromSongID(track.getSong().getSongID());
                 track.setStatus(Track.Status.DOWNLOADING);
                 track.setStartDownloadTime(System.currentTimeMillis());
+                if ((track.getSong().getEstimateDuration() == null || track.getSong().getEstimateDuration() <= 0.0) && streamKey.getuSecs() > 0)
+                    track.getSong().setEstimateDuration(streamKey.getuSecs() / 1000000.0);
                 fireDownloadStatusChanged();
                 if (Boolean.getBoolean("mockNet"))
                     fakedownload(streamKey);
