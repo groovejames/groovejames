@@ -53,18 +53,8 @@ public class SearchService {
             case Album: {
                 // search for songs of the given album
                 Long albumID = ((AlbumSearch) searchParameter).getAlbumID();
-                java.util.ArrayList<Song> allSongs = new java.util.ArrayList<Song>();
-                Songs songs = grooveshark.albumGetSongs(albumID, 0, true);
-                allSongs.addAll(Arrays.asList(songs.getSongs()));
-                boolean hasMore = true;
-                int offset = 0;
-                while (hasMore) {
-                    songs = grooveshark.albumGetSongs(albumID, offset, false);
-                    allSongs.addAll(Arrays.asList(songs.getSongs()));
-                    hasMore = songs.isHasMore();
-                    offset += songs.getSongs().length;
-                }
-                result = filterDuplicateSongs(allSongs);
+                Song[] songs = grooveshark.albumGetAllSongs(albumID);
+                result = filterDuplicateSongs(songs);
                 break;
             }
             case Artist: {
@@ -85,18 +75,8 @@ public class SearchService {
                     // if we get an ArtistSearch instance we already have the artist ID
                     artistID = ((ArtistSearch) searchParameter).getArtistID().toString();
                 }
-                java.util.ArrayList<Song> allSongs = new java.util.ArrayList<Song>();
-                Songs songs = grooveshark.artistGetSongs(artistID, 0, true);
-                allSongs.addAll(Arrays.asList(songs.getSongs()));
-                boolean hasMore = true;
-                int offset = 0;
-                while (hasMore) {
-                    songs = grooveshark.artistGetSongs(artistID, offset, false);
-                    allSongs.addAll(Arrays.asList(songs.getSongs()));
-                    hasMore = songs.isHasMore();
-                    offset += songs.getSongs().length;
-                }
-                result = filterDuplicateSongs(allSongs);
+                Song[] songs = grooveshark.artistGetAllSongs(artistID);
+                result = filterDuplicateSongs(songs);
                 break;
             }
             case User: {
@@ -114,7 +94,7 @@ public class SearchService {
                 // search for favorites, too
                 Song[] favorites = grooveshark.getFavorites(userID, SearchSongsResultType.Songs);
                 allSongs.addAll(Arrays.asList(favorites));
-                result = filterDuplicateSongs(allSongs);
+                result = filterDuplicateSongs(allSongs.toArray(new Song[allSongs.size()]));
                 break;
             }
             case Playlist: {
@@ -199,10 +179,10 @@ public class SearchService {
         return result;
     }
 
-    private Song[] filterDuplicateSongs(java.util.ArrayList<Song> allSongs) {
+    private Song[] filterDuplicateSongs(Song[] songs) {
         HashSet<Long> allSongsIds = new HashSet<Long>();
-        ArrayList<Song> resultList = new ArrayList<Song>(allSongs.size());
-        for (Song song : allSongs) {
+        ArrayList<Song> resultList = new ArrayList<Song>(songs.length);
+        for (Song song : songs) {
             Long songID = song.getSongID();
             if (!allSongsIds.contains(songID)) {
                 resultList.add(song);

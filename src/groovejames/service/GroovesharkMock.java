@@ -197,21 +197,21 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
     }
 
     @Override
-    public Songs albumGetSongs(Long albumID, int offset, boolean isVerified) {
-        return artistGetSongs(null, 0, false);
+    public Song[] albumGetAllSongs(Long albumID) {
+        return getResultsFromSearch(SearchSongsResultType.Songs, null);
     }
 
     @Override
-    public Songs artistGetSongs(String artistID, int offset, boolean isVerified) {
-        Songs songs = new Songs();
-        songs.setSongs(getResultsFromSearch(SearchSongsResultType.Songs, null));
-        songs.setHasMore(false);
-        return songs;
+    public Song[] artistGetAllSongs(String artistID) {
+        return getResultsFromSearch(SearchSongsResultType.Songs, null);
     }
 
     @Override
     public Songs playlistGetSongs(long playlistID) throws Exception {
-        return artistGetSongs(null, 0, false);
+        Songs songs = new Songs();
+        songs.setSongs(getResultsFromSearch(SearchSongsResultType.Songs, null));
+        songs.setHasMore(false);
+        return songs;
     }
 
     @Override

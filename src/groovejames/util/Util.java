@@ -138,7 +138,7 @@ public class Util {
         return baos.toByteArray();
     }
 
-    public static String createRandomLettersAndNumbersOfLength(int length) {
+    public static String createRandomHexNumber(int length) {
         Random random = new Random(System.currentTimeMillis());
         char[] result = new char[length];
         for (int i = 0; i < length; i++) {

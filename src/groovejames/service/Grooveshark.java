@@ -17,8 +17,11 @@ public interface Grooveshark {
     final String CLIENT_NAME = System.getProperty("grooveshark.client.name", "htmlshark");
     final String CLIENT_REVISION = System.getProperty("grooveshark.client.revision", "20120312");
 
-    // hint: search for "$.Class.extend("GS.Controllers.ServiceController" in app-<version>.js
-    final String SECRET = System.getProperty("grooveshark.secret", "circlesAndSquares");
+    // hint: search for "$.Class.extend("GS.Controllers.ServiceController" in app.js
+    // or controllerKey in com.grooveshark.jsQueue.Controller in JSQueue.swf
+//    final String SECRET = System.getProperty("grooveshark.secret", "circlesAndSquares");
+//    final String SECRET = System.getProperty("grooveshark.secret", "grahamCrackersRYummy");
+    final String SECRET = System.getProperty("grooveshark.secret", "breakfastBurritos");
 
     Song[] getAutocomplete(@Param("type") AutocompleteType type,
                            @Param("query") String query)
@@ -36,15 +39,10 @@ public interface Grooveshark {
                                                           @Param("query") String query)
         throws Exception;
 
-    Songs albumGetSongs(@Param("albumID") Long albumID,
-                        @Param("offset") int offset,
-                        @Param("isVerified") boolean isVerified)
+    Song[] albumGetAllSongs(@Param("albumID") Long albumID)
         throws Exception;
 
-
-    Songs artistGetSongs(@Param("artistID") String artistID,
-                         @Param("offset") int offset,
-                         @Param("isVerified") boolean isVerified)
+    Song[] artistGetAllSongs(@Param("artistID") String artistID)
         throws Exception;
 
     Songs playlistGetSongs(@Param("playlistID") long playlistID)
@@ -62,11 +60,12 @@ public interface Grooveshark {
         throws Exception;
 
     // hint: class com.grooveshark.jsQueue.Service in JSQueue.swf
-    @Header(clientName = "jsqueue", clientRevision = "20120312.05", secret = "circlesAndSquares") StreamKey getStreamKeyFromSongIDEx(@Param("songID") long songID,
-                                                                                                                                     @Param("type") long type,
-                                                                                                                                     @Param("mobile") boolean mobile,
-                                                                                                                                     @Param("prefetch") boolean prefetch,
-                                                                                                                                     @Param("country") Country country)
+    @Header(clientName = "jsqueue", clientRevision = "20120312.08", secret = "circlesAndSquares")
+    StreamKey getStreamKeyFromSongIDEx(@Param("songID") long songID,
+                                       @Param("type") long type,
+                                       @Param("mobile") boolean mobile,
+                                       @Param("prefetch") boolean prefetch,
+                                       @Param("country") Country country)
         throws Exception;
 
     @ResultPath("Token") String getTokenForSong(@Param("songID") long songID, @Param("country") Country country)
