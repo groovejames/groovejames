@@ -31,9 +31,9 @@ public class MP3Player {
      */
     protected AudioDevice audio;
     /**
-     * Has the player been closed?
+     * Has the player been closed forcefully?
      */
-    protected boolean closed = false;
+    protected boolean closeForced = false;
     /**
      * Has the player played back all frames from the stream?
      */
@@ -131,15 +131,6 @@ public class MP3Player {
         return complete;
     }
 
-    /**
-     * Set the new completed status of this player -- only used for tests.
-     *
-     * @param complete the new completed status of this player.
-     */
-    public synchronized void setComplete(boolean complete) {
-        this.complete = complete;
-    }
-
     public void play() throws JavaLayerException {
         currentFrame = 0;
         play(Integer.MAX_VALUE);
@@ -169,7 +160,7 @@ public class MP3Player {
     public synchronized void stop() {
         AudioDevice out = audio;
         if (out != null) {
-            closed = true;
+            closeForced = true;
             audio = null;
 //			out.flush();
             out.close();
@@ -206,7 +197,7 @@ public class MP3Player {
             if (out != null) {
                 out.flush();
                 synchronized (this) {
-                    complete = !closed;
+                    complete = !closeForced && currentFrame > 0;
                     stop();
                 }
 

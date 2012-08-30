@@ -77,7 +77,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
             song1.setArtistName("Beck");
             song1.setAlbumID(1L);
             song1.setAlbumName("Odelay");
-            song1.setSongName("New Pollution");
+            song1.setSongName("New Pollution (track2)");
             song1.setTrackNum(1L);
             song1.setEstimateDuration(278.0);
             song1.setScore(10000.0);
@@ -89,7 +89,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
             song2.setArtistName("Beck");
             song2.setAlbumID(1L);
             song2.setAlbumName("Odelay");
-            song2.setSongName("Devil's Haircut");
+            song2.setSongName("Devil's Haircut (track1)");
             song2.setTrackNum(2L);
             song2.setEstimateDuration(328.0);
             song2.setScore(8500.0);
@@ -101,7 +101,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
             song3.setArtistName("Depeche Mode");
             song3.setAlbumID(2L);
             song3.setAlbumName("Black Celebration");
-            song3.setSongName("Black Celebration");
+            song3.setSongName("Black Celebration (track2)");
             song3.setTrackNum(1L);
             song3.setEstimateDuration(60.0);
             song3.setScore(5000.0);
@@ -113,7 +113,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
             song4.setArtistName("Depeche Mode");
             song4.setAlbumID(2L);
             song4.setAlbumName("Black Celebration");
-            song4.setSongName("Flies on the windscreen");
+            song4.setSongName("Flies on the windscreen (track1)");
             song4.setTrackNum(2L);
             song4.setEstimateDuration(2032.0);
             song4.setScore(0.0);
@@ -125,7 +125,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
             song5.setArtistName("Depeche Mode");
             song5.setAlbumID(2L);
             song5.setAlbumName("Black Celebration");
-            song5.setSongName("A Question Of Lust");
+            song5.setSongName("A Question Of Lust (track2)");
             song5.setTrackNum(3L);
             song5.setEstimateDuration(30.0);
             song5.setScore(0.0);
@@ -135,7 +135,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
             song6.setArtistID(3L);
             song6.setArtistName("Dead Kennedys");
             song6.setAlbumID(3L);
-            song6.setSongName("track1");
+            song6.setSongName("Hyperactive child (track1)");
             song6.setTrackNum(1L);
             song6.setEstimateDuration(37.0);
             song6.setScore(0.0);
@@ -145,7 +145,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
             song7.setArtistID(3L);
             song7.setArtistName("Dead Kennedys");
             song7.setAlbumID(3L);
-            song7.setSongName("track2");
+            song7.setSongName("I like short songs (track2)");
             song7.setTrackNum(2L);
             song7.setEstimateDuration(28.0);
             song7.setScore(0.0);

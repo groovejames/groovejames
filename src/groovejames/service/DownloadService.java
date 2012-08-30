@@ -105,8 +105,8 @@ public class DownloadService {
         Track track = new Track(song, store);
         int additionalAbortDelay = 0;
         boolean downloadWasInterrupted = cancelDownload(track, true);
-        if (downloadWasInterrupted)
-            additionalAbortDelay = forPlay ? 2000 : 5000;
+        if (downloadWasInterrupted && !forPlay)
+            additionalAbortDelay += 5000;
         additionalAbortDelay += Math.max(nextSongMustSleepUntil - System.currentTimeMillis(), 0);
         DownloadTask downloadTask = new DownloadTask(track, additionalAbortDelay, downloadListener);
         currentlyRunningDownloads.add(downloadTask);
@@ -265,7 +265,9 @@ public class DownloadService {
         private void fakedownload(StreamKey streamKey) throws InterruptedException, IOException {
             httpPost = new HttpPost(format("http://%s/stream.php", streamKey.getIp()));
             Thread.sleep(1000);
-            File file = new File(format("test/groovejames/mp3player/%s.mp3", track.getSongName()));
+            String songName = track.getSongName();
+            songName = songName.contains("track1") ? "track1" : songName.contains("track2") ? "track2" : songName;
+            File file = new File(format("test/groovejames/mp3player/%s.mp3", songName));
             Store store = track.getStore();
             OutputStream storeOutputStream = store.getOutputStream();
             OutputStream outputStream = new MonitoredOutputStream(storeOutputStream);

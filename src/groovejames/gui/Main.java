@@ -762,6 +762,7 @@ public class Main implements Application {
                     } else {
                         updatePlayInfo(track, "Now playing");
                     }
+                    playlistTable.repaint();
                 }
             });
         }
