@@ -33,6 +33,6 @@ public class MemoryStore implements Store {
     }
 
     @Override public boolean isSameLocation(Store other) {
-        return false;
+        return true;
     }
 }

@@ -104,14 +104,11 @@ public class DownloadService {
     private Track download(Song song, Store store, DownloadListener downloadListener, boolean forPlay) {
         Track track = new Track(song, store);
         int additionalAbortDelay = 0;
-        DownloadTask downloadTask = findDownloadTask(track);
-        if (downloadTask != null) {
-            boolean downloadWasInterrupted = cancelDownload(downloadTask.track, true);
-            if (downloadWasInterrupted)
-                additionalAbortDelay = 5000;
-        }
+        boolean downloadWasInterrupted = cancelDownload(track, true);
+        if (downloadWasInterrupted)
+            additionalAbortDelay = forPlay ? 2000 : 5000;
         additionalAbortDelay += Math.max(nextSongMustSleepUntil - System.currentTimeMillis(), 0);
-        downloadTask = new DownloadTask(track, additionalAbortDelay, downloadListener);
+        DownloadTask downloadTask = new DownloadTask(track, additionalAbortDelay, downloadListener);
         currentlyRunningDownloads.add(downloadTask);
         if (forPlay) {
             executorServiceForPlay.submit(downloadTask);
@@ -123,10 +120,14 @@ public class DownloadService {
     }
 
     public synchronized boolean cancelDownload(Track track, boolean deleteStore) {
-        boolean downloadWasInterrupted = false;
         DownloadTask downloadTask = findDownloadTask(track);
-        currentlyRunningDownloads.remove(downloadTask);
+        return cancelDownload(downloadTask, deleteStore);
+    }
+
+    private synchronized boolean cancelDownload(DownloadTask downloadTask, boolean deleteStore) {
+        boolean downloadWasInterrupted = false;
         if (downloadTask != null) {
+            currentlyRunningDownloads.remove(downloadTask);
             downloadWasInterrupted = downloadTask.abort();
             if (deleteStore) {
                 downloadTask.track.getStore().deleteStore();
@@ -151,7 +152,7 @@ public class DownloadService {
         executorServiceForPlay.shutdownNow();
         ArrayList<DownloadTask> downloadsCopy = new ArrayList<DownloadTask>(currentlyRunningDownloads);
         for (DownloadTask downloadTask : downloadsCopy) {
-            cancelDownload(downloadTask.track, true);
+            cancelDownload(downloadTask, true);
         }
     }
 
