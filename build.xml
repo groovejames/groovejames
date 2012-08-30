@@ -63,6 +63,7 @@
         <copy file="grooveJames.exe" tofile="out/grooveJames-${version}.exe"/>
         <zip destfile="out/grooveJames-${version}-bin.zip">
             <zipfileset dir="out" includes="grooveJames.jar, grooveJames-${version}.exe"/>
+            <zipfileset dir="." includes="CHANGES.txt"/>
         </zip>
     </target>
 
