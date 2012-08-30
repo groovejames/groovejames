@@ -249,6 +249,18 @@ public class Main implements Application {
         playlistTable.getColumns().get(0).setCellRenderer(new PlaylistCellRenderer(Services.getPlayService()));
         playlistTable.setTableData(Services.getPlayService().getPlaylist());
         playlistTable.getComponentKeyListeners().add(new TableSelectAllKeyListener());
+        playlistTable.getComponentMouseButtonListeners().add(new ComponentMouseButtonListener.Adapter() {
+            @Override
+            public boolean mouseClick(Component component, Mouse.Button button, int x, int y, int count) {
+                if(count > 1) {
+                    int row = playlistTable.getRowAt(y);
+                    if (row >= 0) {
+                        Services.getPlayService().setCurrentTrackIndex(row);
+                    }
+                }
+                return false;
+            }
+        });
 
         final SuggestionPopupTextInputContentListener suggestionPopupTextInputContentListener = new SuggestionPopupTextInputContentListener(
             new SuggestionsProvider<String>() {
@@ -681,7 +693,10 @@ public class Main implements Application {
     }
 
     private void updatePlayInfo(Track track, String prefix) {
-        nowPlayingLabel.setText(format("%s: %s - %s - %s", prefix, track.getArtistName(), track.getAlbumName(), track.getSongName()));
+        String text = format("%s: %s - %s", prefix, track.getArtistName(), track.getSongName());
+        if (!isEmpty(track.getAlbumName()))
+            text += " - from «" + track.getAlbumName() + "»";
+        nowPlayingLabel.setText(text);
     }
 
     private void resetPlayInfo() {
