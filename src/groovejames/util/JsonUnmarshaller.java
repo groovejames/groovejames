@@ -20,7 +20,7 @@ public class JsonUnmarshaller {
     private static final Log log = LogFactory.getLog(JsonUnmarshaller.class);
     private static final boolean checkForUnusedParameters = false;
 
-    public Object unmarshall(Object jsonResult, Class<?> type) {
+    public static Object unmarshall(Object jsonResult, Class<?> type) {
         try {
             if (type.isArray())
                 return unmarshallArray(jsonResult, type.getComponentType());
@@ -33,7 +33,7 @@ public class JsonUnmarshaller {
         }
     }
 
-    private Object unmarshallObject(Object jsonResult, Class<?> type) throws InstantiationException, IllegalAccessException, IntrospectionException, InvocationTargetException {
+    private static Object unmarshallObject(Object jsonResult, Class<?> type) throws InstantiationException, IllegalAccessException, IntrospectionException, InvocationTargetException {
         if (jsonResult == null)
             return null;
         if (!(jsonResult instanceof JSONObject))
@@ -83,7 +83,7 @@ public class JsonUnmarshaller {
         return result;
     }
 
-    private Object[] unmarshallArray(Object jsonResult, Class<?> componentType) {
+    private static Object[] unmarshallArray(Object jsonResult, Class<?> componentType) {
         if (!(jsonResult instanceof JSONArray))
             throw new RuntimeException("expected JSONArray, got " + jsonResult.getClass() + ", for component type " + componentType);
         JSONArray jsonArray = (JSONArray) jsonResult;

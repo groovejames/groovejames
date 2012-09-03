@@ -10,7 +10,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HTTP;
@@ -28,8 +27,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static groovejames.util.Util.gunzip;
 
@@ -44,8 +41,6 @@ class GroovesharkProxy implements InvocationHandler {
     private static final int GS_COMMUNICATION_TOKEN_DURATION = 1500000;
 
     private static List<Method> methodsOfClassObject = Arrays.asList(Object.class.getMethods());
-
-    private static final String controllerKey = "breakfastBurritos";
 
     private final HttpClientService httpClientService;
     private final String sessionID;
@@ -175,7 +170,7 @@ class GroovesharkProxy implements InvocationHandler {
             }
         }
 
-        return new JsonUnmarshaller().unmarshall(jsonResult, method.getReturnType());
+        return JsonUnmarshaller.unmarshall(jsonResult, method.getReturnType());
     }
 
     private Param findParamAnnotation(Annotation[] parameterAnnotations) {
@@ -207,12 +202,14 @@ class GroovesharkProxy implements InvocationHandler {
     }
 
     private String getSessionID() throws IOException {
-        /* previously:
+        /* previously: */
         // create a random PHP session id, something like "fae7efe67e55c2cb1d1777de4cc079b3" or "10bcda1a8690b74a4934b32dc6c13b06"
         // it is a random number of 16 bytes as a 32 char hex string
-        return Util.createRandomHexNumber(32);
-        */
+        String sessionID = Util.createRandomHexNumber(32);
+        log.info("create fake sessionID: " + sessionID);
+        return sessionID;
 
+/*
         String uri = "http://w69b-groove.appspot.com/";
         HttpGet httpGet = new HttpGet(uri);
         httpGet.setHeader("Host", "w69b-groove.appspot.com");
@@ -236,6 +233,7 @@ class GroovesharkProxy implements InvocationHandler {
             return sessionID;
         }
         throw new IOException("could not find sessionID at " + uri);
+*/
     }
 
     private synchronized String getCommunicationToken(String clientName, String clientRevision) throws IOException, ParseException {
