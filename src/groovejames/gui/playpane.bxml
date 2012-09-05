@@ -48,7 +48,7 @@
             <Border TablePane.columnSpan="6">
                 <ScrollPane horizontalScrollBarPolicy="fill_to_capacity" verticalScrollBarPolicy="fill_to_capacity">
                     <view>
-                        <TableView bxml:id="playlistTable"
+                        <TableView bxml:id="playerTable"
                                    selectMode="multi"
                                    styles="{showVerticalGridLines:true}">
                             <columns>
@@ -65,7 +65,7 @@
                         </TableView>
                     </view>
                     <columnHeader>
-                        <TableViewHeader tableView="$playlistTable"
+                        <TableViewHeader tableView="$playerTable"
                                          styles="{columnsResizable:true}"/>
                     </columnHeader>
                 </ScrollPane>

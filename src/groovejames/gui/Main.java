@@ -107,7 +107,7 @@ public class Main implements Application {
     @BXML private PushButton searchButton;
     @BXML private PushButton clipboardButton;
     @BXML private TableView downloadsTable;
-    @BXML private TableView playlistTable;
+    @BXML private TableView playerTable;
     @BXML private Label nowPlayingLabel;
     @BXML private Meter playProgress;
     @BXML private Meter playDownloadProgress;
@@ -225,7 +225,6 @@ public class Main implements Application {
             new Keyboard.KeyStroke(Keyboard.KeyCode.R, Platform.getCommandModifier().getMask()),
             "reloadGUI"));
 
-        TooltipTableMouseListener.install(downloadsTable);
         downloadsTable.setTableData(downloadTracks);
         downloadsTable.getTableViewSortListeners().add(new DefaultTableViewSortListener());
         downloadsTable.getComponentKeyListeners().add(new TableSelectAllKeyListener());
@@ -244,16 +243,17 @@ public class Main implements Application {
                 return false;
             }
         });
+        TooltipTableMouseListener.install(downloadsTable);
+        WtkUtil.setupColumnWidthSaver(downloadsTable, "downloadsTable");
 
-        TooltipTableMouseListener.install(playlistTable);
-        playlistTable.getColumns().get(0).setCellRenderer(new PlaylistCellRenderer(Services.getPlayService()));
-        playlistTable.setTableData(Services.getPlayService().getPlaylist());
-        playlistTable.getComponentKeyListeners().add(new TableSelectAllKeyListener());
-        playlistTable.getComponentMouseButtonListeners().add(new ComponentMouseButtonListener.Adapter() {
+        playerTable.getColumns().get(0).setCellRenderer(new PlaylistCellRenderer(Services.getPlayService()));
+        playerTable.setTableData(Services.getPlayService().getPlaylist());
+        playerTable.getComponentKeyListeners().add(new TableSelectAllKeyListener());
+        playerTable.getComponentMouseButtonListeners().add(new ComponentMouseButtonListener.Adapter() {
             @Override
             public boolean mouseClick(Component component, Mouse.Button button, int x, int y, int count) {
                 if(count > 1) {
-                    int row = playlistTable.getRowAt(y);
+                    int row = playerTable.getRowAt(y);
                     if (row >= 0) {
                         Services.getPlayService().setCurrentTrackIndex(row);
                     }
@@ -261,6 +261,8 @@ public class Main implements Application {
                 return false;
             }
         });
+        TooltipTableMouseListener.install(playerTable);
+        WtkUtil.setupColumnWidthSaver(playerTable, "playerTable");
 
         final SuggestionPopupTextInputContentListener suggestionPopupTextInputContentListener = new SuggestionPopupTextInputContentListener(
             new SuggestionsProvider<String>() {
@@ -731,7 +733,7 @@ public class Main implements Application {
                 public void run() {
                     updatePlayInfo(track, "Now playing");
                     updatePlayPauseButton(true);
-                    playlistTable.repaint();
+                    playerTable.repaint();
                 }
             });
         }
@@ -741,7 +743,7 @@ public class Main implements Application {
                 public void run() {
                     updatePlayInfo(track, "Paused");
                     updatePlayPauseButton(false);
-                    playlistTable.repaint();
+                    playerTable.repaint();
                 }
             });
         }
@@ -755,7 +757,7 @@ public class Main implements Application {
                         resetPlayInfo();
                     }
                     updatePlayPauseButton(false);
-                    playlistTable.repaint();
+                    playerTable.repaint();
                 }
             });
         }
@@ -777,7 +779,7 @@ public class Main implements Application {
                     } else {
                         updatePlayInfo(track, "Now playing");
                     }
-                    playlistTable.repaint();
+                    playerTable.repaint();
                 }
             });
         }

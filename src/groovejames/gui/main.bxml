@@ -68,7 +68,7 @@
                                       if (tabPane.selectedIndex == 0)
                                         downloadsTable.requestFocus();
                                       else if (tabPane.selectedIndex == 1)
-                                        playlistTable.requestFocus();
+                                        playerTable.requestFocus();
                                     }
                                 </tabPaneSelectionListeners>
                             </TabPane>

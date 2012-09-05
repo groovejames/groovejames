@@ -33,9 +33,13 @@ public class WtkUtil {
         tableView.getColumns().remove(columnToRemove);
     }
 
+    public static void setupColumnWidthSaver(final TableView tableView, final String tableKey) {
+        setupColumnWidthSaver(tableView, tableKey, null);
+    }
+
     public static void setupColumnWidthSaver(final TableView tableView, final String tableKey, final String subKey) {
         try {
-            Preferences columnPrefs = prefs.node(tableKey).node(subKey).node("columns");
+            Preferences columnPrefs = getTableColumnPrefs(tableKey, subKey);
             ArrayList<TableView.Column> columns = WtkUtil.getColumns(tableView, columnPrefs.keys());
             for (TableView.Column column : columns) {
                 if (!column.isRelative()) {
@@ -53,10 +57,17 @@ public class WtkUtil {
                 if (!column.getTableView().isVisible()) return;
                 if (tableView.getUserData().get("dontRedistributeColumnWidths") == Boolean.TRUE) return;
                 if (column.isRelative()) return;
-                Preferences columnPrefs = prefs.node(tableKey).node(subKey).node("columns");
+                Preferences columnPrefs = getTableColumnPrefs(tableKey, subKey);
                 columnPrefs.putInt(column.getName(), column.getWidth());
             }
         });
+    }
+
+    private static Preferences getTableColumnPrefs(String tableKey, String subKey) {
+        Preferences columnPrefs = prefs.node(tableKey);
+        if (subKey != null) columnPrefs = columnPrefs.node(subKey);
+        columnPrefs = columnPrefs.node("columns");
+        return columnPrefs;
     }
 
 }
