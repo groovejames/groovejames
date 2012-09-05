@@ -1,5 +1,7 @@
 r15-dev (unreleased)
   - NEW: double click in player's playlist to change current song
+  - NEW: replaced "Play Now" dropdown button with two buttons "Play" and "Enqueue"
+  - NEW: context menu on songs table
   - get a session id faster by simply faking one, leads to faster startup
   - fixed saving column widths for download and player table
 

@@ -24,12 +24,13 @@ import org.apache.pivot.collections.immutable.ImmutableList;
 import org.apache.pivot.util.Filter;
 import org.apache.pivot.util.Resources;
 import org.apache.pivot.util.concurrent.TaskExecutionException;
-import org.apache.pivot.wtk.Button;
-import org.apache.pivot.wtk.ButtonPressListener;
+import org.apache.pivot.wtk.Action;
 import org.apache.pivot.wtk.Component;
 import org.apache.pivot.wtk.ComponentKeyListener;
 import org.apache.pivot.wtk.ListButton;
 import org.apache.pivot.wtk.ListButtonSelectionListener;
+import org.apache.pivot.wtk.Menu;
+import org.apache.pivot.wtk.MenuHandler;
 import org.apache.pivot.wtk.Mouse;
 import org.apache.pivot.wtk.PushButton;
 import org.apache.pivot.wtk.SortDirection;
@@ -55,7 +56,8 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
     private @BXML ListButton songGroupByButton;
     private @BXML SplitPane songSplitPane;
     private @BXML PushButton downloadButton;
-    private @BXML ListButton playButton;
+    private @BXML PushButton playButton;
+    private @BXML PushButton enqueueButton;
     private @BXML TextInput songSearchInPage;
 
     private Main main;
@@ -67,6 +69,37 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
 
     @Override public void initialize(Map<String, Object> namespace, URL location, Resources resources) {
         this.main = (Main) namespace.get("main");
+
+        final Action downloadAction = new Action() {
+            @Override public void perform(Component source) {
+                Sequence<?> selectedRows = songTable.getSelectedRows();
+                for (int i = 0, len = selectedRows.getLength(); i < len; i++) {
+                    Song song = (Song) selectedRows.get(i);
+                    main.download(song);
+                }
+            }
+        };
+        downloadAction.setEnabled(false);
+
+        final Action playAction = new Action() {
+            @Override @SuppressWarnings("unchecked") public void perform(Component source) {
+                Sequence<Song> selectedRows = (Sequence<Song>) songTable.getSelectedRows();
+                main.play(selectedRows, PlayService.AddMode.NOW);
+            }
+        };
+        playAction.setEnabled(false);
+
+        final Action enqueueAction = new Action() {
+            @Override @SuppressWarnings("unchecked") public void perform(Component source) {
+                Sequence<Song> selectedRows = (Sequence<Song>) songTable.getSelectedRows();
+                main.play(selectedRows, PlayService.AddMode.LAST);
+            }
+        };
+        enqueueAction.setEnabled(false);
+
+        downloadButton.setAction(downloadAction);
+        playButton.setAction(playAction);
+        enqueueButton.setAction(enqueueAction);
 
         songGroupByButton.getListButtonSelectionListeners().add(new ListButtonSelectionListener.Adapter() {
             @Override public void selectedIndexChanged(ListButton listButton, int previousSelectedIndex) {
@@ -143,48 +176,44 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
                 for (Span span : ranges) {
                     length += span.getLength();
                 }
-                downloadButton.setEnabled(length > 0);
-                downloadButton.setButtonData(new ButtonData(
-                    ((ButtonData) downloadButton.getButtonData()).getIcon(),
-                    "Download" + (length == 0 ? "" : " (" + length + ")")
-                ));
-                playButton.setEnabled(length > 0);
-                for (Object listData : playButton.getListData()) {
-                    ListIdItem item = (ListIdItem) listData;
-                    item.setText(item.getUserData().toString() + (length == 0 ? "" : " (" + length + ")"));
-                }
+                downloadAction.setEnabled(length > 0);
+                playAction.setEnabled(length > 0);
+                enqueueAction.setEnabled(length > 0);
+                String suffix = length == 0 ? "" : " (" + length + ")";
+                downloadButton.setButtonData(new ButtonData(((ButtonData) downloadButton.getButtonData()).getIcon(), "Download" + suffix));
+                playButton.setButtonData(new ButtonData(((ButtonData) playButton.getButtonData()).getIcon(), "Play Now" + suffix));
+                enqueueButton.setButtonData(new ButtonData(((ButtonData) enqueueButton.getButtonData()).getIcon(), "Enqueue" + suffix));
             }
         });
+        songTable.setMenuHandler(new MenuHandler.Adapter() {
+            @Override
+            public boolean configureContextMenu(Component component, Menu menu, int x, int y) {
+                int length = 0;
+                ImmutableList<Span> ranges = songTable.getSelectedRanges();
+                for (Span span : ranges) {
+                    length += span.getLength();
+                }
+                String suffix = length == 0 ? "" : length == 1 ? " this file" : " " + length + " files";
+                Menu.Item downloadMenuItem = new Menu.Item("Download" + suffix);
+                downloadMenuItem.setAction(downloadAction);
+                Menu.Item playMenuItem = new Menu.Item("Play" + suffix);
+                playMenuItem.setAction(playAction);
+                Menu.Item enqueueMenuItem = new Menu.Item("Enqueue" + suffix);
+                enqueueMenuItem.setAction(enqueueAction);
+                Menu.Section menuSection = new Menu.Section();
+                menuSection.add(downloadMenuItem);
+                menuSection.add(playMenuItem);
+                menuSection.add(enqueueMenuItem);
+                menu.getSections().add(menuSection);
+                return false;
+            }
+        });
+
 
         songSearchInPage.getComponentKeyListeners().add(new ComponentKeyListener.Adapter() {
             @Override public boolean keyTyped(Component searchField, char character) {
                 songList.setFilter(new SongListFilter());
                 return false;
-            }
-        });
-
-        downloadButton.getButtonPressListeners().add(new ButtonPressListener() {
-            @Override public void buttonPressed(Button button) {
-                Sequence<?> selectedRows = songTable.getSelectedRows();
-                for (int i = 0, len = selectedRows.getLength(); i < len; i++) {
-                    Song song = (Song) selectedRows.get(i);
-                    main.download(song);
-                }
-            }
-        });
-
-        playButton.getButtonPressListeners().add(new ButtonPressListener() {
-            @Override @SuppressWarnings("unchecked")
-            public void buttonPressed(Button button) {
-                ListIdItem listIdItem = (ListIdItem) playButton.getSelectedItem();
-                String listItemId = listIdItem.getId();
-                PlayService.AddMode addMode =
-                    listItemId.equals("playNow") ? PlayService.AddMode.NOW
-                        : listItemId.equals("playNext") ? PlayService.AddMode.NEXT
-                        : listItemId.equals("playLast") ? PlayService.AddMode.LAST
-                        : PlayService.AddMode.REPLACE;
-                Sequence<Song> selectedRows = (Sequence<Song>) songTable.getSelectedRows();
-                main.play(selectedRows, addMode);
             }
         });
     }

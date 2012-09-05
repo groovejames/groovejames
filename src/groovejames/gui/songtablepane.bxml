@@ -9,6 +9,7 @@
     <columns>
         <TablePane.Column width="-1"/>
         <TablePane.Column width="-1"/>
+        <TablePane.Column width="-1"/>
         <TablePane.Column width="1*"/>
         <TablePane.Column width="-1"/>
         <TablePane.Column width="-1"/>
@@ -20,16 +21,16 @@
                     <content:ButtonData text="Download" icon="@images/download.png"/>
                 </buttonData>
             </PushButton>
-            <ListButton bxml:id="playButton" enabled="false" selectedIndex="0" repeatable="true">
-                <listData>
-                    <collections:ArrayList>
-                        <guicomponents:ListIdItem bxml:id="songPlayNowButton" id="playNow" text="Play Now" icon="@images/player_play.png" userData="Play Now"/>
-                        <guicomponents:ListIdItem bxml:id="songPlayNextButton" id="playNext" text="Play Next" icon="@images/player_play.png" userData="Play Next"/>
-                        <guicomponents:ListIdItem bxml:id="songPlayLastButton" id="playLast" text="Play Last" icon="@images/player_play.png" userData="Play Last"/>
-                        <guicomponents:ListIdItem bxml:id="songPlayReplaceButton" id="playReplace" text="Replace Current Songs" icon="@images/player_play.png" userData="Replace Current Songs"/>
-                    </collections:ArrayList>
-                </listData>
-            </ListButton>
+            <PushButton bxml:id="playButton" enabled="false">
+                <buttonData>
+                    <content:ButtonData text="Play Now" icon="@images/player_play.png"/>
+                </buttonData>
+            </PushButton>
+            <PushButton bxml:id="enqueueButton" enabled="false">
+                <buttonData>
+                    <content:ButtonData text="Enqueue" icon="@images/player_enqueue.png"/>
+                </buttonData>
+            </PushButton>
             <TablePane.Filler/>
             <ListButton bxml:id="songGroupByButton" selectedIndex="0">
                 <listData>
@@ -42,7 +43,7 @@
             <TextInput bxml:id="songSearchInPage" prompt="Search in page..."/>
         </TablePane.Row>
         <TablePane.Row height="1*">
-            <SplitPane bxml:id="songSplitPane" splitRatio="0.25" orientation="horizontal" TablePane.columnSpan="5">
+            <SplitPane bxml:id="songSplitPane" splitRatio="0.25" orientation="horizontal" TablePane.columnSpan="6">
                 <left>
                     <Border>
                         <content>
