@@ -4,7 +4,6 @@
                    xmlns:content="org.apache.pivot.wtk.content"
                    xmlns:gui="groovejames.gui"
                    xmlns:guicomponents="groovejames.gui.components"
-                   xmlns:model="groovejames.model"
                    styles="{horizontalSpacing:6, verticalSpacing:6}">
     <columns>
         <TablePane.Column width="-1"/>
@@ -47,7 +46,8 @@
                 <left>
                     <Border>
                         <content>
-                            <ScrollPane horizontalScrollBarPolicy="fill_to_capacity" verticalScrollBarPolicy="fill_to_capacity">
+                            <ScrollPane horizontalScrollBarPolicy="fill_to_capacity"
+                                        verticalScrollBarPolicy="fill_to_capacity">
                                 <view>
                                     <TableView
                                             bxml:id="songAlbumTable"
@@ -60,7 +60,7 @@
                                                     <guicomponents:ImageObjectCellRenderer
                                                             bxml:id="songAlbumImageRenderer"
                                                             preferredHeight="40"
-                                                            urlPrefix="http://beta.grooveshark.com/static/amazonart/m"
+                                                            urlPrefix="http://images.grooveshark.com/static/albums/"
                                                             defaultImage="@images/unknownSong.png"/>
                                                 </cellRenderer>
                                             </TableView.Column>

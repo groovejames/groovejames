@@ -1,75 +1,109 @@
-<TablePane xmlns="org.apache.pivot.wtk"
+<SplitPane xmlns="org.apache.pivot.wtk"
            xmlns:content="org.apache.pivot.wtk.content"
            xmlns:gui="groovejames.gui"
            xmlns:bxml="http://pivot.apache.org/bxml"
-           styles="{horizontalSpacing:6, verticalSpacing: 6}">
+           orientation="horizontal"
+           splitRatio="0.3">
     <TabPane.tabData>
         <content:ButtonData text="Playlist"/>
     </TabPane.tabData>
-    <columns>
-        <TablePane.Column/>
-        <TablePane.Column/>
-        <TablePane.Column/>
-        <TablePane.Column/>
-        <TablePane.Column width="1*"/>
-        <TablePane.Column/>
-    </columns>
-    <rows>
-        <TablePane.Row>
-            <PushButton bxml:id="songPlayPauseButton" action="songPlayPause" tooltipText="Play/Pause" styles="{toolbar: true}">
-                <buttonData>
-                    <content:ButtonData icon="@images/player_play.png"/>
-                </buttonData>
-            </PushButton>
-            <PushButton action="songPrevious" tooltipText="Skip to previous song" styles="{toolbar: true}">
-                <buttonData>
-                    <content:ButtonData icon="@images/player_rew.png"/>
-                </buttonData>
-            </PushButton>
-            <PushButton action="songNext" tooltipText="Skip to next song" styles="{toolbar: true}">
-                <buttonData>
-                    <content:ButtonData icon="@images/player_fwd.png"/>
-                </buttonData>
-            </PushButton>
-            <PushButton action="songClearPlaylist" tooltipText="Clear playlist (remove all songs)" styles="{toolbar: true}">
-                <buttonData>
-                    <content:ButtonData icon="@images/trash.png"/>
-                </buttonData>
-            </PushButton>
-            <Label bxml:id="nowPlayingLabel" styles="{verticalAlignment:'center', font:{bold:true,size:'120%'}}"/>
-            <BoxPane orientation="vertical" styles="{verticalAlignment:'bottom', fill:true, spacing:0}">
-                <Meter bxml:id="playProgress" percentage="1.0" preferredHeight="15"
-                       styles="{font:{bold:false}, gridFrequency:1.0, gridColor:'0xA0A0A040'}"/>
-                <Meter bxml:id="playDownloadProgress" percentage="1.0" preferredHeight="2"
-                       styles="{color:'0x202080FF', gridFrequency:1.0, gridColor:'0x00000000'}"/>
-            </BoxPane>
-        </TablePane.Row>
-        <TablePane.Row height="1*">
-            <Border TablePane.columnSpan="6">
-                <ScrollPane horizontalScrollBarPolicy="fill_to_capacity" verticalScrollBarPolicy="fill_to_capacity">
-                    <view>
-                        <TableView bxml:id="playerTable"
-                                   selectMode="multi"
-                                   styles="{showVerticalGridLines:true}">
-                            <columns>
-                                <TableView.Column name="isPlaying" width="20"/>
-                                <TableView.Column name="songName" headerData="Name" width="190"/>
-                                <TableView.Column name="artistName" headerData="Artist" width="155"/>
-                                <TableView.Column name="albumName" headerData="Album" width="155"/>
-                                <TableView.Column name="estimateDuration" headerData="Length" width="45">
-                                    <cellRenderer>
-                                        <gui:TimeTableCellRenderer/>
-                                    </cellRenderer>
-                                </TableView.Column>
-                            </columns>
-                        </TableView>
-                    </view>
-                    <columnHeader>
-                        <TableViewHeader tableView="$playerTable"
-                                         styles="{columnsResizable:true}"/>
-                    </columnHeader>
-                </ScrollPane>
-            </Border>
-        </TablePane.Row>
-    </rows>
-</TablePane>
+    <left>
+        <TablePane>
+            <columns>
+                <TablePane.Column width="1*"/>
+            </columns>
+            <rows>
+                <TablePane.Row>
+                    <FlowPane>
+                        <PushButton bxml:id="songPlayPauseButton" action="songPlayPause" tooltipText="Play/Pause"
+                                    styles="{toolbar: true}">
+                            <buttonData>
+                                <content:ButtonData icon="@images/player_play.png"/>
+                            </buttonData>
+                        </PushButton>
+                        <PushButton action="songPrevious" tooltipText="Skip to previous song" styles="{toolbar: true}">
+                            <buttonData>
+                                <content:ButtonData icon="@images/player_rew.png"/>
+                            </buttonData>
+                        </PushButton>
+                        <PushButton action="songNext" tooltipText="Skip to next song" styles="{toolbar: true}">
+                            <buttonData>
+                                <content:ButtonData icon="@images/player_fwd.png"/>
+                            </buttonData>
+                        </PushButton>
+                        <PushButton action="songClearPlaylist" tooltipText="Clear playlist (remove all songs)"
+                                    styles="{toolbar: true}">
+                            <buttonData>
+                                <content:ButtonData icon="@images/trash.png"/>
+                            </buttonData>
+                        </PushButton>
+                    </FlowPane>
+                </TablePane.Row>
+                <TablePane.Row>
+                    <Separator/>
+                </TablePane.Row>
+                <TablePane.Row>
+                    <Label bxml:id="nowPlayingLabel" visible="false" text="Now playing:"
+                           styles="{font:{bold:true,size:'120%'}}"/>
+                </TablePane.Row>
+                <TablePane.Row>
+                    <Separator bxml:id="nowPlayingSeparator" visible="false"/>
+                </TablePane.Row>
+                <TablePane.Row>
+                    <Label bxml:id="nowPlayingArtist" visible="false"
+                           styles="{wrapText:true, font:{bold:true,size:'160%'}}"/>
+                </TablePane.Row>
+                <TablePane.Row>
+                    <Label bxml:id="nowPlayingSongname" visible="false"
+                           styles="{wrapText:true, font:{bold:true,size:'130%'}, padding:{top:5,bottom:10}}"/>
+                </TablePane.Row>
+                <TablePane.Row>
+                    <Label bxml:id="nowPlayingFromTheAlbum" visible="false" text="from the album"/>
+                </TablePane.Row>
+                <TablePane.Row>
+                    <Label bxml:id="nowPlayingAlbum" visible="false"
+                           styles="{wrapText:true, font:{size:'120%'}, padding:{bottom:10}}"/>
+                </TablePane.Row>
+                <TablePane.Row height="1*">
+                    <ImageView bxml:id="nowPlayingImage" visible="false"
+                               styles="{fill:true}"/>
+                </TablePane.Row>
+                <TablePane.Row>
+                    <BoxPane orientation="vertical"
+                             styles="{verticalAlignment:'bottom', fill:true, spacing:0, padding:{top:5}}">
+                        <Meter bxml:id="playProgress" percentage="0.0" preferredHeight="15" visible="false"
+                               styles="{font:{bold:false}, gridFrequency:1.0, gridColor:'0xA0A0A000'}"/>
+                        <Meter bxml:id="playDownloadProgress" percentage="0.0" preferredHeight="2" visible="false"
+                               styles="{color:'0x202080FF', gridFrequency:1.0, gridColor:'0x00000000'}"/>
+                    </BoxPane>
+                </TablePane.Row>
+            </rows>
+        </TablePane>
+    </left>
+    <right>
+        <Border>
+            <ScrollPane horizontalScrollBarPolicy="fill_to_capacity" verticalScrollBarPolicy="fill_to_capacity">
+                <view>
+                    <TableView bxml:id="playerTable"
+                               selectMode="multi"
+                               styles="{showVerticalGridLines:true}">
+                        <columns>
+                            <TableView.Column name="isPlaying" width="20"/>
+                            <TableView.Column name="songName" headerData="Name" width="180"/>
+                            <TableView.Column name="artistName" headerData="Artist" width="140"/>
+                            <TableView.Column name="albumName" headerData="Album" width="140"/>
+                            <TableView.Column name="estimateDuration" headerData="Length" width="45">
+                                <cellRenderer>
+                                    <gui:TimeTableCellRenderer/>
+                                </cellRenderer>
+                            </TableView.Column>
+                        </columns>
+                    </TableView>
+                </view>
+                <columnHeader>
+                    <TableViewHeader tableView="$playerTable" styles="{columnsResizable:true}"/>
+                </columnHeader>
+            </ScrollPane>
+        </Border>
+    </right>
+</SplitPane>

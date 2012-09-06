@@ -7,6 +7,7 @@ import groovejames.gui.clipboard.GroovesharkUserClipboardListener;
 import groovejames.gui.clipboard.WatchClipboardTask;
 import groovejames.gui.components.DefaultTableViewSortListener;
 import groovejames.gui.components.FixedTerraTooltipSkin;
+import groovejames.gui.components.ImageLoader;
 import groovejames.gui.components.SuggestionPopupTextInputContentListener;
 import groovejames.gui.components.SuggestionsProvider;
 import groovejames.gui.components.TableSelectAllKeyListener;
@@ -45,6 +46,7 @@ import org.apache.pivot.wtk.ComponentKeyListener;
 import org.apache.pivot.wtk.ComponentMouseButtonListener;
 import org.apache.pivot.wtk.DesktopApplicationContext;
 import org.apache.pivot.wtk.Display;
+import org.apache.pivot.wtk.ImageView;
 import org.apache.pivot.wtk.Keyboard;
 import org.apache.pivot.wtk.Label;
 import org.apache.pivot.wtk.Menu;
@@ -56,6 +58,7 @@ import org.apache.pivot.wtk.Platform;
 import org.apache.pivot.wtk.Prompt;
 import org.apache.pivot.wtk.PushButton;
 import org.apache.pivot.wtk.ScrollPane;
+import org.apache.pivot.wtk.Separator;
 import org.apache.pivot.wtk.Sheet;
 import org.apache.pivot.wtk.SheetCloseListener;
 import org.apache.pivot.wtk.SplitPane;
@@ -97,6 +100,7 @@ public class Main implements Application {
     private Resources resources;
     private Display display;
     private WatchClipboardTask watchClipboardTask;
+    private ImageLoader imageLoader;
     private final ArrayList<Track> downloadTracks = new ArrayList<Track>();
 
     @BXML private Window window;
@@ -109,6 +113,12 @@ public class Main implements Application {
     @BXML private TableView downloadsTable;
     @BXML private TableView playerTable;
     @BXML private Label nowPlayingLabel;
+    @BXML private Label nowPlayingArtist;
+    @BXML private Label nowPlayingSongname;
+    @BXML private Label nowPlayingFromTheAlbum;
+    @BXML private Label nowPlayingAlbum;
+    @BXML private ImageView nowPlayingImage;
+    @BXML private Separator nowPlayingSeparator;
     @BXML private Meter playProgress;
     @BXML private Meter playDownloadProgress;
     @BXML private PushButton songPlayPauseButton;
@@ -152,6 +162,8 @@ public class Main implements Application {
 
         this.settings = loadSettings();
         this.downloadTracks.getListListeners().add(new TrackListListener());
+        this.imageLoader = new ImageLoader();
+        this.imageLoader.setUrlPrefix("http://images.grooveshark.com/static/albums/");
 
         Services.getPlayService().setListener(new PlaylistListener());
 
@@ -252,7 +264,7 @@ public class Main implements Application {
         playerTable.getComponentMouseButtonListeners().add(new ComponentMouseButtonListener.Adapter() {
             @Override
             public boolean mouseClick(Component component, Mouse.Button button, int x, int y, int count) {
-                if(count > 1) {
+                if (count > 1) {
                     int row = playerTable.getRowAt(y);
                     if (row >= 0) {
                         Services.getPlayService().setCurrentTrackIndex(row);
@@ -404,7 +416,7 @@ public class Main implements Application {
     private void showLowerSplitPane() {
         if (mainSplitPane.getSplitRatio() >= 0.95f) {
             float splitRatio = Preferences.userNodeForPackage(Main.class).node("mainSplitPane").getFloat("splitRatio", 0.5f);
-            SplitRatioTransition transition = new SplitRatioTransition(mainSplitPane, splitRatio, 600, 50);
+            SplitRatioTransition transition = new SplitRatioTransition(mainSplitPane, splitRatio, 600, 100);
             transition.start();
         }
     }
@@ -694,16 +706,45 @@ public class Main implements Application {
         }
     }
 
-    private void updatePlayInfo(Track track, String prefix) {
-        String text = format("%s: %s - %s", prefix, track.getArtistName(), track.getSongName());
-        if (!isEmpty(track.getAlbumName()))
-            text += " - from «" + track.getAlbumName() + "»";
-        nowPlayingLabel.setText(text);
+    private void updatePlayInfo(Track track, String nowPlayingText) {
+        nowPlayingLabel.setVisible(true);
+        nowPlayingLabel.setText(nowPlayingText);
+        nowPlayingArtist.setVisible(true);
+        nowPlayingArtist.setText(track.getArtistName());
+        nowPlayingSongname.setVisible(true);
+        nowPlayingSongname.setText(track.getSongName());
+        if (!isEmpty(track.getAlbumName())) {
+            nowPlayingFromTheAlbum.setVisible(true);
+            nowPlayingAlbum.setVisible(true);
+            nowPlayingAlbum.setText("«" + track.getAlbumName() + "»");
+        } else {
+            nowPlayingFromTheAlbum.setVisible(false);
+            nowPlayingAlbum.setVisible(false);
+            nowPlayingAlbum.setText("");
+        }
+        nowPlayingImage.setVisible(true);
+        nowPlayingImage.setImage(imageLoader.getImage(track.getSong(), nowPlayingImage));
+        nowPlayingSeparator.setVisible(true);
+        playDownloadProgress.setVisible(true);
+        playProgress.setVisible(true);
     }
 
     private void resetPlayInfo() {
+        nowPlayingLabel.setVisible(false);
         nowPlayingLabel.setText("");
-        playDownloadProgress.setPercentage(1.0);
+        nowPlayingArtist.setVisible(false);
+        nowPlayingArtist.setText("");
+        nowPlayingSongname.setVisible(false);
+        nowPlayingSongname.setText("");
+        nowPlayingFromTheAlbum.setVisible(false);
+        nowPlayingAlbum.setVisible(false);
+        nowPlayingAlbum.setText("");
+        nowPlayingImage.setVisible(false);
+        nowPlayingImage.setImage((Image) null);
+        nowPlayingSeparator.setVisible(false);
+        playDownloadProgress.setVisible(false);
+        playDownloadProgress.setPercentage(0.0);
+        playProgress.setVisible(false);
         playProgress.setPercentage(0.0);
         playProgress.setText("");
     }
@@ -752,7 +793,7 @@ public class Main implements Application {
             ApplicationContext.queueCallback(new Runnable() {
                 public void run() {
                     if (track.getStatus() == Track.Status.ERROR) {
-                        updatePlayInfo(track, "ERROR playing");
+                        updatePlayInfo(track, "ERROR");
                     } else {
                         resetPlayInfo();
                     }

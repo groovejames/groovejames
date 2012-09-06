@@ -29,7 +29,7 @@
                                             <guicomponents:ImageObjectCellRenderer
                                                     bxml:id="playlistImageRenderer"
                                                     preferredHeight="40"
-                                                    urlPrefix="http://images.grooveshark.com/static/playlists/30_"
+                                                    urlPrefix="http://images.grooveshark.com/static/playlists/40_"
                                                     defaultImage="@images/unknownSong.png"/>
                                         </cellRenderer>
                                     </TableView.Column>

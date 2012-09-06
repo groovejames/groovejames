@@ -1,10 +1,7 @@
 <gui:AlbumTablePane xmlns="org.apache.pivot.wtk"
                     xmlns:bxml="http://pivot.apache.org/bxml"
-                    xmlns:collections="org.apache.pivot.collections"
-                    xmlns:content="org.apache.pivot.wtk.content"
                     xmlns:gui="groovejames.gui"
                     xmlns:guicomponents="groovejames.gui.components"
-                    xmlns:model="groovejames.model"
                     styles="{verticalSpacing:6}">
     <columns>
         <TablePane.Column width="1*"/>
@@ -30,7 +27,7 @@
                                             <guicomponents:ImageObjectCellRenderer
                                                     bxml:id="albumImageRenderer"
                                                     preferredHeight="40"
-                                                    urlPrefix="http://beta.grooveshark.com/static/amazonart/m"
+                                                    urlPrefix="http://images.grooveshark.com/static/albums/40_"
                                                     defaultImage="@images/unknownSong.png"/>
                                         </cellRenderer>
                                     </TableView.Column>
