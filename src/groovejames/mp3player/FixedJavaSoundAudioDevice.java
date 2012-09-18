@@ -64,9 +64,7 @@ public class FixedJavaSoundAudioDevice extends AudioDeviceBase {
 
     protected DataLine.Info getSourceLineInfo() {
         AudioFormat fmt = getAudioFormat();
-        //DataLine.Info info = new DataLine.Info(SourceDataLine.class, fmt, 4000);
-        DataLine.Info info = new DataLine.Info(SourceDataLine.class, fmt);
-        return info;
+        return new DataLine.Info(SourceDataLine.class, fmt);
     }
 
     public void open(AudioFormat fmt) throws JavaLayerException {

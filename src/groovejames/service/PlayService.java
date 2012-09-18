@@ -118,8 +118,8 @@ public class PlayService {
         Song currentSong = getCurrentSong();
         if (currentSong != null && !playThread.isStopForced()) {
             log.info("pausing: " + currentSong);
-            pausedFrame = playThread.forceStop();
             pausedAudioPosition = playThread.getCurrentPosition();
+            pausedFrame = playThread.forceStop();
             try {
                 playThread.join();
             } catch (InterruptedException e) {
