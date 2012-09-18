@@ -63,6 +63,8 @@ public class JsonUnmarshaller {
                     Object valueToSet;
                     if (value instanceof String)
                         valueToSet = Util.coerce((String) value, propertyDescriptor.getPropertyType());
+                    else if (value instanceof Long)
+                        valueToSet = Util.coerce((Long) value, propertyDescriptor.getPropertyType());
                     else
                         valueToSet = value;
                     try {

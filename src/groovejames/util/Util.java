@@ -182,7 +182,7 @@ public class Util {
     /**
      * Coerces a string value to a primitive type.
      *
-     * @param value string value
+     * @param value string value, may not be null
      * @param type  result type
      * @return The coerced value
      */
@@ -208,6 +208,33 @@ public class Util {
             coercedValue = Float.parseFloat(value);
         } else if (type == Double.class || type == Double.TYPE) {
             coercedValue = Double.parseDouble(value);
+        } else {
+            coercedValue = value;
+        }
+        return coercedValue;
+    }
+
+    /**
+     * Coerces a long value to a primitive type.
+     *
+     * @param value long value
+     * @param type  result type
+     * @return The coerced value
+     */
+    public static Object coerce(long value, Class<?> type) {
+        Object coercedValue;
+        if (type == Boolean.class || type == Boolean.TYPE) {
+            coercedValue = value == 0 ? Boolean.FALSE : Boolean.TRUE;
+        } else if (type == Byte.class || type == Byte.TYPE) {
+            coercedValue = new Long(value).byteValue();
+        } else if (type == Short.class || type == Short.TYPE) {
+            coercedValue = new Long(value).shortValue();
+        } else if (type == Integer.class || type == Integer.TYPE) {
+            coercedValue = new Long(value).intValue();
+        } else if (type == Float.class || type == Float.TYPE) {
+            coercedValue = new Long(value).floatValue();
+        } else if (type == Double.class || type == Double.TYPE) {
+            coercedValue = new Long(value).doubleValue();
         } else {
             coercedValue = value;
         }

@@ -263,8 +263,9 @@ class GroovesharkProxy implements InvocationHandler {
         jsonObject.put("parameters", jsonParametersObject);
         if (log.isDebugEnabled()) log.debug("getCommunicationToken request: " + jsonObject.toJSONString());
 
-        HttpPost httpPost = new HttpPost("https://grooveshark.com/more.php");
+        HttpPost httpPost = new HttpPost("https://grooveshark.com/more.php?getCommunicationToken");
         httpPost.setHeader(HTTP.CONTENT_TYPE, "application/json");
+        httpPost.setHeader("Referer", "http://grooveshark.com/JSQueue.swf?20120521.04");
         httpPost.setEntity(new StringEntity(jsonObject.toJSONString(), "UTF-8"));
         HttpResponse httpResponse = httpClientService.getHttpClient().execute(httpPost);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

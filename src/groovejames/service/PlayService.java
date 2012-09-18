@@ -2,12 +2,15 @@ package groovejames.service;
 
 import groovejames.model.Song;
 import groovejames.model.Track;
+import groovejames.mp3player.FixedJavaSoundAudioDevice;
 import groovejames.mp3player.MP3Player;
 import groovejames.mp3player.PlayThread;
 import groovejames.mp3player.PlaybackListener;
+import javazoom.jl.player.AudioDevice;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pivot.collections.ArrayList;
+import org.apache.pivot.collections.LinkedList;
 import org.apache.pivot.collections.Sequence;
 
 import java.io.IOException;
@@ -21,17 +24,26 @@ public class PlayService {
 
     private static final Log log = LogFactory.getLog(PlayService.class);
 
+    /**
+     * how many bytes to pre-download before actually begin playing
+     */
+    private static final long PLAY_BUFFER_SIZE = 50000L;
+
     private final DownloadService downloadService;
+    private final AudioDevice audioDevice;
     private final ArrayList<Song> playlist = new ArrayList<Song>();
     private int currentSongIndex = -1;
     private Track currentTrack;
     private int pausedFrame = -1;
     private int pausedAudioPosition = 0;
     private PlayServiceListener listener;
-    private PlayThread playThread = new PlayThread();
+    private PlayThread playThread;
+    private boolean radio;
 
     public PlayService(DownloadService downloadService) {
         this.downloadService = downloadService;
+        this.audioDevice = new FixedJavaSoundAudioDevice();
+        this.playThread = new PlayThread(audioDevice);
     }
 
     public void setListener(PlayServiceListener listener) {
@@ -106,8 +118,8 @@ public class PlayService {
         Song currentSong = getCurrentSong();
         if (currentSong != null && !playThread.isStopForced()) {
             log.info("pausing: " + currentSong);
-            pausedAudioPosition = playThread.getCurrentPosition();
             pausedFrame = playThread.forceStop();
+            pausedAudioPosition = playThread.getCurrentPosition();
             try {
                 playThread.join();
             } catch (InterruptedException e) {
@@ -140,6 +152,7 @@ public class PlayService {
         stopPlaying();
         currentSongIndex = -1;
         playlist.clear();
+        radio = false;
     }
 
     /**
@@ -148,7 +161,7 @@ public class PlayService {
      * @return current audio position, in milliseconds
      */
     public int getCurrentPosition() {
-        return playThread != null ? playThread.getCurrentPosition() : 0;
+        return playThread.getCurrentPosition();
     }
 
     /**
@@ -182,19 +195,44 @@ public class PlayService {
         return currentTrack;
     }
 
+    public void setRadio(boolean radio) {
+        if (!radio) { // switch off radio
+            this.radio = radio;
+            return;
+        }
+        // to enable radio playlist must not be empty
+        if (playlist.isEmpty())
+            return;
+        this.radio = radio;
+        addNextRadioSong();
+    }
+
     private Song getCurrentSong() {
         return currentSongIndex >= 0 ? playlist.get(currentSongIndex) : null;
     }
 
-    private void startPlaying(Song song, int framePosition, int audioPosition) {
+    private void startPlaying(final Song song, final int framePosition, final int audioPosition) {
+        if (currentTrack != null && currentTrack.getSong() != song)
+            stopPlaying();
+        log.info("starting from " + framePosition + ": " + song);
+        if (currentTrack == null || currentTrack.getSong() != song) {
+            currentTrack = downloadService.downloadToMemory(song, new ChainedPlayServiceListener(listener) {
+                @Override public void downloadedBytesChanged(Track track) {
+                    if (!isPlaying() && !isPaused() && track.getDownloadedBytes() > PLAY_BUFFER_SIZE) {
+                        startPlayingCurrentTrack(framePosition, audioPosition);
+                    }
+                    super.downloadedBytesChanged(track);
+                }
+            });
+        } else {
+            startPlayingCurrentTrack(framePosition, audioPosition);
+        }
+    }
+
+    private void startPlayingCurrentTrack(int framePosition, int audioPosition) {
         try {
-            if (currentTrack != null && currentTrack.getSong() != song)
-                stopPlaying();
-            log.info("starting from " + framePosition + ": " + song);
-            if (currentTrack == null || currentTrack.getSong() != song)
-                currentTrack = downloadService.downloadToMemory(song, listener);
             InputStream inputStream = currentTrack.getStore().getInputStream();
-            playThread = new PlayThread(inputStream, framePosition, new PlayThreadListener(currentTrack, audioPosition));
+            playThread = new PlayThread(audioDevice, inputStream, framePosition, new PlayThreadListener(currentTrack, audioPosition));
             playThread.start();
         } catch (IOException ex) {
             handlePlayException(currentTrack, ex);
@@ -227,6 +265,10 @@ public class PlayService {
             startPlaying(currentSong, 0, 0);
         } else {
             log.info("skipped beyond end of playlist");
+            if (radio) {
+                addNextRadioSong();
+                skipToNext();
+            }
         }
     }
 
@@ -238,6 +280,16 @@ public class PlayService {
             startPlaying(currentSong, 0, 0);
         } else {
             log.info("skipped beyond start of playlist");
+        }
+    }
+
+    private void addNextRadioSong() {
+        try {
+            log.info("fetching next radio song...");
+            Song nextRadioSong = Services.getSearchService().autoplayGetSong(playlist);
+            add(new LinkedList<Song>(nextRadioSong), AddMode.LAST);
+        } catch (Exception ex) {
+            log.error("error fetching next song for radio", ex);
         }
     }
 
@@ -280,6 +332,42 @@ public class PlayService {
 
         @Override public void exception(MP3Player player, Exception ex) {
             handlePlayException(track, ex);
+        }
+    }
+
+    private abstract class ChainedPlayServiceListener implements PlayServiceListener {
+        private final PlayServiceListener origListener;
+
+        private ChainedPlayServiceListener(PlayServiceListener origListener) {
+            this.origListener = origListener;
+        }
+
+        @Override public void playbackStarted(Track track) {
+            if (origListener != null) origListener.playbackStarted(track);
+        }
+
+        @Override public void playbackPaused(Track track, int audioPosition) {
+            if (origListener != null) origListener.playbackPaused(track, audioPosition);
+        }
+
+        @Override public void playbackFinished(Track track, int audioPosition) {
+            if (origListener != null) origListener.playbackFinished(track, audioPosition);
+        }
+
+        @Override public void positionChanged(Track track, int audioPosition) {
+            if (origListener != null) origListener.positionChanged(track, audioPosition);
+        }
+
+        @Override public void exception(Track track, Exception ex) {
+            if (origListener != null) origListener.exception(track, ex);
+        }
+
+        @Override public void statusChanged(Track track) {
+            if (origListener != null) origListener.statusChanged(track);
+        }
+
+        @Override public void downloadedBytesChanged(Track track) {
+            if (origListener != null) origListener.downloadedBytesChanged(track);
         }
     }
 }

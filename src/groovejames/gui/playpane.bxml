@@ -14,7 +14,7 @@
             </columns>
             <rows>
                 <TablePane.Row>
-                    <FlowPane>
+                    <FlowPane styles="{alignToBaseline: false}">
                         <PushButton bxml:id="songPlayPauseButton" action="songPlayPause" tooltipText="Play/Pause"
                                     styles="{toolbar: true}">
                             <buttonData>
@@ -35,6 +35,12 @@
                                     styles="{toolbar: true}">
                             <buttonData>
                                 <content:ButtonData icon="@images/trash.png"/>
+                            </buttonData>
+                        </PushButton>
+                        <PushButton bxml:id="radioButton" action="toggleRadio" toggleButton="true"
+                                    tooltipText="Play similar tracks like the one(s) on the left">
+                            <buttonData>
+                                <content:ButtonData text="RADIO OFF"/>
                             </buttonData>
                         </PushButton>
                     </FlowPane>

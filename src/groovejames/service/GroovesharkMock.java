@@ -15,6 +15,9 @@ import groovejames.model.User;
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Random;
 
 public class GroovesharkMock implements InvocationHandler, Grooveshark {
 
@@ -241,6 +244,20 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
     @Override
     public StreamKey getStreamKeyFromSongIDEx(long songID, long type, boolean mobile, boolean prefetch, Country country) {
         return new StreamKey("dummystreamkey-" + songID, "dummystreamserver.com", songID);
+    }
+
+    private int lastAutoplaySong = -1;
+
+    @Override
+    public Song autoplayGetSong(Collection<Long> songIDsAlreadySeen, Collection<Long> recentArtists, int minDuration, int maxDuration, Map<String, String> seedArtists, Collection<Long> frowns, long songQueueID, Country country) throws Exception {
+        Song[] songs = getResultsFromSearch(SearchSongsResultType.Songs, null);
+        Random random = new Random(System.currentTimeMillis());
+        int songNo;
+        do {
+            songNo = random.nextInt(songs.length);
+        } while (songNo == lastAutoplaySong);
+        lastAutoplaySong = songNo;
+        return songs[songNo];
     }
 
     @Override

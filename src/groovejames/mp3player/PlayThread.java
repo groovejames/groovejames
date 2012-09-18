@@ -1,5 +1,7 @@
 package groovejames.mp3player;
 
+import javazoom.jl.player.AudioDevice;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -20,22 +22,22 @@ import java.io.InputStream;
  */
 public class PlayThread extends Thread {
 
+    private final AudioDevice audioDevice;
     private final InputStream inputStream;
     private final int firstFrame;
     private final PlaybackListener playbackListener;
     private volatile MP3Player player;
     private volatile boolean stopForced;
 
-    public PlayThread() {
-        this.inputStream = null;
-        this.firstFrame = 0;
-        this.playbackListener = null;
+    public PlayThread(AudioDevice audioDevice) {
+        this(audioDevice, null, 0, null);
     }
 
-    public PlayThread(InputStream inputStream, int firstFrame, PlaybackListener playbackListener) {
+    public PlayThread(AudioDevice audioDevice, InputStream inputStream, int firstFrame, PlaybackListener playbackListener) {
         super("player");
         setDaemon(true);
         setPriority(NORM_PRIORITY + 2);
+        this.audioDevice = audioDevice;
         this.inputStream = inputStream;
         this.firstFrame = firstFrame;
         this.playbackListener = playbackListener;
@@ -60,7 +62,7 @@ public class PlayThread extends Thread {
             return;
         try {
             try {
-                player = new MP3Player(inputStream);
+                player = new MP3Player(inputStream, audioDevice);
                 LocalPlaybackListener localPlaybackListener = new LocalPlaybackListener();
                 if (playbackListener != null)
                     localPlaybackListener.otherListener = playbackListener;

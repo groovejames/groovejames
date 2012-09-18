@@ -62,6 +62,7 @@ import org.apache.pivot.wtk.Separator;
 import org.apache.pivot.wtk.Sheet;
 import org.apache.pivot.wtk.SheetCloseListener;
 import org.apache.pivot.wtk.SplitPane;
+import org.apache.pivot.wtk.SplitPaneListener;
 import org.apache.pivot.wtk.TabPane;
 import org.apache.pivot.wtk.TabPaneListener;
 import org.apache.pivot.wtk.TableView;
@@ -72,6 +73,7 @@ import org.apache.pivot.wtk.Tooltip;
 import org.apache.pivot.wtk.Window;
 import org.apache.pivot.wtk.content.ButtonData;
 import org.apache.pivot.wtk.media.Image;
+import org.apache.pivot.wtk.skin.terra.TerraTheme;
 
 import java.io.File;
 import java.io.IOException;
@@ -122,12 +124,12 @@ public class Main implements Application {
     @BXML private Meter playProgress;
     @BXML private Meter playDownloadProgress;
     @BXML private PushButton songPlayPauseButton;
+    @BXML private PushButton radioButton;
 
     public static void main(String[] args) {
         ConsoleUtil.redirectStdErrToCommonsLogging();
         ConsoleUtil.redirectStdOutToCommonsLogging();
         System.setProperty("org.apache.pivot.wtk.skin.terra.location", "/groovejames/gui/GrooveJames_theme.json");
-//        System.setProperty("org.apache.pivot.wtk.skin.terra.location", "TerraTheme_dark.json");
         args = filterSystemProperties(args);
         DesktopApplicationContext.main(Main.class, args);
     }
@@ -159,13 +161,13 @@ public class Main implements Application {
 
         this.resources = new Resources("groovejames.gui.resources");
         this.display = display;
-
         this.settings = loadSettings();
-        this.downloadTracks.getListListeners().add(new TrackListListener());
+        this.downloadTracks.getListListeners().add(new DownloadTracksListListener());
         this.imageLoader = new ImageLoader();
         this.imageLoader.setUrlPrefix("http://images.grooveshark.com/static/albums/");
 
         Services.getPlayService().setListener(new PlaylistListener());
+        Services.getPlayService().getPlaylist().getListListeners().add(new PlaylistListListener());
 
         applySettings();
         initActions();
@@ -216,6 +218,10 @@ public class Main implements Application {
         Action.getNamedActions().put("songPrevious", new SongPreviousAction());
         Action.getNamedActions().put("songNext", new SongNextAction());
         Action.getNamedActions().put("songClearPlaylist", new SongClearPlaylistAction());
+
+        ToggleRadioAction toggleRadioAction = new ToggleRadioAction();
+        toggleRadioAction.setEnabled(false);
+        Action.getNamedActions().put("toggleRadio", toggleRadioAction);
     }
 
     private Window createWindow() throws IOException, SerializationException {
@@ -376,6 +382,15 @@ public class Main implements Application {
                 tabCloseAllAction.setEnabled(numTabs > 0);
             }
         });
+
+        mainSplitPane.getSplitPaneListeners().add(new SplitPaneListener.Adapter() {
+            @Override public void splitRatioChanged(SplitPane splitPane, float previousSplitRatio) {
+                if (!SplitRatioTransition.isTransitionRunning(splitPane)) {
+                    Preferences splitPanePrefs = Preferences.userNodeForPackage(Main.class).node("mainSplitPane");
+                    splitPanePrefs.putFloat("splitRatio", splitPane.getSplitRatio());
+                }
+            }
+        });
     }
 
     public boolean shutdown(boolean optional) throws Exception {
@@ -414,10 +429,17 @@ public class Main implements Application {
 
     // show download/playlist pane if currently collapsed
     private void showLowerSplitPane() {
+        final float initialSplitRatio = 0.5f;
         if (mainSplitPane.getSplitRatio() >= 0.95f) {
-            float splitRatio = Preferences.userNodeForPackage(Main.class).node("mainSplitPane").getFloat("splitRatio", 0.5f);
-            SplitRatioTransition transition = new SplitRatioTransition(mainSplitPane, splitRatio, 600, 100);
-            transition.start();
+            final Preferences splitPanePrefs = Preferences.userNodeForPackage(Main.class).node("mainSplitPane");
+            float savedSplitRatio = splitPanePrefs.getFloat("splitRatio", initialSplitRatio);
+            boolean transitionShownAtLeastOnce = splitPanePrefs.getBoolean("transitionShownAtLeastOnce", false);
+            if (savedSplitRatio < 0.95f || !transitionShownAtLeastOnce) {
+                splitPanePrefs.putBoolean("transitionShownAtLeastOnce", true);
+                if (!transitionShownAtLeastOnce && savedSplitRatio >= 0.95f) savedSplitRatio = initialSplitRatio;
+                SplitRatioTransition transition = new SplitRatioTransition(mainSplitPane, savedSplitRatio, 600, 100);
+                transition.start();
+            }
         }
     }
 
@@ -664,7 +686,18 @@ public class Main implements Application {
     }
 
 
-    private class TrackListListener extends ListListener.Adapter<Track> {
+    private class ToggleRadioAction extends Action {
+        @Override public void perform(Component source) {
+            Services.getPlayService().setRadio(radioButton.isSelected());
+            String buttonText = radioButton.isSelected() ? "RADIO ON" : "RADIO OFF";
+            int colorThemeIndex = radioButton.isSelected() ? 16 : 10;
+            ((ButtonData) radioButton.getButtonData()).setText(buttonText);
+            radioButton.getStyles().put("backgroundColor", ((TerraTheme) Theme.getTheme()).getColor(colorThemeIndex));
+            radioButton.repaint();
+        }
+    }
+
+    private class DownloadTracksListListener extends ListListener.Adapter<Track> {
         private Timer timer;
 
         @Override
@@ -703,6 +736,27 @@ public class Main implements Application {
                     }
                 }, 0, 500);
             }
+        }
+    }
+
+    private class PlaylistListListener extends ListListener.Adapter<Song> {
+        @Override
+        public void itemInserted(List<Song> list, int index) {
+            updateToggleRadioAction(list);
+        }
+
+        @Override
+        public void itemsRemoved(List<Song> list, int index, Sequence<Song> items) {
+            updateToggleRadioAction(list);
+        }
+
+        @Override
+        public void listCleared(List<Song> list) {
+            updateToggleRadioAction(list);
+        }
+
+        private void updateToggleRadioAction(List<Song> list) {
+            Action.getNamedActions().get("toggleRadio").setEnabled(!list.isEmpty());
         }
     }
 

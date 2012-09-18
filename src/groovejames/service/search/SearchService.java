@@ -18,8 +18,11 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
 
 public class SearchService {
 
@@ -118,6 +121,30 @@ public class SearchService {
     public StreamKey getStreamKeyFromSongID(long songID) throws Exception {
         return grooveshark.getStreamKeyFromSongIDEx(songID, /*type*/ 0, /*mobile*/ false, /*prefetch*/ false, Country.DEFAULT_COUNTRY);
     }
+
+    public Song autoplayGetSong(Iterable<Song> songsAlreadySeen) throws Exception {
+        /*
+       {"header":{"privacy":0,"country":{"DMA":807,"CC1":0,"ID":223,"CC2":0,"IPR":0,"CC4":1073741824,"CC3":0},"session":"d9c5aaa75a9a11ea52adf8e242938b72","token":"727e15ab9ccf8f098ba6a5047987d451796bf3255dedea","uuid":"2FBE082B-BF60-4E23-9EBC-7CC77CEB5AE0","client":"jsqueue","clientRevision":"20120830"},"parameters":{"songIDsAlreadySeen":[35501],"recentArtists":[822],"minDuration":60,"seedArtistWeightRange":[70,100],"country":{"DMA":807,"CC1":0,"ID":223,"CC2":0,"IPR":0,"CC4":1073741824,"CC3":0},"secondaryArtistWeightModifier":0.9,"weightModifierRange":[-9,9],"seedArtists":{"822":"p"},"songQueueID":"1346948642359","frowns":[],"maxDuration":1500},"method":"autoplayGetSong"}
+        */
+        ArrayList<Long> songIDsAlreadySeen = new ArrayList<Long>();
+        TreeSet<Long> recentArtistIDs = new TreeSet<Long>();
+        for (Song song : songsAlreadySeen) {
+            songIDsAlreadySeen.add(song.getSongID());
+            recentArtistIDs.add(song.getArtistID());
+        }
+        Map<String, String> seedArtists = new HashMap<String, String>();
+        seedArtists.put(recentArtistIDs.iterator().next().toString(), "p");
+        return grooveshark.autoplayGetSong(
+            songIDsAlreadySeen,
+            recentArtistIDs,
+            /*minDuration*/ 60,
+            /*maxDuration*/ 1500,
+            seedArtists,
+            /*frowns*/ new ArrayList<Long>(),
+            /*songQueueID*/ 0,
+            Country.DEFAULT_COUNTRY);
+    }
+
 
     public Song[] searchArtists(SearchParameter searchParameter) throws Exception {
         SearchType searchType = searchParameter.getSearchType();

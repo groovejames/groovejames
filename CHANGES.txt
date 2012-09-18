@@ -1,10 +1,14 @@
 r15-dev (unreleased)
+  - NEW: Radio!
+  - NEW: now pre buffers 50kb of song data to avoid stuttering on slow networks
   - NEW: double click in player's playlist to change current song
   - NEW: replaced "Play Now" dropdown button with two buttons "Play" and "Enqueue"
   - NEW: context menu on songs table
   - new layout for Player panel, now displays image of current track if available
   - get a session id faster by simply faking one, leads to faster startup
   - fixed saving column widths for download and player table
+  - fixed saving horizontal splitpane position
+  - fixed no audio output problem when skipping fast between songs
 
 r14-dev (2012/08/30)
   - fixed invalid token error (again)
