@@ -1,6 +1,7 @@
 <SplitPane xmlns="org.apache.pivot.wtk"
            xmlns:content="org.apache.pivot.wtk.content"
            xmlns:gui="groovejames.gui"
+           xmlns:guicomponents="groovejames.gui.components"
            xmlns:bxml="http://pivot.apache.org/bxml"
            orientation="horizontal"
            splitRatio="0.3">
@@ -90,9 +91,10 @@
         <Border>
             <ScrollPane horizontalScrollBarPolicy="fill_to_capacity" verticalScrollBarPolicy="fill_to_capacity">
                 <view>
-                    <TableView bxml:id="playerTable"
-                               selectMode="multi"
-                               styles="{showVerticalGridLines:true}">
+                    <guicomponents:ClickableTableView bxml:id="playerTable"
+                                                      selectMode="multi"
+                                                      clickableColumns="2,3"
+                                                      styles="{showVerticalGridLines:true}">
                         <columns>
                             <TableView.Column name="isPlaying" width="20"/>
                             <TableView.Column name="songName" headerData="Name" width="180"/>
@@ -104,7 +106,7 @@
                                 </cellRenderer>
                             </TableView.Column>
                         </columns>
-                    </TableView>
+                    </guicomponents:ClickableTableView>
                 </view>
                 <columnHeader>
                     <TableViewHeader tableView="$playerTable" styles="{columnsResizable:true}"/>

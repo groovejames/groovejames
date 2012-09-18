@@ -5,6 +5,8 @@ import groovejames.gui.clipboard.GroovesharkArtistClipboardListener;
 import groovejames.gui.clipboard.GroovesharkPlaylistClipboardListener;
 import groovejames.gui.clipboard.GroovesharkUserClipboardListener;
 import groovejames.gui.clipboard.WatchClipboardTask;
+import groovejames.gui.components.ClickableTableListener;
+import groovejames.gui.components.ClickableTableView;
 import groovejames.gui.components.DefaultTableViewSortListener;
 import groovejames.gui.components.FixedTerraTooltipSkin;
 import groovejames.gui.components.ImageLoader;
@@ -19,6 +21,8 @@ import groovejames.service.PlayService;
 import groovejames.service.PlayServiceListener;
 import groovejames.service.ProxySettings;
 import groovejames.service.Services;
+import groovejames.service.search.AlbumSearch;
+import groovejames.service.search.ArtistSearch;
 import groovejames.service.search.GeneralSearch;
 import groovejames.service.search.SearchParameter;
 import groovejames.util.ConsoleUtil;
@@ -112,8 +116,8 @@ public class Main implements Application {
     @BXML private TextInput searchField;
     @BXML private PushButton searchButton;
     @BXML private PushButton clipboardButton;
-    @BXML private TableView downloadsTable;
-    @BXML private TableView playerTable;
+    @BXML private ClickableTableView downloadsTable;
+    @BXML private ClickableTableView playerTable;
     @BXML private Label nowPlayingLabel;
     @BXML private Label nowPlayingArtist;
     @BXML private Label nowPlayingSongname;
@@ -261,6 +265,19 @@ public class Main implements Application {
                 return false;
             }
         });
+        downloadsTable.getClickableTableListeners().add(new ClickableTableListener() {
+            @Override
+            public boolean cellClicked(ClickableTableView source, Object row, int rowIndex, int columnIndex, Mouse.Button button, int clickCount) {
+                TableView.Column column = source.getColumns().get(columnIndex);
+                Song song = ((Track) row).getSong();
+                if ("artistName".equals(column.getName())) {
+                    openSearchTab(new ArtistSearch(song.getArtistID(), song.getArtistName()));
+                } else if ("albumName".equals(column.getName())) {
+                    openSearchTab(new AlbumSearch(song.getAlbumID(), song.getAlbumName(), song.getArtistName()));
+                }
+                return false;
+            }
+        });
         TooltipTableMouseListener.install(downloadsTable);
         WtkUtil.setupColumnWidthSaver(downloadsTable, "downloadsTable");
 
@@ -275,6 +292,19 @@ public class Main implements Application {
                     if (row >= 0) {
                         Services.getPlayService().setCurrentTrackIndex(row);
                     }
+                }
+                return false;
+            }
+        });
+        playerTable.getClickableTableListeners().add(new ClickableTableListener() {
+            @Override
+            public boolean cellClicked(ClickableTableView source, Object row, int rowIndex, int columnIndex, Mouse.Button button, int clickCount) {
+                TableView.Column column = source.getColumns().get(columnIndex);
+                Song song = (Song) row;
+                if ("artistName".equals(column.getName())) {
+                    openSearchTab(new ArtistSearch(song.getArtistID(), song.getArtistName()));
+                } else if ("albumName".equals(column.getName())) {
+                    openSearchTab(new AlbumSearch(song.getAlbumID(), song.getAlbumName(), song.getArtistName()));
                 }
                 return false;
             }
