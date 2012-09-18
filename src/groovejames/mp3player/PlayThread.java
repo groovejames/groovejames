@@ -1,5 +1,6 @@
 package groovejames.mp3player;
 
+import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.AudioDevice;
 
 import java.io.IOException;
@@ -71,9 +72,16 @@ public class PlayThread extends Thread {
             } finally {
                 inputStream.close();
             }
+        } catch (JavaLayerException ex) {
+            if (playbackListener != null)
+                playbackListener.exception(player, new RuntimeException(ex.getMessage(), ex.getException()));
+            else
+                throw new RuntimeException(ex);
         } catch (Exception ex) {
             if (playbackListener != null)
                 playbackListener.exception(player, ex);
+            else
+                throw new RuntimeException(ex);
         } finally {
             System.out.println("thread ends");
         }

@@ -848,6 +848,7 @@ public class Main implements Application {
                 public void run() {
                     if (track.getStatus() == Track.Status.ERROR) {
                         updatePlayInfo(track, "ERROR");
+                        exception(track, track.getFault());
                     } else {
                         resetPlayInfo();
                     }
