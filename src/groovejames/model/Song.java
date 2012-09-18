@@ -175,8 +175,9 @@ public class Song extends ImageObject {
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("Song");
-        sb.append("{songID='").append(songID).append('\'');
+        sb.append("{songID=").append(songID);
         sb.append(", songName='").append(songName).append('\'');
+        sb.append(", coverArtFilename='").append(coverArtFilename).append('\'');
         sb.append('}');
         return sb.toString();
     }
