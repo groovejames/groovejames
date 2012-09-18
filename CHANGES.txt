@@ -1,4 +1,4 @@
-r15-dev (unreleased)
+r15-dev (2012/09/18)
   - NEW: Radio!
   - NEW: now pre buffers 50kb of song data to avoid stuttering on slow networks
   - NEW: double click in player's playlist to change current song
