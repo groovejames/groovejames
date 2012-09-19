@@ -119,7 +119,17 @@ public class SearchService {
     }
 
     public StreamKey getStreamKeyFromSongID(long songID) throws Exception {
-        return grooveshark.getStreamKeyFromSongIDEx(songID, /*type*/ 0, /*mobile*/ false, /*prefetch*/ false, Country.DEFAULT_COUNTRY);
+        Exception lastEx = null;
+        for (int i = 0; i < 5; i++) {
+            try {
+                return grooveshark.getStreamKeyFromSongIDEx(songID, /*type*/ 0, /*mobile*/ false, /*prefetch*/ false, Country.DEFAULT_COUNTRY);
+            } catch (Exception ex) {
+                lastEx = ex;
+                log.warn("error calling getStreamKeyFromSongIDEx retry #" + i + "/5: " + ex);
+                Thread.sleep(300);
+            }
+        }
+        throw lastEx;
     }
 
     public Song autoplayGetSong(Iterable<Song> songsAlreadySeen) throws Exception {
