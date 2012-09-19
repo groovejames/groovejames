@@ -27,7 +27,7 @@ public class PlayService {
     /**
      * how many bytes to pre-download before actually begin playing
      */
-    private static final long PLAY_BUFFER_SIZE = 50000L;
+    private static final long PLAY_BUFFER_SIZE = 100000L;
 
     private final DownloadService downloadService;
     private final AudioDevice audioDevice;
