@@ -165,26 +165,26 @@ public class PlayService {
     }
 
     /**
-     * @return the index of the track being played currently
+     * @return the index of the song being played currently
      */
-    public int getCurrentTrackIndex() {
+    public int getCurrentSongIndex() {
         return currentSongIndex;
     }
 
-    public synchronized void setCurrentTrackIndex(int currentTrackIndex) {
-        if (currentTrackIndex == currentSongIndex)
+    public synchronized void playSong(int songIndex) {
+        if (songIndex == currentSongIndex)
             return;
-        if (currentTrackIndex < 0 || currentTrackIndex >= playlist.getLength()) {
-            log.error("setCurrentTrackIndex: index out of bounds: " + currentTrackIndex + "; must be in range [0," + playlist.getLength() + ")");
+        if (songIndex < 0 || songIndex >= playlist.getLength()) {
+            log.error("playSong: index out of bounds: " + songIndex + "; must be in range [0," + playlist.getLength() + ")");
             return;
         }
         Song currentSong = getCurrentSong();
         if (currentSong != null)
-            log.info("stopping because of song index change to " + currentTrackIndex + ": " + currentSong);
+            log.info("stopping because of song index change to " + songIndex + ": " + currentSong);
         stopPlaying();
-        currentSongIndex = currentTrackIndex;
+        currentSongIndex = songIndex;
         currentSong = getCurrentSong();
-        log.info("skipping to song index " + currentTrackIndex + ": " + currentSong);
+        log.info("skipping to song index " + songIndex + ": " + currentSong);
         startPlaying(currentSong, 0, 0);
     }
 

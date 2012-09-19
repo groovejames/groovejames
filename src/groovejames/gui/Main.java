@@ -62,7 +62,6 @@ import org.apache.pivot.wtk.Platform;
 import org.apache.pivot.wtk.Prompt;
 import org.apache.pivot.wtk.PushButton;
 import org.apache.pivot.wtk.ScrollPane;
-import org.apache.pivot.wtk.Separator;
 import org.apache.pivot.wtk.Sheet;
 import org.apache.pivot.wtk.SheetCloseListener;
 import org.apache.pivot.wtk.SplitPane;
@@ -124,7 +123,6 @@ public class Main implements Application {
     @BXML private Label nowPlayingFromTheAlbum;
     @BXML private Label nowPlayingAlbum;
     @BXML private ImageView nowPlayingImage;
-    @BXML private Separator nowPlayingSeparator;
     @BXML private Meter playProgress;
     @BXML private Meter playDownloadProgress;
     @BXML private PushButton songPlayPauseButton;
@@ -221,6 +219,7 @@ public class Main implements Application {
         Action.getNamedActions().put("songPlayPause", new SongPlayPauseAction());
         Action.getNamedActions().put("songPrevious", new SongPreviousAction());
         Action.getNamedActions().put("songNext", new SongNextAction());
+        Action.getNamedActions().put("songKeep", new SongKeepAction());
         Action.getNamedActions().put("songClearPlaylist", new SongClearPlaylistAction());
 
         ToggleRadioAction toggleRadioAction = new ToggleRadioAction();
@@ -290,7 +289,7 @@ public class Main implements Application {
                 if (count > 1) {
                     int row = playerTable.getRowAt(y);
                     if (row >= 0) {
-                        Services.getPlayService().setCurrentTrackIndex(row);
+                        Services.getPlayService().playSong(row);
                     }
                 }
                 return false;
@@ -707,6 +706,17 @@ public class Main implements Application {
     }
 
 
+    private class SongKeepAction extends Action {
+        @Override public void perform(Component source) {
+            Sequence<?> selectedRows = playerTable.getSelectedRows();
+            for (int i = 0, len = selectedRows.getLength(); i < len; i++) {
+                Song selectedSong = (Song) selectedRows.get(i);
+                download(selectedSong);
+            }
+        }
+    }
+
+
     private class SongClearPlaylistAction extends Action {
         @Override public void perform(Component source) {
             Services.getPlayService().clearPlaylist();
@@ -791,7 +801,6 @@ public class Main implements Application {
     }
 
     private void updatePlayInfo(Track track, String nowPlayingText) {
-        nowPlayingLabel.setVisible(true);
         nowPlayingLabel.setText(nowPlayingText);
         nowPlayingArtist.setVisible(true);
         nowPlayingArtist.setText(track.getArtistName());
@@ -808,14 +817,12 @@ public class Main implements Application {
         }
         nowPlayingImage.setVisible(true);
         nowPlayingImage.setImage(imageLoader.getImage(track.getSong(), nowPlayingImage));
-        nowPlayingSeparator.setVisible(true);
         playDownloadProgress.setVisible(true);
         playProgress.setVisible(true);
     }
 
     private void resetPlayInfo() {
-        nowPlayingLabel.setVisible(false);
-        nowPlayingLabel.setText("");
+        nowPlayingLabel.setText("Playlist");
         nowPlayingArtist.setVisible(false);
         nowPlayingArtist.setText("");
         nowPlayingSongname.setVisible(false);
@@ -825,7 +832,6 @@ public class Main implements Application {
         nowPlayingAlbum.setText("");
         nowPlayingImage.setVisible(false);
         nowPlayingImage.setImage((Image) null);
-        nowPlayingSeparator.setVisible(false);
         playDownloadProgress.setVisible(false);
         playDownloadProgress.setPercentage(0.0);
         playProgress.setVisible(false);

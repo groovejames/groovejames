@@ -24,6 +24,6 @@ public class PlaylistCellRenderer extends TableViewImageCellRenderer {
     public void render(Object row, int rowIndex, int columnIndex,
                        TableView tableView, String columnName,
                        boolean selected, boolean highlighted, boolean disabled) {
-        setImage(rowIndex == playService.getCurrentTrackIndex() ? pointerImage : null);
+        setImage(rowIndex == playService.getCurrentSongIndex() ? pointerImage : null);
     }
 }

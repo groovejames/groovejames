@@ -1,5 +1,5 @@
 r16-dev (unreleased)
-  -
+  - NEW: download songs of playlist
 
 r15-dev (2012/09/18)
   - NEW: Radio!

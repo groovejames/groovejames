@@ -9,52 +9,17 @@
         <content:ButtonData text="Playlist"/>
     </TabPane.tabData>
     <left>
-        <TablePane>
+        <TablePane styles="{padding:{top:7}}">
             <columns>
                 <TablePane.Column width="1*"/>
             </columns>
             <rows>
                 <TablePane.Row>
-                    <FlowPane styles="{alignToBaseline: false}">
-                        <PushButton bxml:id="songPlayPauseButton" action="songPlayPause" tooltipText="Play/Pause"
-                                    styles="{toolbar: true}">
-                            <buttonData>
-                                <content:ButtonData icon="@images/player_play.png"/>
-                            </buttonData>
-                        </PushButton>
-                        <PushButton action="songPrevious" tooltipText="Skip to previous song" styles="{toolbar: true}">
-                            <buttonData>
-                                <content:ButtonData icon="@images/player_rew.png"/>
-                            </buttonData>
-                        </PushButton>
-                        <PushButton action="songNext" tooltipText="Skip to next song" styles="{toolbar: true}">
-                            <buttonData>
-                                <content:ButtonData icon="@images/player_fwd.png"/>
-                            </buttonData>
-                        </PushButton>
-                        <PushButton action="songClearPlaylist" tooltipText="Clear playlist (remove all songs)"
-                                    styles="{toolbar: true}">
-                            <buttonData>
-                                <content:ButtonData icon="@images/trash.png"/>
-                            </buttonData>
-                        </PushButton>
-                        <PushButton bxml:id="radioButton" action="toggleRadio" toggleButton="true"
-                                    tooltipText="Play similar tracks like the one(s) on the left">
-                            <buttonData>
-                                <content:ButtonData text="RADIO OFF"/>
-                            </buttonData>
-                        </PushButton>
-                    </FlowPane>
-                </TablePane.Row>
-                <TablePane.Row>
-                    <Separator/>
-                </TablePane.Row>
-                <TablePane.Row>
-                    <Label bxml:id="nowPlayingLabel" visible="false" text="Now playing:"
+                    <Label bxml:id="nowPlayingLabel" text="Playlist"
                            styles="{font:{bold:true,size:'120%'}}"/>
                 </TablePane.Row>
                 <TablePane.Row>
-                    <Separator bxml:id="nowPlayingSeparator" visible="false"/>
+                    <Separator/>
                 </TablePane.Row>
                 <TablePane.Row>
                     <Label bxml:id="nowPlayingArtist" visible="false"
@@ -88,30 +53,77 @@
         </TablePane>
     </left>
     <right>
-        <Border>
-            <ScrollPane horizontalScrollBarPolicy="fill_to_capacity" verticalScrollBarPolicy="fill_to_capacity">
-                <view>
-                    <guicomponents:ClickableTableView bxml:id="playerTable"
-                                                      selectMode="multi"
-                                                      clickableColumns="2,3"
-                                                      styles="{showVerticalGridLines:true}">
-                        <columns>
-                            <TableView.Column name="isPlaying" width="20"/>
-                            <TableView.Column name="songName" headerData="Name" width="180"/>
-                            <TableView.Column name="artistName" headerData="Artist" width="140"/>
-                            <TableView.Column name="albumName" headerData="Album" width="140"/>
-                            <TableView.Column name="estimateDuration" headerData="Length" width="45">
-                                <cellRenderer>
-                                    <gui:TimeTableCellRenderer/>
-                                </cellRenderer>
-                            </TableView.Column>
-                        </columns>
-                    </guicomponents:ClickableTableView>
-                </view>
-                <columnHeader>
-                    <TableViewHeader tableView="$playerTable" styles="{columnsResizable:true}"/>
-                </columnHeader>
-            </ScrollPane>
-        </Border>
+        <TablePane>
+            <columns>
+                <TablePane.Column width="1*"/>
+            </columns>
+            <rows>
+                <TablePane.Row>
+                    <FlowPane styles="{alignToBaseline: false, padding:{bottom:5}}">
+                        <PushButton bxml:id="songPlayPauseButton" action="songPlayPause" tooltipText="Play/Pause"
+                                    styles="{toolbar: true}">
+                            <buttonData>
+                                <content:ButtonData icon="@images/player_play.png"/>
+                            </buttonData>
+                        </PushButton>
+                        <PushButton action="songPrevious" tooltipText="Skip to previous song" styles="{toolbar: true}">
+                            <buttonData>
+                                <content:ButtonData icon="@images/player_rew.png"/>
+                            </buttonData>
+                        </PushButton>
+                        <PushButton action="songNext" tooltipText="Skip to next song" styles="{toolbar: true}">
+                            <buttonData>
+                                <content:ButtonData icon="@images/player_fwd.png"/>
+                            </buttonData>
+                        </PushButton>
+                        <PushButton action="songKeep" tooltipText="Download selected song(s)" styles="{toolbar: true}">
+                            <buttonData>
+                                <content:ButtonData icon="@images/download.png"/>
+                            </buttonData>
+                        </PushButton>
+                        <PushButton action="songClearPlaylist" tooltipText="Clear the playlist"
+                                    styles="{toolbar: true}">
+                            <buttonData>
+                                <content:ButtonData icon="@images/trash.png"/>
+                            </buttonData>
+                        </PushButton>
+                        <PushButton bxml:id="radioButton" action="toggleRadio" toggleButton="true"
+                                    tooltipText="Play similar tracks like the one(s) on the left">
+                            <buttonData>
+                                <content:ButtonData text="RADIO OFF"/>
+                            </buttonData>
+                        </PushButton>
+                    </FlowPane>
+                </TablePane.Row>
+                <TablePane.Row height="1*">
+                    <Border>
+                        <ScrollPane horizontalScrollBarPolicy="fill_to_capacity"
+                                    verticalScrollBarPolicy="fill_to_capacity">
+                            <view>
+                                <guicomponents:ClickableTableView bxml:id="playerTable"
+                                                                  selectMode="multi"
+                                                                  clickableColumns="2,3"
+                                                                  styles="{showVerticalGridLines:true}">
+                                    <columns>
+                                        <TableView.Column name="isPlaying" width="20"/>
+                                        <TableView.Column name="songName" headerData="Name" width="180"/>
+                                        <TableView.Column name="artistName" headerData="Artist" width="140"/>
+                                        <TableView.Column name="albumName" headerData="Album" width="140"/>
+                                        <TableView.Column name="estimateDuration" headerData="Length" width="45">
+                                            <cellRenderer>
+                                                <gui:TimeTableCellRenderer/>
+                                            </cellRenderer>
+                                        </TableView.Column>
+                                    </columns>
+                                </guicomponents:ClickableTableView>
+                            </view>
+                            <columnHeader>
+                                <TableViewHeader tableView="$playerTable" styles="{columnsResizable:true}"/>
+                            </columnHeader>
+                        </ScrollPane>
+                    </Border>
+                </TablePane.Row>
+            </rows>
+        </TablePane>
     </right>
 </SplitPane>
