@@ -18,31 +18,35 @@ import org.apache.pivot.wtk.TextInputContentListener;
  */
 public class SuggestionPopupTextInputContentListener extends TextInputContentListener.Adapter {
 
-    private SuggestionsProvider<?> suggestionsProvider;
-    private SuggestionPopup suggestionPopup;
-    private ListView.ItemRenderer suggestionRenderer;
+    private final SuggestionsProvider<?> suggestionsProvider;
+    private final SuggestionPopup suggestionPopup;
     private SuggestionTask suggestionTask;
     private String lastText;
 
-    public SuggestionPopupTextInputContentListener() {
-    }
-
     public SuggestionPopupTextInputContentListener(SuggestionsProvider<?> suggestionsProvider) {
-        this.suggestionsProvider = suggestionsProvider;
+        this(suggestionsProvider, null);
     }
 
-    public SuggestionPopupTextInputContentListener setSuggestionsProvider(SuggestionsProvider<?> suggestionsProvider) {
+    public SuggestionPopupTextInputContentListener(SuggestionsProvider<?> suggestionsProvider, ListView.ItemRenderer suggestionRenderer) {
+        if (suggestionsProvider == null) {
+            throw new IllegalArgumentException("suggestionsProvider may not be null");
+        }
         this.suggestionsProvider = suggestionsProvider;
-        return this;
-    }
-
-    public SuggestionPopupTextInputContentListener setSuggestionRenderer(ListView.ItemRenderer suggestionRenderer) {
-        this.suggestionRenderer = suggestionRenderer;
-        return this;
+        this.suggestionPopup = new SuggestionPopup();
+        if (suggestionRenderer != null) {
+            this.suggestionPopup.setSuggestionRenderer(suggestionRenderer);
+        }
     }
 
     public SuggestionPopup getSuggestionPopup() {
         return suggestionPopup;
+    }
+
+    public void closeSuggestionPopup() {
+        if (suggestionTask != null) {
+            suggestionTask.abort();
+        }
+        suggestionPopup.close();
     }
 
     @Override
@@ -52,12 +56,12 @@ public class SuggestionPopupTextInputContentListener extends TextInputContentLis
 
     @Override
     public void textChanged(TextInput textInput) {
-//        getSuggestions(textInput);
+        getSuggestions(textInput);
     }
 
     @Override
     public void textRemoved(TextInput textInput, int index, int count) {
-//        getSuggestions(textInput);
+        getSuggestions(textInput);
     }
 
 
@@ -83,16 +87,8 @@ public class SuggestionPopupTextInputContentListener extends TextInputContentLis
                 if (task == suggestionTask) {
                     List<?> suggestions = (List<?>) suggestionTask.getResult();
                     if (suggestions == null || suggestions.isEmpty()) {
-                        if (suggestionPopup != null) {
-                            suggestionPopup.close();
-                        }
+                        suggestionPopup.close();
                     } else {
-                        if (suggestionPopup == null) {
-                            suggestionPopup = new SuggestionPopup();
-                        }
-                        if (suggestionRenderer != null) {
-                            suggestionPopup.setSuggestionRenderer(suggestionRenderer);
-                        }
                         suggestionPopup.setSuggestionData(suggestions);
                         suggestionPopup.open(textInput, new SuggestionPopupCloseListener() {
                             @Override
@@ -135,15 +131,8 @@ public class SuggestionPopupTextInputContentListener extends TextInputContentLis
                 throw new AbortException();
             }
             try {
-                Thread.sleep(100);
-            } catch (InterruptedException ex) {
-                throw new AbortException();
-            }
-            try {
-                if (abort) {
-                    throw new AbortException();
-                }
-                return suggestionsProvider.getSuggestions(query);
+                List<?> suggestions = suggestionsProvider.getSuggestions(query);
+                return abort ? null : suggestions;
             } catch (Exception ex) {
                 throw new TaskExecutionException("error getting suggestions for " + query, ex);
             }

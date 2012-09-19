@@ -337,9 +337,7 @@ public class Main implements Application {
             @Override
             public boolean keyTyped(Component searchField, char character) {
                 if (character == Keyboard.KeyCode.ENTER) {
-                    if (suggestionPopupTextInputContentListener.getSuggestionPopup() != null) {
-                        suggestionPopupTextInputContentListener.getSuggestionPopup().close();
-                    }
+                    suggestionPopupTextInputContentListener.closeSuggestionPopup();
                     doSearch();
                 }
                 return false;  //do not consume this event
