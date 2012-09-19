@@ -120,12 +120,12 @@ public class SearchService {
 
     public StreamKey getStreamKeyFromSongID(long songID) throws Exception {
         Exception lastEx = null;
-        for (int i = 0; i < 5; i++) {
+        for (int i = 1, maxRetries = 5; i <= maxRetries; i++) {
             try {
                 return grooveshark.getStreamKeyFromSongIDEx(songID, /*type*/ 0, /*mobile*/ false, /*prefetch*/ false, Country.DEFAULT_COUNTRY);
             } catch (Exception ex) {
                 lastEx = ex;
-                log.warn("error calling getStreamKeyFromSongIDEx retry #" + i + "/5: " + ex);
+                log.warn("error calling getStreamKeyFromSongIDEx retry #" + i + "/" + maxRetries + ": " + ex);
                 Thread.sleep(300);
             }
         }
