@@ -129,6 +129,8 @@ public class Main implements Application {
     @BXML private PushButton radioButton;
 
     public static void main(String[] args) {
+        log.info("GrooveJames started.");
+        log.info("GrooveJames running on " + System.getProperty("java.vm.name") + " " + System.getProperty("java.runtime.version") + " (" + System.getProperty("java.vm.vendor") + ") in " + System.getProperty("java.home"));
         ConsoleUtil.redirectStdErrToCommonsLogging();
         ConsoleUtil.redirectStdOutToCommonsLogging();
         System.setProperty("org.apache.pivot.wtk.skin.terra.location", "/groovejames/gui/GrooveJames_theme.json");
@@ -177,6 +179,7 @@ public class Main implements Application {
         initComponents();
         window.open(display);
         searchField.requestFocus();
+        log.info("GUI initialized");
     }
 
     private Settings loadSettings() {

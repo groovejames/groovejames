@@ -226,7 +226,8 @@ public class DownloadService {
         }
 
         private void download(StreamKey streamKey) throws IOException {
-            httpPost = new HttpPost(format("http://%s/stream.php", streamKey.getIp()));
+            String url = format("http://%s/stream.php", streamKey.getIp());
+            httpPost = new HttpPost(url);
             httpPost.setHeader(HTTP.CONTENT_TYPE, "application/x-www-form-urlencoded");
             httpPost.setHeader(HTTP.CONN_KEEP_ALIVE, "300");
             httpPost.setEntity(new StringEntity("streamKey=" + streamKey.getStreamKey()));
@@ -254,7 +255,7 @@ public class DownloadService {
                     store.writeTrackInfo(track);
                 } else {
                     throw new HttpResponseException(statusCode,
-                        format("%d %s", statusCode, statusLine.getReasonPhrase()));
+                        format("%s: %d %s", url, statusCode, statusLine.getReasonPhrase()));
                 }
             } finally {
                 close(httpEntity);
