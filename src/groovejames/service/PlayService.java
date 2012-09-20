@@ -2,11 +2,9 @@ package groovejames.service;
 
 import groovejames.model.Song;
 import groovejames.model.Track;
-import groovejames.mp3player.FixedJavaSoundAudioDevice;
 import groovejames.mp3player.MP3Player;
 import groovejames.mp3player.PlayThread;
 import groovejames.mp3player.PlaybackListener;
-import javazoom.jl.player.AudioDevice;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pivot.collections.ArrayList;
@@ -27,10 +25,9 @@ public class PlayService {
     /**
      * how many bytes to pre-download before actually begin playing
      */
-    private static final long PLAY_BUFFER_SIZE = 100000L;
+    private static final long PLAY_BUFFER_SIZE = 300000L;
 
     private final DownloadService downloadService;
-    private final AudioDevice audioDevice;
     private final ArrayList<Song> playlist = new ArrayList<Song>();
     private int currentSongIndex = -1;
     private Track currentTrack;
@@ -42,8 +39,7 @@ public class PlayService {
 
     public PlayService(DownloadService downloadService) {
         this.downloadService = downloadService;
-        this.audioDevice = new FixedJavaSoundAudioDevice();
-        this.playThread = new PlayThread(audioDevice);
+        this.playThread = new PlayThread();
     }
 
     public void setListener(PlayServiceListener listener) {
@@ -218,7 +214,7 @@ public class PlayService {
         if (currentTrack == null || currentTrack.getSong() != song) {
             currentTrack = downloadService.downloadToMemory(song, new ChainedPlayServiceListener(listener) {
                 @Override public void downloadedBytesChanged(Track track) {
-                    if (!isPlaying() && !isPaused() && track.getDownloadedBytes() > PLAY_BUFFER_SIZE) {
+                    if (!isPlaying() && !isPaused() && track == currentTrack && track.getDownloadedBytes() > PLAY_BUFFER_SIZE) {
                         startPlayingCurrentTrack(framePosition, audioPosition);
                     }
                     super.downloadedBytesChanged(track);
@@ -232,7 +228,7 @@ public class PlayService {
     private void startPlayingCurrentTrack(int framePosition, int audioPosition) {
         try {
             InputStream inputStream = currentTrack.getStore().getInputStream();
-            playThread = new PlayThread(audioDevice, inputStream, framePosition, new PlayThreadListener(currentTrack, audioPosition));
+            playThread = new PlayThread(inputStream, framePosition, new PlayThreadListener(currentTrack, audioPosition));
             playThread.start();
         } catch (IOException ex) {
             handlePlayException(currentTrack, ex);

@@ -1,6 +1,7 @@
 r16-dev (unreleased)
   - NEW: download songs of playlist
   - fixed closing autocomplete popup after search; autocomplete now more responsive
+  - another try to fix stutter on skip and pause/play (still not solved 100%)
 
 r15-dev (2012/09/18)
   - NEW: Radio!

@@ -1,7 +1,6 @@
 package groovejames.mp3player;
 
 import javazoom.jl.decoder.JavaLayerException;
-import javazoom.jl.player.AudioDevice;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,12 +9,14 @@ import java.io.InputStream;
  * Usage:
  * <pre>
  * File mp3File = new File(...);
- * PlayThread playThread = new PlayThread(mp3File);
+ * InputStream mp3Stream = new FileInputStream(mp3File);
+ * PlayThread playThread = new PlayThread(mp3Stream);
  * playThread.start();
  * ...
  * int lastFrame = playThread.forceStop(); // stops player, closes file stream
  * ...
- * playThread = new PlayThread(mp3File, lastFrame);
+ * mp3Stream = new FileInputStream(mp3File);
+ * playThread = new PlayThread(mp3Stream, lastFrame);
  * playThread.start(); // reopenes stream and resumes play at last position
  * ...
  * playThread.forceStop();
@@ -23,22 +24,28 @@ import java.io.InputStream;
  */
 public class PlayThread extends Thread {
 
-    private final AudioDevice audioDevice;
     private final InputStream inputStream;
     private final int firstFrame;
     private final PlaybackListener playbackListener;
     private volatile MP3Player player;
     private volatile boolean stopForced;
 
-    public PlayThread(AudioDevice audioDevice) {
-        this(audioDevice, null, 0, null);
+    public PlayThread() {
+        this(null, 0, null);
     }
 
-    public PlayThread(AudioDevice audioDevice, InputStream inputStream, int firstFrame, PlaybackListener playbackListener) {
+    public PlayThread(InputStream inputStream) {
+        this(inputStream, 0, null);
+    }
+
+    public PlayThread(InputStream inputStream, int firstFrame) {
+        this(inputStream, firstFrame, null);
+    }
+
+    public PlayThread(InputStream inputStream, int firstFrame, PlaybackListener playbackListener) {
         super("player");
         setDaemon(true);
         setPriority(NORM_PRIORITY + 2);
-        this.audioDevice = audioDevice;
         this.inputStream = inputStream;
         this.firstFrame = firstFrame;
         this.playbackListener = playbackListener;
@@ -63,7 +70,7 @@ public class PlayThread extends Thread {
             return;
         try {
             try {
-                player = new MP3Player(inputStream, audioDevice);
+                player = new MP3Player(inputStream, new FixedJavaSoundAudioDevice());
                 LocalPlaybackListener localPlaybackListener = new LocalPlaybackListener();
                 if (playbackListener != null)
                     localPlaybackListener.otherListener = playbackListener;
