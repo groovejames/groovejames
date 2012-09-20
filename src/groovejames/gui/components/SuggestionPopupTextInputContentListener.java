@@ -56,7 +56,7 @@ public class SuggestionPopupTextInputContentListener extends TextInputContentLis
 
     @Override
     public void textChanged(TextInput textInput) {
-        getSuggestions(textInput);
+        //getSuggestions(textInput);
     }
 
     @Override
