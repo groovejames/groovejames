@@ -288,7 +288,14 @@ class GroovesharkProxy implements InvocationHandler {
             throw new IOException("Grooveshark connect error: " + message + (code != null ? ", error code: " + code : ""));
         }
 
-        return new CommunicationToken(clientName, communicationToken);
+        long expires = System.currentTimeMillis() + GS_COMMUNICATION_TOKEN_DURATION;
+
+        if (log.isDebugEnabled()) {
+            log.debug("new communication token for client " + clientName + ": " + communicationToken);
+            log.debug("new communication token expires: " + new Date(expires));
+        }
+
+        return new CommunicationToken(communicationToken, expires);
     }
 
 
@@ -296,13 +303,9 @@ class GroovesharkProxy implements InvocationHandler {
         private final String token;
         private final long expires;
 
-        private CommunicationToken(String client, String token) {
+        private CommunicationToken(String token, long expires) {
             this.token = token;
-            this.expires = System.currentTimeMillis() + GS_COMMUNICATION_TOKEN_DURATION;
-            if (log.isDebugEnabled()) {
-                log.debug("new communication token for client " + client + ": " + token);
-                log.debug("new communication token expires: " + new Date(expires));
-            }
+            this.expires = expires;
         }
 
         public String getToken() {

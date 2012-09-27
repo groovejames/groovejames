@@ -20,14 +20,14 @@ public class JsonUnmarshaller {
     private static final Log log = LogFactory.getLog(JsonUnmarshaller.class);
     private static final boolean checkForUnusedParameters = false;
 
-    public static Object unmarshall(Object jsonResult, Class<?> type) {
+    public static <T> T unmarshall(Object jsonResult, Class<T> type) {
         try {
             if (type.isArray())
-                return unmarshallArray(jsonResult, type.getComponentType());
+                return type.cast(unmarshallArray(jsonResult, type.getComponentType()));
             else if (jsonResult != null && jsonResult instanceof String)
-                return Util.coerce((String) jsonResult, type);
+                return type.cast(Util.coerce((String) jsonResult, type));
             else
-                return unmarshallObject(jsonResult, type);
+                return type.cast(unmarshallObject(jsonResult, type));
         } catch (Exception ex) {
             throw new RuntimeException("error unmarshalling object of type " + type, ex);
         }

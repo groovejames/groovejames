@@ -243,7 +243,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
 
     @Override
     public StreamKey getStreamKeyFromSongIDEx(long songID, long type, boolean mobile, boolean prefetch, Country country) {
-        return new StreamKey("dummystreamkey-" + songID, "dummystreamserver.com", songID);
+        return new StreamKey("dummystreamkey-" + songID, "dummystreamserver.com");
     }
 
     private int lastAutoplaySong = -1;

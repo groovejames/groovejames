@@ -6,16 +6,17 @@ public class StreamKey {
     private String ip;
     private Long streamServerID;
 
-    /** length of stream, in microseconds. */
+    /**
+     * length of stream, in microseconds.
+     */
     private long uSecs;
 
     public StreamKey() {
     }
 
-    public StreamKey(String streamKey, String ip, Long streamServerID) {
+    public StreamKey(String streamKey, String ip) {
         this.streamKey = streamKey;
         this.ip = ip;
-        this.streamServerID = streamServerID;
     }
 
     public String getStreamKey() {
