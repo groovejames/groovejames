@@ -1,4 +1,4 @@
-r16-dev (unreleased)
+r16-dev (2012/09/27)
   - NEW: download songs of playlist
   - fixed closing autocomplete popup after search; autocomplete now more responsive
   - another try to fix stutter on skip and pause/play (still not solved 100%)
