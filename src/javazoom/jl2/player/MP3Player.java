@@ -1,19 +1,16 @@
-package groovejames.mp3player;
+package javazoom.jl2.player;
 
-import javazoom.jl.decoder.Bitstream;
-import javazoom.jl.decoder.BitstreamException;
-import javazoom.jl.decoder.Decoder;
-import javazoom.jl.decoder.Header;
-import javazoom.jl.decoder.JavaLayerException;
-import javazoom.jl.decoder.SampleBuffer;
-import javazoom.jl.player.AudioDevice;
-import javazoom.jl.player.FactoryRegistry;
+import javazoom.jl2.decoder.Bitstream;
+import javazoom.jl2.decoder.BitstreamException;
+import javazoom.jl2.decoder.Decoder;
+import javazoom.jl2.decoder.Header;
+import javazoom.jl2.decoder.JavaLayerException;
+import javazoom.jl2.decoder.SampleBuffer;
 
 import java.io.InputStream;
 
 /**
- * A slightly modified version of {@code javazoom.jl.player.advanced.AdvancedPlayer}
- * which contains support for retrieving the last played frame position.
+ * A fork of the Javazoom JLayer MP3 Player.
  *
  * @see <a href="http://www.javazoom.net/index.shtml">Javazoom JLayer (Java MP3 Player)</a>
  */
@@ -73,7 +70,7 @@ public class MP3Player {
         if (device != null)
             audio = device;
         else
-            audio = FactoryRegistry.systemRegistry().createAudioDevice();
+            audio = new JavaSoundAudioDevice();
         audio.open(decoder = new Decoder());
     }
 

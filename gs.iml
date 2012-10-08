@@ -16,7 +16,6 @@
     <orderEntry type="library" name="log4j" level="project" />
     <orderEntry type="library" name="json_simple" level="project" />
     <orderEntry type="library" name="jid" level="project" />
-    <orderEntry type="library" name="jl" level="project" />
   </component>
 </module>
 

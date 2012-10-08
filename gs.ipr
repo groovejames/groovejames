@@ -145,6 +145,7 @@
       <entry name="?*.ftl" />
       <entry name="?*.bxml" />
       <entry name="?*.json" />
+      <entry name="?*.ser" />
     </wildcardResourcePatterns>
     <annotationProcessing enabled="false" useClasspath="true" />
   </component>
@@ -614,15 +615,6 @@
       </CLASSES>
       <JAVADOC />
       <SOURCES />
-    </library>
-    <library name="jl">
-      <CLASSES>
-        <root url="jar://$PROJECT_DIR$/lib/jl1.0.1-patched.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES>
-        <root url="jar://$PROJECT_DIR$/etc/jl1.0.1-src-patched.zip!/" />
-      </SOURCES>
     </library>
     <library name="json_simple">
       <CLASSES>

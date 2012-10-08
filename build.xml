@@ -29,6 +29,7 @@
                 <include name="**/*.properties"/>
                 <include name="**/*.bxml"/>
                 <include name="**/*.json"/>
+                <include name="**/*.ser"/>
             </fileset>
         </copy>
     </target>

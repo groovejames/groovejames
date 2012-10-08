@@ -1,4 +1,4 @@
-package groovejames.mp3player;
+package javazoom.jl2.player;
 
 /**
  * Listener for MP3Player playback.

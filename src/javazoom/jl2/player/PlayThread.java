@@ -1,6 +1,6 @@
-package groovejames.mp3player;
+package javazoom.jl2.player;
 
-import javazoom.jl.decoder.JavaLayerException;
+import javazoom.jl2.decoder.JavaLayerException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,28 +26,37 @@ public class PlayThread extends Thread {
 
     private final InputStream inputStream;
     private final int firstFrame;
-    private final PlaybackListener playbackListener;
+    private final AudioDevice audioDevice;
     private volatile MP3Player player;
     private volatile boolean stopForced;
+    private volatile PlaybackListener playbackListener;
 
     public PlayThread() {
-        this(null, 0, null);
+        this(null);
     }
 
     public PlayThread(InputStream inputStream) {
-        this(inputStream, 0, null);
+        this(inputStream, 0);
     }
 
     public PlayThread(InputStream inputStream, int firstFrame) {
-        this(inputStream, firstFrame, null);
+        this(inputStream, firstFrame, new JavaSoundAudioDevice());
     }
 
-    public PlayThread(InputStream inputStream, int firstFrame, PlaybackListener playbackListener) {
+    public PlayThread(InputStream inputStream, int firstFrame, AudioDevice audioDevice) {
         super("player");
         setDaemon(true);
         setPriority(NORM_PRIORITY + 2);
         this.inputStream = inputStream;
         this.firstFrame = firstFrame;
+        this.audioDevice = audioDevice;
+    }
+
+    public PlaybackListener getPlaybackListener() {
+        return playbackListener;
+    }
+
+    public void setPlaybackListener(PlaybackListener playbackListener) {
         this.playbackListener = playbackListener;
     }
 
@@ -70,7 +79,7 @@ public class PlayThread extends Thread {
             return;
         try {
             try {
-                player = new MP3Player(inputStream, new FixedJavaSoundAudioDevice());
+                player = new MP3Player(inputStream, audioDevice);
                 LocalPlaybackListener localPlaybackListener = new LocalPlaybackListener();
                 if (playbackListener != null)
                     localPlaybackListener.otherListener = playbackListener;
@@ -100,15 +109,15 @@ public class PlayThread extends Thread {
             try {
                 inputStream.close();
             } catch (IOException ignore) {
-                // intentionally ignored
+                throw new RuntimeException(ignore);
             }
         }
         int currentFrame = 0;
         if (player != null) {
             synchronized (this) {
                 if (player != null) {
-                    player.stop();
                     currentFrame = player.getCurrentFrame();
+                    player.stop();
                     player = null;
                 }
             }

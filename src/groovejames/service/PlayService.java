@@ -2,9 +2,9 @@ package groovejames.service;
 
 import groovejames.model.Song;
 import groovejames.model.Track;
-import groovejames.mp3player.MP3Player;
-import groovejames.mp3player.PlayThread;
-import groovejames.mp3player.PlaybackListener;
+import javazoom.jl2.player.MP3Player;
+import javazoom.jl2.player.PlayThread;
+import javazoom.jl2.player.PlaybackListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pivot.collections.ArrayList;
@@ -228,7 +228,8 @@ public class PlayService {
     private void startPlayingCurrentTrack(int framePosition, int audioPosition) {
         try {
             InputStream inputStream = currentTrack.getStore().getInputStream();
-            playThread = new PlayThread(inputStream, framePosition, new PlayThreadListener(currentTrack, audioPosition));
+            playThread = new PlayThread(inputStream, framePosition);
+            playThread.setPlaybackListener(new PlayThreadListener(currentTrack, audioPosition));
             playThread.start();
         } catch (IOException ex) {
             handlePlayException(currentTrack, ex);
