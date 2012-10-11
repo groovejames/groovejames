@@ -30,7 +30,6 @@ import javazoom.jl2.decoder.JavaLayerException;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
-import javax.sound.sampled.Line;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
@@ -49,54 +48,29 @@ public class JavaSoundAudioDevice implements AudioDevice {
     private	boolean			open = false;
     private Decoder			decoder = null;
 
-    protected void setAudioFormat(AudioFormat fmt)
-	{
-		this.fmt = fmt;
-	}
+    protected AudioFormat createAudioFormat()
+    {
+        return new AudioFormat(decoder.getOutputFrequency(), 16, decoder.getOutputChannels(), true, false);
+    }
 
-	protected AudioFormat getAudioFormat()
-	{
-		if (fmt == null)
-		{
-			Decoder decoder = getDecoder();
-			fmt = new AudioFormat(decoder.getOutputFrequency(), 16, decoder.getOutputChannels(), true, false);
-        }
-        return fmt;
-	}
-
-	protected DataLine.Info getSourceLineInfo()
-	{
-		AudioFormat fmt = getAudioFormat();
-		//DataLine.Info info = new DataLine.Info(SourceDataLine.class, fmt, 4000);
-        return new DataLine.Info(SourceDataLine.class, fmt);
-	}
-
-	public void open(AudioFormat fmt) throws JavaLayerException
-	{
-		if (!isOpen())
-		{
-			setAudioFormat(fmt);
-			setOpen(true);
-		}
-	}
-
-	protected SourceDataLine createSource() throws JavaLayerException
+    protected SourceDataLine createSource() throws JavaLayerException
     {
         SourceDataLine source;
         try
         {
-			Line line = AudioSystem.getLine(getSourceLineInfo());
-            if (line instanceof SourceDataLine)
-            {
-         		source = (SourceDataLine)line;
-                //source.open(fmt, millisecondsToBytes(fmt, 2000));
-				source.open(fmt);
-                source.start();
-            }
-            else
-            {
-                throw new JavaLayerException("cannot obtain source audio line, expected class " + SourceDataLine.class + ", got " + line.getClass());
-            }
+            source = (SourceDataLine) AudioSystem.getLine(new DataLine.Info(SourceDataLine.class, fmt));
+
+            source.open(fmt);
+            source.start();
+
+            // write a short silent sound to test the device (and to "clean up" the source line).
+            // this is important, otherwise there might occur "garbled" sound when pausing/resuming
+            byte[] data = new byte[22050*2];
+            source.write(data, 0, data.length);
+            source.stop();
+            source.drain();
+
+            source.start();
         }
         catch (RuntimeException ex)
         {
@@ -112,11 +86,6 @@ public class JavaSoundAudioDevice implements AudioDevice {
         }
         return source;
     }
-
-	public int millisecondsToBytes(AudioFormat fmt, int time)
-	{
-		return (int) (time * (fmt.getSampleRate() * fmt.getChannels() * fmt.getSampleSizeInBits()) / 8000.0);
-	}
 
     protected byte[] getByteArray(int length)
 	{
@@ -171,7 +140,7 @@ public class JavaSoundAudioDevice implements AudioDevice {
     /**
      * Sets the open state for this audio device.
      */
-    protected void setOpen(boolean open)
+    protected synchronized void setOpen(boolean open)
     {
         this.open = open;
     }
@@ -202,14 +171,14 @@ public class JavaSoundAudioDevice implements AudioDevice {
             {
                 if (source.isActive())
                 {
-                    source.flush();
                     source.stop();
+                    source.flush();
                 }
                 source.close();
                 source = null;
-                fmt = null;
             }
             setOpen(false);
+            fmt = null;
             decoder = null;
         }
     }
@@ -232,6 +201,8 @@ public class JavaSoundAudioDevice implements AudioDevice {
     {
         if (isOpen())
         {
+            if (fmt == null)
+                fmt = createAudioFormat();
             if (source == null)
                 source = createSource();
 
@@ -251,19 +222,10 @@ public class JavaSoundAudioDevice implements AudioDevice {
         {
             if (source != null)
             {
+                source.stop();
                 source.drain();
             }
         }
     }
 
-    /**
-     * Retrieves the decoder that provides audio data to this
-     * audio device.
-     *
-     * @return The associated decoder.
-     */
-    protected Decoder getDecoder()
-    {
-        return decoder;
-    }
 }

@@ -154,12 +154,11 @@ public class MP3Player {
      * Stops this player. Any audio currently playing is stopped immediately.
      * Input and (audio) output streams get closed.
      */
-    public synchronized void stop() {
+    public void stop() {
         AudioDevice out = audio;
         if (out != null) {
             closeForced = true;
             audio = null;
-//			out.flush();
             out.close();
             try {
                 bitstream.close();
@@ -259,7 +258,6 @@ public class MP3Player {
         Header h = bitstream.readFrame();
         if (h == null) return false;
         bitstream.closeFrame();
-        firePositionChangedEvent(audio);
         return true;
     }
 

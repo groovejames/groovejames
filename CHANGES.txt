@@ -1,4 +1,5 @@
 r17-dev (unreleased)
+  - bugfix: player sometimes produced garbled noise at the start of a track, or when pausing/resuming a track
 
 r16-dev (2012/09/27)
   - NEW: download songs of playlist
