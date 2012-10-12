@@ -1,4 +1,7 @@
-r17-dev (unreleased)
+r18-dev (unrelease)
+  -
+
+r17-dev (2012/10/11)
   - bugfix: player sometimes produced garbled noise at the start of a track, or when pausing/resuming a track
 
 r16-dev (2012/09/27)
