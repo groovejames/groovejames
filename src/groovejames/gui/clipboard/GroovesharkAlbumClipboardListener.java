@@ -9,8 +9,8 @@ import java.util.regex.Pattern;
 
 public class GroovesharkAlbumClipboardListener implements ClipboardListener {
 
-    // "http://grooveshark.com/#/album/Hymns+Of+The+49th+Parallel/1426903" or "http://grooveshark.com/album/Hymns+Of+The+49th+Parallel/1426903"
-    private final Pattern pattern = Pattern.compile("http://grooveshark.com/(?:#/)?album/([^/]*)/([0-9]+)");
+    // "http://grooveshark.com/#!/album/Hymns+Of+The+49th+Parallel/1426903" or "http://grooveshark.com/album/Hymns+Of+The+49th+Parallel/1426903"
+    private final Pattern pattern = Pattern.compile("http://grooveshark.com/(?:#!/)?album/([^/]*)/([0-9]+)");
 
     private final Main main;
 

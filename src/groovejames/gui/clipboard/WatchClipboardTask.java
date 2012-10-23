@@ -101,7 +101,7 @@ public class WatchClipboardTask extends Thread {
     }
 
     private void clipboardContentsChanged(String text) {
-        log.debug("thread " + getName() + ": clipboard contents changed");
+        log.debug("thread " + getName() + ": clipboard contents changed: " + text.substring(0, Math.min(text.length(), 300)));
         for (ClipboardListener clipboardListener : clipboardListeners) {
             boolean consumed = clipboardListener.clipboardContentsChanged(text);
             if (consumed) {

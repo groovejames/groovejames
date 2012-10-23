@@ -9,8 +9,8 @@ import java.util.regex.Pattern;
 
 public class GroovesharkUserClipboardListener implements ClipboardListener {
 
-    // URL e.g.: "http://grooveshark.com/#/user/Sheila+Nicholls/932298" or "http://grooveshark.com/user/Sheila+Nicholls/932298"
-    private final Pattern pattern = Pattern.compile("http://grooveshark.com/(?:#/)?user/([^/]*)/([0-9]+)");
+    // URL e.g.: "http://grooveshark.com/#!/user/Sheila+Nicholls/932298" or "http://grooveshark.com/user/Sheila+Nicholls/932298"
+    private final Pattern pattern = Pattern.compile("http://grooveshark.com/(?:#!/)?user/([^/]*)/([0-9]+)");
 
     private final Main main;
 

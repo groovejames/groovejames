@@ -10,8 +10,8 @@ import java.util.regex.Pattern;
 
 public class GroovesharkArtistClipboardListener implements ClipboardListener {
 
-    // finds urls like "http://grooveshark.com/#/artist/K+d+Lang/428326" or "http://grooveshark.com/artist/K+d+Lang/428326"
-    private final Pattern pattern1 = Pattern.compile("http://grooveshark.com/(?:#/)?artist/([^/]*)/([0-9]+)");
+    // finds urls like "http://grooveshark.com/#!/artist/K+d+Lang/428326" or "http://grooveshark.com/artist/K+d+Lang/428326"
+    private final Pattern pattern1 = Pattern.compile("http://grooveshark.com/(?:#!/)?artist/([^/]*)/([0-9]+)");
 
     // finds urls like "http://grooveshark.com/sharon_jones_and_the_dap_kings"
     // Note: sometimes Grooveshark creates urls which it later does not find, e.g. "http://grooveshark.com/theblackkeys"
