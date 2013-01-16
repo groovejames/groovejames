@@ -1,9 +1,6 @@
 package groovejames.model;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-
-public class Song extends ImageObject {
+public class Song extends BaseModelObject {
 
     private Long artistID;
     private String artistName;
@@ -16,11 +13,6 @@ public class Song extends ImageObject {
     private String year;
     private Long trackNum;
     private Double estimateDuration; // in seconds
-    private double popularity;
-    private double popularityPercentage;
-    private double score;
-    private double scorePercentage;
-    private String isVerified; // "1" or "0"
 
     public Long getArtistID() {
         return artistID;
@@ -125,46 +117,6 @@ public class Song extends ImageObject {
      */
     public void setEstimateDuration(Double estimateDuration) {
         this.estimateDuration = estimateDuration;
-    }
-
-    public double getPopularity() {
-        return popularity;
-    }
-
-    public void setPopularity(double popularity) {
-        this.popularity = popularity;
-    }
-
-    public double getPopularityPercentage() {
-        return popularityPercentage;
-    }
-
-    public void setPopularityPercentage(double popularityPercentage) {
-        this.popularityPercentage = max(min(popularityPercentage, 1.0), 0.0);
-    }
-
-    public double getScore() {
-        return score;
-    }
-
-    public void setScore(double score) {
-        this.score = score;
-    }
-
-    public double getScorePercentage() {
-        return scorePercentage;
-    }
-
-    public void setScorePercentage(double scorePercentage) {
-        this.scorePercentage = max(min(scorePercentage, 1.0), 0.0);
-    }
-
-    public String getIsVerified() {
-        return isVerified;
-    }
-
-    public void setIsVerified(String verified) {
-        isVerified = verified;
     }
 
     @Override

@@ -1,10 +1,13 @@
 package groovejames.service;
 
 import groovejames.model.Album;
+import groovejames.model.Artist;
 import groovejames.model.AutocompleteType;
 import groovejames.model.Country;
 import groovejames.model.ItemByPageNameResult;
 import groovejames.model.Playlist;
+import groovejames.model.SearchAlbumsResultType;
+import groovejames.model.SearchArtistsResultType;
 import groovejames.model.SearchPlaylistsResultType;
 import groovejames.model.SearchSongsResultType;
 import groovejames.model.SearchUsersResultType;
@@ -51,111 +54,149 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
     }
 
     @Override
-    public Song[] getAutocomplete(AutocompleteType type, String query) {
-        return getResultsFromSearch(SearchSongsResultType.Artists, query);
+    public Artist[] getAutocomplete(AutocompleteType type, String query) {
+        return getResultsFromSearch(SearchArtistsResultType.Artists, query);
+    }
+
+    @Override
+    public Artist[] getResultsFromSearch(SearchArtistsResultType type, String query) {
+        Artist artist1 = new Artist();
+        artist1.setArtistID(1L);
+        artist1.setArtistName("Beck");
+        artist1.setScore(10000.0);
+
+        Artist artist2 = new Artist();
+        artist2.setArtistID(2L);
+        artist2.setArtistName("Depeche Mode");
+        artist2.setScore(8000.0);
+
+        Artist artist3 = new Artist();
+        artist3.setArtistID(3L);
+        artist3.setArtistName("Dead Kennedys");
+        artist3.setScore(7000.0);
+
+        return new Artist[]{artist1, artist2, artist3};
     }
 
     @Override
     public Song[] getResultsFromSearch(SearchSongsResultType type, String query) {
-        if (type == SearchSongsResultType.Artists) {
-            Song song1 = new Song();
-            song1.setArtistID(1L);
-            song1.setArtistName("Beck");
-            song1.setScore(10000.0);
+        Song song1 = new Song();
+        song1.setSongID(1000L);
+        song1.setArtistID(1L);
+        song1.setArtistName("Beck");
+        song1.setAlbumID(1L);
+        song1.setAlbumName("Odelay");
+        song1.setSongName("New Pollution (track2)");
+        song1.setTrackNum(1L);
+        song1.setEstimateDuration(278.0);
+        song1.setScore(10000.0);
+        song1.setPopularity(43049344.0);
+        song1.setIsVerified("1");
 
-            Song song2 = new Song();
-            song2.setArtistID(2L);
-            song2.setArtistName("Depeche Mode");
-            song2.setScore(8000.0);
+        Song song2 = new Song();
+        song2.setSongID(1001L);
+        song2.setArtistID(1L);
+        song2.setArtistName("Beck");
+        song2.setAlbumID(1L);
+        song2.setAlbumName("Odelay");
+        song2.setSongName("Devil's Haircut (track1)");
+        song2.setTrackNum(2L);
+        song2.setEstimateDuration(328.0);
+        song2.setScore(8500.0);
+        song2.setPopularity(42042352.0);
+        song2.setIsVerified("1");
 
-            Song song3 = new Song();
-            song3.setArtistID(3L);
-            song3.setArtistName("Dead Kennedys");
-            song3.setScore(7000.0);
+        Song song3 = new Song();
+        song3.setSongID(1002L);
+        song3.setArtistID(2L);
+        song3.setArtistName("Depeche Mode");
+        song3.setAlbumID(2L);
+        song3.setAlbumName("Black Celebration");
+        song3.setSongName("Black Celebration (track2)");
+        song3.setTrackNum(1L);
+        song3.setEstimateDuration(60.0);
+        song3.setScore(5000.0);
+        song3.setPopularity(41320393.0);
+        song3.setIsVerified("1");
 
-            return new Song[]{song1, song2, song3};
-        } else {
-            Song song1 = new Song();
-            song1.setSongID(1000L);
-            song1.setArtistID(1L);
-            song1.setArtistName("Beck");
-            song1.setAlbumID(1L);
-            song1.setAlbumName("Odelay");
-            song1.setSongName("New Pollution (track2)");
-            song1.setTrackNum(1L);
-            song1.setEstimateDuration(278.0);
-            song1.setScore(10000.0);
-            song1.setPopularity(43049344.0);
+        Song song4 = new Song();
+        song4.setSongID(1003L);
+        song4.setArtistID(2L);
+        song4.setArtistName("Depeche Mode");
+        song4.setAlbumID(2L);
+        song4.setAlbumName("Black Celebration");
+        song4.setSongName("Flies on the windscreen (track1)");
+        song4.setTrackNum(2L);
+        song4.setEstimateDuration(2032.0);
+        song4.setScore(0.0);
+        song4.setPopularity(40584948.0);
+        song4.setIsVerified("1");
 
-            Song song2 = new Song();
-            song2.setSongID(1001L);
-            song2.setArtistID(1L);
-            song2.setArtistName("Beck");
-            song2.setAlbumID(1L);
-            song2.setAlbumName("Odelay");
-            song2.setSongName("Devil's Haircut (track1)");
-            song2.setTrackNum(2L);
-            song2.setEstimateDuration(328.0);
-            song2.setScore(8500.0);
-            song2.setPopularity(42042352.0);
+        Song song5 = new Song();
+        song5.setSongID(1004L);
+        song5.setArtistID(2L);
+        song5.setArtistName("Depeche Mode");
+        song5.setAlbumID(2L);
+        song5.setAlbumName("Black Celebration");
+        song5.setSongName("A Question Of Lust (track2)");
+        song5.setTrackNum(3L);
+        song5.setEstimateDuration(30.0);
+        song5.setScore(0.0);
+        song5.setIsVerified("1");
 
-            Song song3 = new Song();
-            song3.setSongID(1002L);
-            song3.setArtistID(2L);
-            song3.setArtistName("Depeche Mode");
-            song3.setAlbumID(2L);
-            song3.setAlbumName("Black Celebration");
-            song3.setSongName("Black Celebration (track2)");
-            song3.setTrackNum(1L);
-            song3.setEstimateDuration(60.0);
-            song3.setScore(5000.0);
-            song3.setPopularity(41320393.0);
+        Song song6 = new Song();
+        song6.setSongID(1L);
+        song6.setArtistID(3L);
+        song6.setArtistName("Dead Kennedys");
+        song6.setAlbumID(3L);
+        song6.setSongName("Hyperactive child (track1)");
+        song6.setTrackNum(1L);
+        song6.setEstimateDuration(37.0);
+        song6.setScore(0.0);
+        song6.setIsVerified("0");
 
-            Song song4 = new Song();
-            song4.setSongID(1003L);
-            song4.setArtistID(2L);
-            song4.setArtistName("Depeche Mode");
-            song4.setAlbumID(2L);
-            song4.setAlbumName("Black Celebration");
-            song4.setSongName("Flies on the windscreen (track1)");
-            song4.setTrackNum(2L);
-            song4.setEstimateDuration(2032.0);
-            song4.setScore(0.0);
-            song4.setPopularity(40584948.0);
+        Song song7 = new Song();
+        song7.setSongID(2L);
+        song7.setArtistID(3L);
+        song7.setArtistName("Dead Kennedys");
+        song7.setAlbumID(3L);
+        song7.setSongName("I like short songs (track2)");
+        song7.setTrackNum(2L);
+        song7.setEstimateDuration(28.0);
+        song7.setScore(0.0);
+        song7.setIsVerified(null);
 
-            Song song5 = new Song();
-            song5.setSongID(1004L);
-            song5.setArtistID(2L);
-            song5.setArtistName("Depeche Mode");
-            song5.setAlbumID(2L);
-            song5.setAlbumName("Black Celebration");
-            song5.setSongName("A Question Of Lust (track2)");
-            song5.setTrackNum(3L);
-            song5.setEstimateDuration(30.0);
-            song5.setScore(0.0);
+        return new Song[]{song1, song2, song3, song4, song5, song6, song7};
+    }
 
-            Song song6 = new Song();
-            song6.setSongID(1L);
-            song6.setArtistID(3L);
-            song6.setArtistName("Dead Kennedys");
-            song6.setAlbumID(3L);
-            song6.setSongName("Hyperactive child (track1)");
-            song6.setTrackNum(1L);
-            song6.setEstimateDuration(37.0);
-            song6.setScore(0.0);
+    @Override
+    public Album[] getResultsFromSearch(SearchAlbumsResultType type, String query) {
+        Album album1 = new Album();
+        album1.setArtistID(1L);
+        album1.setArtistName("Beck");
+        album1.setAlbumID(1L);
+        album1.setAlbumName("Odelay");
+        album1.setPopularity(43049344.0);
+        album1.setIsVerified("1");
+        album1.setReleaseType("1");
 
-            Song song7 = new Song();
-            song7.setSongID(2L);
-            song7.setArtistID(3L);
-            song7.setArtistName("Dead Kennedys");
-            song7.setAlbumID(3L);
-            song7.setSongName("I like short songs (track2)");
-            song7.setTrackNum(2L);
-            song7.setEstimateDuration(28.0);
-            song7.setScore(0.0);
+        Album album2 = new Album();
+        album2.setArtistID(2L);
+        album2.setArtistName("Depeche Mode");
+        album2.setAlbumID(2L);
+        album2.setAlbumName("Black Celebration");
+        album2.setPopularity(43040000.0);
+        album2.setIsVerified("1");
+        album2.setReleaseType("2");
 
-            return new Song[]{song1, song2, song3, song4, song5, song6, song7};
-        }
+        Album album3 = new Album();
+        album3.setArtistID(2L);
+        album3.setArtistName("Depeche Mode");
+        album3.setAlbumID(3L);
+        album3.setAlbumName("Some Broken Frame");
+        album3.setIsVerified("0");
+
+        return new Album[]{album1, album2, album3};
     }
 
     @Override
@@ -206,38 +247,13 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
     }
 
     @Override
-    public Song[] artistGetAllSongs(String artistID) {
+    public Song[] artistGetAllSongs(Long artistID) {
         return getResultsFromSearch(SearchSongsResultType.Songs, null);
     }
 
     @Override
     public Album[] artistGetAllAlbums(Long artistID) {
-        Album album1 = new Album();
-        album1.setArtistID(1L);
-        album1.setArtistName("Beck");
-        album1.setAlbumID(1L);
-        album1.setAlbumName("Odelay");
-        album1.setPopularity(43049344.0);
-        album1.setIsVerified("1");
-        album1.setReleaseType("1");
-
-        Album album2 = new Album();
-        album2.setArtistID(2L);
-        album2.setArtistName("Depeche Mode");
-        album2.setAlbumID(2L);
-        album2.setAlbumName("Black Celebration");
-        album2.setPopularity(43040000.0);
-        album2.setIsVerified("1");
-        album2.setReleaseType("2");
-
-        Album album3 = new Album();
-        album3.setArtistID(2L);
-        album3.setArtistName("Depeche Mode");
-        album3.setAlbumID(3L);
-        album3.setAlbumName("Some Broken Frame");
-        album3.setIsVerified("0");
-
-        return new Album[]{album1, album2, album3};
+        return getResultsFromSearch(SearchAlbumsResultType.Albums, null);
     }
 
     @Override

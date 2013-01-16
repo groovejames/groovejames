@@ -5,7 +5,7 @@ import groovejames.gui.components.ClickableTableView;
 import groovejames.gui.components.DefaultTableViewSortListener;
 import groovejames.gui.components.TableSelectAllKeyListener;
 import groovejames.gui.components.TooltipTableMouseListener;
-import groovejames.model.Song;
+import groovejames.model.Artist;
 import groovejames.service.Services;
 import groovejames.service.search.ArtistSearch;
 import groovejames.service.search.SearchParameter;
@@ -28,10 +28,10 @@ import java.net.URL;
 
 import static groovejames.util.Util.containsIgnoringCase;
 
-public class ArtistTablePane extends TablePane implements Bindable, CardPaneContent<Song> {
+public class ArtistTablePane extends TablePane implements Bindable, CardPaneContent<Artist> {
 
     private Main main;
-    private FilteredList<Song> artistList = new FilteredList<Song>();
+    private FilteredList<Artist> artistList = new FilteredList<Artist>();
 
     private @BXML ClickableTableView artistTable;
     private @BXML TextInput artistSearchInPage;
@@ -48,8 +48,8 @@ public class ArtistTablePane extends TablePane implements Bindable, CardPaneCont
             public boolean cellClicked(ClickableTableView source, Object row, int rowIndex, int columnIndex, Mouse.Button button, int clickCount) {
                 TableView.Column column = source.getColumns().get(columnIndex);
                 if ("artistName".equals(column.getName())) {
-                    Song song = (Song) row;
-                    main.openSearchTab(new ArtistSearch(song.getArtistID(), song.getArtistName()));
+                    Artist artist = (Artist) row;
+                    main.openSearchTab(new ArtistSearch(artist.getArtistID(), artist.getArtistName()));
                 }
                 return false;
             }
@@ -58,9 +58,9 @@ public class ArtistTablePane extends TablePane implements Bindable, CardPaneCont
         artistSearchInPage.getComponentKeyListeners().add(new ComponentKeyListener.Adapter() {
             @Override public boolean keyTyped(Component searchField, char character) {
                 final String searchString = ((TextInput) searchField).getText().trim();
-                artistList.setFilter(new Filter<Song>() {
-                    @Override public boolean include(Song song) {
-                        return containsIgnoringCase(song.getArtistName(), searchString);
+                artistList.setFilter(new Filter<Artist>() {
+                    @Override public boolean include(Artist artist) {
+                        return containsIgnoringCase(artist.getArtistName(), searchString);
                     }
                 });
                 return false;
@@ -72,15 +72,15 @@ public class ArtistTablePane extends TablePane implements Bindable, CardPaneCont
         WtkUtil.setupColumnWidthSaver(artistTable, "artistTable", searchParameter.getSearchType().name());
     }
 
-    @Override public GuiAsyncTask<Song[]> getSearchTask(final SearchParameter searchParameter) {
-        return new GuiAsyncTask<Song[]>(
+    @Override public GuiAsyncTask<Artist[]> getSearchTask(final SearchParameter searchParameter) {
+        return new GuiAsyncTask<Artist[]>(
             "searching for artists named \"" + searchParameter.getSimpleSearchString() + "\"") {
 
             @Override protected void beforeExecute() {
-                artistList.setSource(new ArrayList<Song>());
+                artistList.setSource(new ArrayList<Artist>());
             }
 
-            @Override public Song[] execute() throws TaskExecutionException {
+            @Override public Artist[] execute() throws TaskExecutionException {
                 try {
                     return Services.getSearchService().searchArtists(searchParameter);
                 } catch (Exception ex) {
@@ -89,8 +89,8 @@ public class ArtistTablePane extends TablePane implements Bindable, CardPaneCont
             }
 
             @Override protected void taskExecuted() {
-                Song[] result = getResult();
-                artistList.setSource(new ArrayList<Song>(result));
+                Artist[] result = getResult();
+                artistList.setSource(new ArrayList<Artist>(result));
             }
         };
     }

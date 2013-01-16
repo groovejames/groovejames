@@ -1,35 +1,35 @@
 package groovejames.model;
 
-public class Artist extends ImageObject {
+public class Artist extends BaseModelObject {
 
-    private String artistID;
-    private String artistNameID;
-    private String name;
+    private Long artistID;
+    private String artistName;
     private String sortName;
     private String coverArtFilename;
+    private String artistCoverArtFilename;
 
-    public String getArtistID() {
+    public Long getArtistID() {
         return artistID;
     }
 
-    public void setArtistID(String artistID) {
+    public void setArtistID(Long artistID) {
         this.artistID = artistID;
     }
 
-    public String getArtistNameID() {
-        return artistNameID;
+    public String getArtistName() {
+        return artistName;
     }
 
-    public void setArtistNameID(String artistNameID) {
-        this.artistNameID = artistNameID;
+    public void setArtistName(String artistName) {
+        this.artistName = artistName;
     }
 
     public String getName() {
-        return name;
+        return artistName;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.artistName = name;
     }
 
     public String getSortName() {
@@ -48,8 +48,16 @@ public class Artist extends ImageObject {
         this.coverArtFilename = coverArtFilename;
     }
 
+    public String getArtistCoverArtFilename() {
+        return artistCoverArtFilename;
+    }
+
+    public void setArtistCoverArtFilename(String artistCoverArtFilename) {
+        this.artistCoverArtFilename = artistCoverArtFilename;
+    }
+
     @Override public String getImageFilename() {
-        return coverArtFilename;
+        return artistCoverArtFilename != null ? artistCoverArtFilename : coverArtFilename;
     }
 
     @Override
@@ -70,8 +78,8 @@ public class Artist extends ImageObject {
         final StringBuilder sb = new StringBuilder();
         sb.append("Artist");
         sb.append("{artistID='").append(artistID).append('\'');
-        sb.append(", artistNameID='").append(artistNameID).append('\'');
-        sb.append(", name='").append(name).append('\'');
+        sb.append(", artistName='").append(artistName).append('\'');
+        sb.append(", isVerified='").append(isVerified).append('\'');
         sb.append('}');
         return sb.toString();
     }

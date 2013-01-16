@@ -1,10 +1,13 @@
 package groovejames.service;
 
 import groovejames.model.Album;
+import groovejames.model.Artist;
 import groovejames.model.AutocompleteType;
 import groovejames.model.Country;
 import groovejames.model.ItemByPageNameResult;
 import groovejames.model.Playlist;
+import groovejames.model.SearchAlbumsResultType;
+import groovejames.model.SearchArtistsResultType;
 import groovejames.model.SearchPlaylistsResultType;
 import groovejames.model.SearchSongsResultType;
 import groovejames.model.SearchUsersResultType;
@@ -25,12 +28,20 @@ public interface Grooveshark {
     // or controllerKey in com.grooveshark.jsQueue.Controller in JSQueue.swf
     final String SECRET = System.getProperty("grooveshark.secret", "breakfastBurritos");
 
-    Song[] getAutocomplete(@Param("type") AutocompleteType type,
-                           @Param("query") String query)
+    Artist[] getAutocomplete(@Param("type") AutocompleteType type,
+                             @Param("query") String query)
         throws Exception;
 
     @ResultPath("result") Song[] getResultsFromSearch(@Param("type") SearchSongsResultType type,
                                                       @Param("query") String query)
+        throws Exception;
+
+    @ResultPath("result") Artist[] getResultsFromSearch(@Param("type") SearchArtistsResultType type,
+                                                        @Param("query") String query)
+        throws Exception;
+
+    @ResultPath("result") Album[] getResultsFromSearch(@Param("type") SearchAlbumsResultType type,
+                                                       @Param("query") String query)
         throws Exception;
 
     @ResultPath("result") User[] getResultsFromSearch(@Param("type") SearchUsersResultType type,
@@ -44,7 +55,7 @@ public interface Grooveshark {
     Song[] albumGetAllSongs(@Param("albumID") Long albumID)
         throws Exception;
 
-    Song[] artistGetAllSongs(@Param("artistID") String artistID)
+    Song[] artistGetAllSongs(@Param("artistID") Long artistID)
         throws Exception;
 
     @ResultPath("albums") Album[] artistGetAllAlbums(@Param("artistID") Long artistID)

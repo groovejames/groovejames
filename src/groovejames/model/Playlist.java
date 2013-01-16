@@ -1,9 +1,6 @@
 package groovejames.model;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-
-public class Playlist extends ImageObject {
+public class Playlist extends BaseModelObject {
 
     private long playlistID;
     private String name;
@@ -12,8 +9,6 @@ public class Playlist extends ImageObject {
     private Long numSongs;
     private Long userID;
     private String picture;
-    private double score;
-    private double scorePercentage;
 
     public long getPlaylistID() {
         return playlistID;
@@ -69,22 +64,6 @@ public class Playlist extends ImageObject {
 
     public void setPicture(String picture) {
         this.picture = picture;
-    }
-
-    public double getScore() {
-        return score;
-    }
-
-    public void setScore(double score) {
-        this.score = score;
-    }
-
-    public double getScorePercentage() {
-        return scorePercentage;
-    }
-
-    public void setScorePercentage(double scorePercentage) {
-        this.scorePercentage = max(min(scorePercentage, 1.0), 0.0);
     }
 
     @Override public String getImageFilename() {

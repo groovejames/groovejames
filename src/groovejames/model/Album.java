@@ -1,10 +1,7 @@
 package groovejames.model;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-
 // {"AlbumID":"5247723","ArtistID":"402081","Name":"Could You Believe","Year":"2010","GenreID":"80","CoverArtFilename":"5247723.jpg","IsVerified":"1","ReleaseStatus":"1","ReleaseType":"2","Popularity":"0","Flags":"0"},
-public class Album extends ImageObject {
+public class Album extends BaseModelObject {
 
     private Long artistID;
     private String artistName;
@@ -12,9 +9,6 @@ public class Album extends ImageObject {
     private String albumName;
     private String coverArtFilename;
     private String year;
-    private double popularity;
-    private double popularityPercentage;
-    private String isVerified; // "1" or "0"
 
     /**
      * "1": song is actually an album name, "2": song is released on a Single or EP,
@@ -70,8 +64,7 @@ public class Album extends ImageObject {
         this.coverArtFilename = coverArtFilename;
     }
 
-    @Override
-    public String getImageFilename() {
+    @Override public String getImageFilename() {
         return coverArtFilename;
     }
 
@@ -83,64 +76,12 @@ public class Album extends ImageObject {
         this.year = year;
     }
 
-    public double getPopularity() {
-        return popularity;
-    }
-
-    public void setPopularity(double popularity) {
-        this.popularity = popularity;
-    }
-
-    public double getPopularityPercentage() {
-        return popularityPercentage;
-    }
-
-    public void setPopularityPercentage(double popularityPercentage) {
-        this.popularityPercentage = max(min(popularityPercentage, 1.0), 0.0);
-    }
-
-    public String getIsVerified() {
-        return isVerified;
-    }
-
-    public void setIsVerified(String verified) {
-        isVerified = verified;
-    }
-
     public String getReleaseType() {
         return releaseType;
     }
 
     public void setReleaseType(String releaseType) {
         this.releaseType = releaseType;
-    }
-
-    /**
-     * Create an Album instance from the given song.
-     *
-     * @param song a Song
-     * @return a new Album instance
-     */
-    public static Album createAlbum(Song song) {
-        Album album = new Album();
-        album.setAlbumID(song.getAlbumID());
-        album.setAlbumName(song.getAlbumName());
-        album.setArtistID(song.getArtistID());
-        album.setArtistName(song.getArtistName());
-        album.setCoverArtFilename(song.getCoverArtFilename());
-        album.setYear(song.getYear());
-        album.setPopularity(song.getPopularity());
-        album.setPopularityPercentage(song.getPopularityPercentage());
-        album.setIsVerified(song.getIsVerified());
-        return album;
-    }
-
-    public static Album[] createAlbumsFromSongs(Song[] songs) {
-        Album[] result = new Album[songs.length];
-        for (int i = 0; i < songs.length; i++) {
-            result[i] = createAlbum(songs[i]);
-        }
-        return result;
     }
 
     @Override

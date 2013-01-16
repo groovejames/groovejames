@@ -2,26 +2,16 @@ package groovejames.model;
 
 import org.apache.pivot.wtk.media.Image;
 
-public abstract class ImageObject {
+public interface ImageObject {
 
-    protected volatile Image image;
-    protected volatile boolean loadingImage;
+    String getImageFilename();
 
-    public abstract String getImageFilename();
-    
-    public Image getImage() {
-        return image;
-    }
+    Image getImage();
 
-    public void setImage(Image image) {
-        this.image = image;
-    }
+    void setImage(Image image);
 
-    public boolean isLoadingImage() {
-        return loadingImage;
-    }
+    boolean isLoadingImage();
 
-    public void setLoadingImage(boolean loadingImage) {
-        this.loadingImage = loadingImage;
-    }
+    void setLoadingImage(boolean loadingImage);
+
 }

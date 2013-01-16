@@ -6,6 +6,9 @@ import groovejames.model.AutocompleteType;
 import groovejames.model.Country;
 import groovejames.model.ItemByPageNameResult;
 import groovejames.model.Playlist;
+import groovejames.model.Scoreable;
+import groovejames.model.SearchAlbumsResultType;
+import groovejames.model.SearchArtistsResultType;
 import groovejames.model.SearchPlaylistsResultType;
 import groovejames.model.SearchSongsResultType;
 import groovejames.model.SearchUsersResultType;
@@ -36,10 +39,10 @@ public class SearchService {
     }
 
     public List<String> getAutocomplete(String query) throws Exception {
-        Song[] autocomplete = grooveshark.getAutocomplete(AutocompleteType.artist, query);
+        Artist[] autocomplete = grooveshark.getAutocomplete(AutocompleteType.artist, query);
         ArrayList<String> result = new ArrayList<String>(autocomplete.length);
-        for (Song s : autocomplete) {
-            result.add(s.getArtistName());
+        for (Artist artist : autocomplete) {
+            result.add(artist.getArtistName());
         }
         return result;
     }
@@ -63,7 +66,7 @@ public class SearchService {
             }
             case Artist: {
                 // search for all songs of the given artist
-                String artistID;
+                Long artistID;
                 if (searchParameter instanceof ArtistURLNameSearch) {
                     // if we only got an url page name then we have to search for the artist ID first, using getItemByPageName()
                     String artistURLName = ((ArtistURLNameSearch) searchParameter).getArtistURLName();
@@ -77,7 +80,7 @@ public class SearchService {
                     artistID = artist.getArtistID();
                 } else {
                     // if we get an ArtistSearch instance we already have the artist ID
-                    artistID = ((ArtistSearch) searchParameter).getArtistID().toString();
+                    artistID = ((ArtistSearch) searchParameter).getArtistID();
                 }
                 Song[] songs = grooveshark.artistGetAllSongs(artistID);
                 result = filterDuplicateSongs(songs);
@@ -116,7 +119,8 @@ public class SearchService {
                 throw new IllegalArgumentException("invalid search type: " + searchType);
             }
         }
-        return normalizeScoreAndPopularity(result);
+        normalize(result);
+        return result;
     }
 
     public StreamKey getStreamKeyFromSongID(long songID) throws Exception {
@@ -157,17 +161,18 @@ public class SearchService {
     }
 
 
-    public Song[] searchArtists(SearchParameter searchParameter) throws Exception {
+    public Artist[] searchArtists(SearchParameter searchParameter) throws Exception {
         SearchType searchType = searchParameter.getSearchType();
-        Song[] result;
+        Artist[] result;
         switch (searchType) {
             case General:
                 String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
-                result = normalizeScoreAndPopularity(grooveshark.getResultsFromSearch(SearchSongsResultType.Artists, searchString));
+                result = grooveshark.getResultsFromSearch(SearchArtistsResultType.Artists, searchString);
                 break;
             default:
                 throw new IllegalArgumentException("invalid search type: " + searchType);
         }
+        normalize(result);
         return result;
     }
 
@@ -177,8 +182,7 @@ public class SearchService {
         switch (searchType) {
             case General:
                 String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
-                Song[] songs = grooveshark.getResultsFromSearch(SearchSongsResultType.Albums, searchString);
-                result = Album.createAlbumsFromSongs(songs);
+                result = grooveshark.getResultsFromSearch(SearchAlbumsResultType.Albums, searchString);
                 break;
             case Artist:
                 Long artistID = ((ArtistSearch) searchParameter).getArtistID();
@@ -187,7 +191,7 @@ public class SearchService {
             default:
                 throw new IllegalArgumentException("invalid search type: " + searchType);
         }
-        result = normalizePopularity(result);
+        normalize(result);
         return result;
     }
 
@@ -197,11 +201,12 @@ public class SearchService {
         switch (searchType) {
             case General:
                 String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
-                result = normalizeScore(grooveshark.getResultsFromSearch(SearchUsersResultType.Users, searchString));
+                result = grooveshark.getResultsFromSearch(SearchUsersResultType.Users, searchString);
                 break;
             default:
                 throw new IllegalArgumentException("invalid search type: " + searchType);
         }
+        normalize(result);
         return result;
     }
 
@@ -220,6 +225,7 @@ public class SearchService {
             default:
                 throw new IllegalArgumentException("invalid search type: " + searchType);
         }
+        normalize(result);
         return result;
     }
 
@@ -236,66 +242,30 @@ public class SearchService {
         return resultList.toArray(new Song[resultList.size()]);
     }
 
-    private Song[] normalizeScoreAndPopularity(Song[] songs) {
+    private void normalize(Scoreable[] scoreables) {
         double minScore = Double.MAX_VALUE, maxScore = Double.MIN_VALUE;
         double minPopularity = Double.MAX_VALUE, maxPopularity = Double.MIN_VALUE;
-        for (Song song : songs) {
-            if (song.getScore() > 0.0) {
-                minScore = Math.min(minScore, song.getScore());
-                maxScore = Math.max(maxScore, song.getScore());
+        for (Scoreable scoreable : scoreables) {
+            if (scoreable.getScore() > 0.0) {
+                minScore = Math.min(minScore, scoreable.getScore());
+                maxScore = Math.max(maxScore, scoreable.getScore());
             }
-            if (song.getPopularity() > 0.0) {
-                minPopularity = Math.min(minPopularity, song.getPopularity());
-                maxPopularity = Math.max(maxPopularity, song.getPopularity());
+            if (scoreable.getPopularity() > 0.0) {
+                minPopularity = Math.min(minPopularity, scoreable.getPopularity());
+                maxPopularity = Math.max(maxPopularity, scoreable.getPopularity());
             }
         }
         double rangeScore = maxScore - minScore;
         double rangePopularity = maxPopularity - minPopularity;
         if (maxScore > Double.MIN_VALUE || maxPopularity > Double.MIN_VALUE
             || rangeScore > 0.0 || rangePopularity > 0.0) {
-            for (Song song : songs) {
+            for (Scoreable scoreable : scoreables) {
                 if (maxScore > Double.MIN_VALUE && rangeScore > 0.0)
-                    song.setScorePercentage((song.getScore() - minScore) / rangeScore);
+                    scoreable.setScorePercentage((scoreable.getScore() - minScore) / rangeScore);
                 if (maxPopularity > Double.MIN_VALUE && rangePopularity > 0.0)
-                    song.setPopularityPercentage((song.getPopularity() - minPopularity) / rangePopularity);
+                    scoreable.setPopularityPercentage((scoreable.getPopularity() - minPopularity) / rangePopularity);
             }
         }
-        return songs;
-    }
-
-    private Album[] normalizePopularity(Album[] albums) {
-        double minPopularity = Double.MAX_VALUE, maxPopularity = Double.MIN_VALUE;
-        for (Album album : albums) {
-            if (album.getPopularity() > 0.0) {
-                minPopularity = Math.min(minPopularity, album.getPopularity());
-                maxPopularity = Math.max(maxPopularity, album.getPopularity());
-            }
-        }
-        double rangePopularity = maxPopularity - minPopularity;
-        if (maxPopularity > Double.MIN_VALUE || rangePopularity > 0.0) {
-            for (Album album : albums) {
-                if (maxPopularity > Double.MIN_VALUE && rangePopularity > 0.0)
-                    album.setPopularityPercentage((album.getPopularity() - minPopularity) / rangePopularity);
-            }
-        }
-        return albums;
-    }
-
-    private User[] normalizeScore(User[] users) {
-        double minScore = Double.MAX_VALUE, maxScore = Double.MIN_VALUE;
-        for (User song : users) {
-            minScore = Math.min(minScore, song.getScore());
-            maxScore = Math.max(maxScore, song.getScore());
-        }
-        double range = maxScore - minScore;
-        if (range > 0.0) {
-            for (User song : users) {
-                song.setScorePercentage((song.getScore() - minScore) / range);
-            }
-        }
-        return users;
     }
 
 }
-
-

@@ -1,4 +1,8 @@
-r18 (unreleased)
+r19
+  - fixed artists images
+  - some refactoring on model and search classes
+
+r18 (2013/01/16)
   - NEW: switch between verified and unverified content on album and song pane
   - rearranged tabs to establish a more drill-down like search (artists->albums->songs)
   - fixed clipboard watcher watching for Grooveshark URLs
