@@ -53,13 +53,14 @@ public class SearchResultPane extends TablePane implements Bindable {
         this.searchLabel.setText(getLabel());
         switch (searchParameter.getSearchType()) {
             case General:
-                addTab("songtablepane.bxml", "Songs");
                 addTab("artisttablepane.bxml", "Artists");
+                addTab("songtablepane.bxml", "Songs");
                 addTab("albumtablepane.bxml", "Albums");
                 addTab("peopletablepane.bxml", "People");
                 addTab("playlisttablepane.bxml", "Playlists");
                 break;
             case Artist:
+                addTab("albumtablepane.bxml", "Albums");
                 addTab("songtablepane.bxml", "Songs");
                 break;
             case Album:

@@ -20,6 +20,7 @@ public class Song extends ImageObject {
     private double popularityPercentage;
     private double score;
     private double scorePercentage;
+    private String isVerified; // "1" or "0"
 
     public Long getArtistID() {
         return artistID;
@@ -158,6 +159,14 @@ public class Song extends ImageObject {
         this.scorePercentage = max(min(scorePercentage, 1.0), 0.0);
     }
 
+    public String getIsVerified() {
+        return isVerified;
+    }
+
+    public void setIsVerified(String verified) {
+        isVerified = verified;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -177,6 +186,7 @@ public class Song extends ImageObject {
         sb.append("Song");
         sb.append("{songID=").append(songID);
         sb.append(", songName='").append(songName).append('\'');
+        sb.append(", isVerified='").append(isVerified).append('\'');
         sb.append(", coverArtFilename='").append(coverArtFilename).append('\'');
         sb.append('}');
         return sb.toString();

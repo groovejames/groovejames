@@ -1,5 +1,6 @@
 package groovejames.service;
 
+import groovejames.model.Album;
 import groovejames.model.AutocompleteType;
 import groovejames.model.Country;
 import groovejames.model.ItemByPageNameResult;
@@ -44,6 +45,9 @@ public interface Grooveshark {
         throws Exception;
 
     Song[] artistGetAllSongs(@Param("artistID") String artistID)
+        throws Exception;
+
+    @ResultPath("albums") Album[] artistGetAllAlbums(@Param("artistID") Long artistID)
         throws Exception;
 
     Songs playlistGetSongs(@Param("playlistID") long playlistID)

@@ -1,5 +1,6 @@
 package groovejames.service;
 
+import groovejames.model.Album;
 import groovejames.model.AutocompleteType;
 import groovejames.model.Country;
 import groovejames.model.ItemByPageNameResult;
@@ -207,6 +208,36 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
     @Override
     public Song[] artistGetAllSongs(String artistID) {
         return getResultsFromSearch(SearchSongsResultType.Songs, null);
+    }
+
+    @Override
+    public Album[] artistGetAllAlbums(Long artistID) {
+        Album album1 = new Album();
+        album1.setArtistID(1L);
+        album1.setArtistName("Beck");
+        album1.setAlbumID(1L);
+        album1.setAlbumName("Odelay");
+        album1.setPopularity(43049344.0);
+        album1.setIsVerified("1");
+        album1.setReleaseType("1");
+
+        Album album2 = new Album();
+        album2.setArtistID(2L);
+        album2.setArtistName("Depeche Mode");
+        album2.setAlbumID(2L);
+        album2.setAlbumName("Black Celebration");
+        album2.setPopularity(43040000.0);
+        album2.setIsVerified("1");
+        album2.setReleaseType("2");
+
+        Album album3 = new Album();
+        album3.setArtistID(2L);
+        album3.setArtistName("Depeche Mode");
+        album3.setAlbumID(3L);
+        album3.setAlbumName("Some Broken Frame");
+        album3.setIsVerified("0");
+
+        return new Album[]{album1, album2, album3};
     }
 
     @Override

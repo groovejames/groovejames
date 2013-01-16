@@ -1,5 +1,6 @@
 package groovejames.service.search;
 
+import groovejames.model.Album;
 import groovejames.model.Artist;
 import groovejames.model.AutocompleteType;
 import groovejames.model.Country;
@@ -170,17 +171,23 @@ public class SearchService {
         return result;
     }
 
-    public Song[] searchAlbums(SearchParameter searchParameter) throws Exception {
+    public Album[] searchAlbums(SearchParameter searchParameter) throws Exception {
         SearchType searchType = searchParameter.getSearchType();
-        Song[] result;
+        Album[] result;
         switch (searchType) {
             case General:
                 String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
-                result = normalizeScoreAndPopularity(grooveshark.getResultsFromSearch(SearchSongsResultType.Albums, searchString));
+                Song[] songs = grooveshark.getResultsFromSearch(SearchSongsResultType.Albums, searchString);
+                result = Album.createAlbumsFromSongs(songs);
+                break;
+            case Artist:
+                Long artistID = ((ArtistSearch) searchParameter).getArtistID();
+                result = grooveshark.artistGetAllAlbums(artistID);
                 break;
             default:
                 throw new IllegalArgumentException("invalid search type: " + searchType);
         }
+        result = normalizePopularity(result);
         return result;
     }
 
@@ -254,6 +261,24 @@ public class SearchService {
             }
         }
         return songs;
+    }
+
+    private Album[] normalizePopularity(Album[] albums) {
+        double minPopularity = Double.MAX_VALUE, maxPopularity = Double.MIN_VALUE;
+        for (Album album : albums) {
+            if (album.getPopularity() > 0.0) {
+                minPopularity = Math.min(minPopularity, album.getPopularity());
+                maxPopularity = Math.max(maxPopularity, album.getPopularity());
+            }
+        }
+        double rangePopularity = maxPopularity - minPopularity;
+        if (maxPopularity > Double.MIN_VALUE || rangePopularity > 0.0) {
+            for (Album album : albums) {
+                if (maxPopularity > Double.MIN_VALUE && rangePopularity > 0.0)
+                    album.setPopularityPercentage((album.getPopularity() - minPopularity) / rangePopularity);
+            }
+        }
+        return albums;
     }
 
     private User[] normalizeScore(User[] users) {

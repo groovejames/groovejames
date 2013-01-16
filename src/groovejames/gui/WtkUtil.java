@@ -29,7 +29,10 @@ public class WtkUtil {
     }
 
     public static void removeColumn(TableView tableView, String columnNameToRemove) {
-        TableView.Column columnToRemove = getColumns(tableView, columnNameToRemove).get(0);
+        ArrayList<TableView.Column> columns = getColumns(tableView, columnNameToRemove);
+        if (columns.isEmpty())
+            throw new IllegalArgumentException("column not found: " + columnNameToRemove);
+        TableView.Column columnToRemove = columns.get(0);
         tableView.getColumns().remove(columnToRemove);
     }
 

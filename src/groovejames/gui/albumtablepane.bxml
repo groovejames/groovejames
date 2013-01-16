@@ -9,6 +9,11 @@
     <rows>
         <TablePane.Row>
             <BoxPane styles="{fill:true, horizontalAlignment:'right'}">
+                <bxml:define>
+                    <ButtonGroup bxml:id="showButtonGroup"/>
+                </bxml:define>
+                <RadioButton bxml:id="showAll" buttonData="Show All" buttonGroup="$showButtonGroup" selected="false"/>
+                <RadioButton bxml:id="showVerified" buttonData="Only Verified" buttonGroup="$showButtonGroup" selected="true"/>
                 <TextInput bxml:id="albumSearchInPage" prompt="Search in page..."/>
             </BoxPane>
         </TablePane.Row>
@@ -20,7 +25,7 @@
                             <guicomponents:ClickableTableView bxml:id="albumTable" selectMode="single"
                                                               clickableColumns="1,2"
                                                               styles="{font:{bold:true, size:'130%'}, showHorizontalGridLines:false, showVerticalGridLines:false}"
-                                                              sort="[{columnName:'scorePercentage', sortDirection:'DESCENDING'}]">
+                                                              sort="[{columnName:'albumName', sortDirection:'ASCENDING'}]">
                                 <columns>
                                     <TableView.Column name="image" width="50">
                                         <cellRenderer>
@@ -31,9 +36,9 @@
                                                     defaultImage="@images/unknownSong.png"/>
                                         </cellRenderer>
                                     </TableView.Column>
-                                    <TableView.Column name="albumName" headerData="Album" width="300"/>
-                                    <TableView.Column name="artistName" headerData="Artist" width="1*"/>
-                                    <TableView.Column name="scorePercentage" headerData="Relevance" width="80">
+                                    <TableView.Column name="albumName" headerData="Album" width="1*"/>
+                                    <TableView.Column name="artistName" headerData="Artist" width="300"/>
+                                    <TableView.Column name="popularityPercentage" headerData="Popularity" width="80">
                                         <cellRenderer>
                                             <guicomponents:MeterTableCellRenderer/>
                                         </cellRenderer>
