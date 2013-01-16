@@ -548,14 +548,11 @@ public class Main implements Application {
     private String getVersionNumberAndDate() {
         Properties properties = loadProperties("version.properties");
         String buildNumber = properties.getProperty("build.number", "");
-        String buildType = properties.getProperty("build.type", "");
         properties = loadProperties("build.properties");
         String buildDate = properties.getProperty("build.date", "");
         String versionNumberAndDate = "";
         if (!buildNumber.isEmpty()) {
             versionNumberAndDate += "r" + buildNumber;
-            if (!buildType.isEmpty())
-                versionNumberAndDate += "-" + buildType;
         }
         if (!buildDate.isEmpty())
             versionNumberAndDate += " (built on " + buildDate + ")";
