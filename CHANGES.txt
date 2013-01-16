@@ -1,5 +1,5 @@
 r18 (unreleased)
-  - NEW: switch between verified and unverified content on album pane
+  - NEW: switch between verified and unverified content on album and song pane
   - rearranged tabs to establish a more drill-down like search (artists->albums->songs)
   - fixed clipboard watcher watching for Grooveshark URLs
 

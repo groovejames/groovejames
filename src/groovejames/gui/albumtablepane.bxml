@@ -3,15 +3,15 @@
                     xmlns:gui="groovejames.gui"
                     xmlns:guicomponents="groovejames.gui.components"
                     styles="{verticalSpacing:6}">
+    <bxml:define>
+        <ButtonGroup bxml:id="showButtonGroup"/>
+    </bxml:define>
     <columns>
         <TablePane.Column width="1*"/>
     </columns>
     <rows>
         <TablePane.Row>
             <BoxPane styles="{fill:true, horizontalAlignment:'right'}">
-                <bxml:define>
-                    <ButtonGroup bxml:id="showButtonGroup"/>
-                </bxml:define>
                 <RadioButton bxml:id="showAll" buttonData="Show All" buttonGroup="$showButtonGroup" selected="false"/>
                 <RadioButton bxml:id="showVerified" buttonData="Only Verified" buttonGroup="$showButtonGroup" selected="true"/>
                 <TextInput bxml:id="albumSearchInPage" prompt="Search in page..."/>

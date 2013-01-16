@@ -5,11 +5,16 @@
                    xmlns:gui="groovejames.gui"
                    xmlns:guicomponents="groovejames.gui.components"
                    styles="{horizontalSpacing:6, verticalSpacing:6}">
+    <bxml:define>
+        <ButtonGroup bxml:id="showButtonGroup"/>
+    </bxml:define>
     <columns>
         <TablePane.Column width="-1"/>
         <TablePane.Column width="-1"/>
         <TablePane.Column width="-1"/>
         <TablePane.Column width="1*"/>
+        <TablePane.Column width="-1"/>
+        <TablePane.Column width="-1"/>
         <TablePane.Column width="-1"/>
         <TablePane.Column width="-1"/>
     </columns>
@@ -31,6 +36,8 @@
                 </buttonData>
             </PushButton>
             <TablePane.Filler/>
+            <RadioButton bxml:id="showAll" buttonData="Show All" buttonGroup="$showButtonGroup" selected="false"/>
+            <RadioButton bxml:id="showVerified" buttonData="Only Verified" buttonGroup="$showButtonGroup" selected="true"/>
             <ListButton bxml:id="songGroupByButton" selectedIndex="0">
                 <listData>
                     <collections:ArrayList>
@@ -42,7 +49,7 @@
             <TextInput bxml:id="songSearchInPage" prompt="Search in page..."/>
         </TablePane.Row>
         <TablePane.Row height="1*">
-            <SplitPane bxml:id="songSplitPane" splitRatio="0.25" orientation="horizontal" TablePane.columnSpan="6">
+            <SplitPane bxml:id="songSplitPane" splitRatio="0.25" orientation="horizontal" TablePane.columnSpan="8">
                 <left>
                     <Border>
                         <content>

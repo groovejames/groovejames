@@ -25,6 +25,9 @@ import org.apache.pivot.util.Filter;
 import org.apache.pivot.util.Resources;
 import org.apache.pivot.util.concurrent.TaskExecutionException;
 import org.apache.pivot.wtk.Action;
+import org.apache.pivot.wtk.Button;
+import org.apache.pivot.wtk.ButtonGroup;
+import org.apache.pivot.wtk.ButtonGroupListener;
 import org.apache.pivot.wtk.Component;
 import org.apache.pivot.wtk.ComponentKeyListener;
 import org.apache.pivot.wtk.ListButton;
@@ -33,6 +36,7 @@ import org.apache.pivot.wtk.Menu;
 import org.apache.pivot.wtk.MenuHandler;
 import org.apache.pivot.wtk.Mouse;
 import org.apache.pivot.wtk.PushButton;
+import org.apache.pivot.wtk.RadioButton;
 import org.apache.pivot.wtk.SortDirection;
 import org.apache.pivot.wtk.Span;
 import org.apache.pivot.wtk.SplitPane;
@@ -59,6 +63,9 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
     private @BXML PushButton playButton;
     private @BXML PushButton enqueueButton;
     private @BXML TextInput songSearchInPage;
+    private @BXML ButtonGroup showButtonGroup;
+    private @BXML RadioButton showAll;
+    private @BXML RadioButton showVerified;
 
     private Main main;
     private FilteredList<Song> songList = new FilteredList<Song>();
@@ -212,10 +219,23 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
 
         songSearchInPage.getComponentKeyListeners().add(new ComponentKeyListener.Adapter() {
             @Override public boolean keyTyped(Component searchField, char character) {
-                songList.setFilter(new SongListFilter());
+                updateFilter();
                 return false;
             }
         });
+
+        showButtonGroup.getButtonGroupListeners().add(new ButtonGroupListener.Adapter() {
+            @Override public void selectionChanged(ButtonGroup buttonGroup, Button previousSelection) {
+                updateFilter();
+            }
+        });
+
+        updateFilter();
+    }
+
+    private void updateFilter() {
+        songList.setFilter(new SongListFilter());
+        songAlbumList.setFilter(new SongAlbumListFilter());
     }
 
     private void setSongsGroupByAlbum(boolean groupByAlbum) {
@@ -252,8 +272,8 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
             WtkUtil.removeColumn(songTable, "albumName");
             // remove "Relevance" column because it is always 0 if we search for album's songs
             WtkUtil.removeColumn(songTable, "scorePercentage");
-            // sort by popularity (instead of score)
-            songTable.setSort("popularityPercentage", SortDirection.DESCENDING);
+            // sort by track number (instead of score)
+            songTable.setSort("trackNum", SortDirection.ASCENDING);
         } else if (searchParameter.getSearchType() == SearchType.Playlist) {
             // remove "Relevance" column because it is always 0 if we search for playlist's songs
             WtkUtil.removeColumn(songTable, "scorePercentage");
@@ -329,6 +349,10 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
             if (songListSelectedAlbumID != null)
                 if (!songListSelectedAlbumID.equals(song.getAlbumID()))
                     return false;
+            boolean showOnlyVerified = showVerified.isSelected();
+            if (showOnlyVerified)
+                if (!"1".equals(song.getIsVerified()))
+                    return false;
             String searchString = songSearchInPage.getText().trim();
             if (containsIgnoringCase(song.getSongName(), searchString))
                 return true;
@@ -343,4 +367,15 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
         }
     }
 
+    private class SongAlbumListFilter implements Filter<Song> {
+        @Override public boolean include(Song song) {
+            if (song.getAlbumID() == null) // "All Albums" entry
+                return true;
+            boolean showOnlyVerified = showVerified.isSelected();
+            if (showOnlyVerified)
+                if (!"1".equals(song.getIsVerified()))
+                    return false;
+            return true;
+        }
+    }
 }
