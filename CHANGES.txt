@@ -1,5 +1,5 @@
-r19
-  - fixed artists images
+r19 (unreleased)
+  - fixed artists and playlist images
   - some refactoring on model and search classes
 
 r18 (2013/01/16)

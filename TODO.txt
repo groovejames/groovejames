@@ -1,6 +1,5 @@
-- user's playlists doesn't work
-- images for playlists
 - mp3 player: add seek forward/backward
+
 - watch clipboard for grooveshark and last.fm urls
   - gs song url:
       http://grooveshark.com/s/Hallelujah/3fFFhG?src=5
