@@ -260,25 +260,41 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
 
         WtkUtil.setupColumnWidthSaver(songTable, "songTable", searchParameter.getSearchType().name());
 
-        if (searchParameter.getSearchType() == SearchType.Artist) {
-            // remove "Artist" column
-            WtkUtil.removeColumn(songTable, "artistName");
-            // remove "Relevance" column because it is always 0 if we search for artist's songs
-            WtkUtil.removeColumn(songTable, "scorePercentage");
-            // sort by popularity (instead of score)
-            songTable.setSort("popularityPercentage", SortDirection.DESCENDING);
-        } else if (searchParameter.getSearchType() == SearchType.Album) {
-            // remove "Album" column
-            WtkUtil.removeColumn(songTable, "albumName");
-            // remove "Relevance" column because it is always 0 if we search for album's songs
-            WtkUtil.removeColumn(songTable, "scorePercentage");
-            // sort by track number (instead of score)
-            songTable.setSort("trackNum", SortDirection.ASCENDING);
-        } else if (searchParameter.getSearchType() == SearchType.Playlist) {
-            // remove "Relevance" column because it is always 0 if we search for playlist's songs
-            WtkUtil.removeColumn(songTable, "scorePercentage");
-            // sort by track number (instead of score)
-            songTable.setSort("trackNum", SortDirection.ASCENDING);
+        switch (searchParameter.getSearchType()) {
+            case Artist:
+                // remove "Artist" column
+                WtkUtil.removeColumn(songTable, "artistName");
+                // remove "Relevance" column because it is always 0 if we search for artist's songs
+                WtkUtil.removeColumn(songTable, "scorePercentage");
+                // sort by popularity (instead of score)
+                songTable.setSort("popularityPercentage", SortDirection.DESCENDING);
+                break;
+            case Album:
+                // remove "Album" column
+                WtkUtil.removeColumn(songTable, "albumName");
+                // remove "Relevance" column because it is always 0 if we search for album's songs
+                WtkUtil.removeColumn(songTable, "scorePercentage");
+                // sort by track number (instead of score)
+                songTable.setSort("trackNum", SortDirection.ASCENDING);
+                break;
+            case Playlist:
+                // remove "Relevance" column because it is always 0 if we search for playlist's songs
+                WtkUtil.removeColumn(songTable, "scorePercentage");
+                // show all instead of only verified tracks
+                showAll.setSelected(true);
+                // sort by track number (instead of score)
+                songTable.setSort("trackNum", SortDirection.ASCENDING);
+                break;
+            case User:
+                // remove "Relevance" column because it is always 0 if we search for user's songs
+                WtkUtil.removeColumn(songTable, "scorePercentage");
+                // show all instead of only verified tracks
+                showAll.setSelected(true);
+                // don't sort at all
+                songTable.clearSort();
+                break;
+            default:
+                break;
         }
     }
 

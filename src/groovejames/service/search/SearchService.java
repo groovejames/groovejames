@@ -66,23 +66,8 @@ public class SearchService {
             }
             case Artist: {
                 // search for all songs of the given artist
-                Long artistID;
-                if (searchParameter instanceof ArtistURLNameSearch) {
-                    // if we only got an url page name then we have to search for the artist ID first, using getItemByPageName()
-                    String artistURLName = ((ArtistURLNameSearch) searchParameter).getArtistURLName();
-                    ItemByPageNameResult itemByPageName = grooveshark.getItemByPageName(artistURLName);
-                    Artist artist = itemByPageName.getArtist();
-                    if (artist == null) {
-                        log.error("no artist found for name=" + artistURLName);
-                        result = new Song[]{};
-                        break;
-                    }
-                    artistID = artist.getArtistID();
-                } else {
-                    // if we get an ArtistSearch instance we already have the artist ID
-                    artistID = ((ArtistSearch) searchParameter).getArtistID();
-                }
-                Song[] songs = grooveshark.artistGetAllSongs(artistID);
+                Long artistID = getArtistID(searchParameter);
+                Song[] songs = artistID != null ? grooveshark.artistGetAllSongs(artistID) : new Song[0];
                 result = filterDuplicateSongs(songs);
                 break;
             }
@@ -185,8 +170,8 @@ public class SearchService {
                 result = grooveshark.getResultsFromSearch(SearchAlbumsResultType.Albums, searchString);
                 break;
             case Artist:
-                Long artistID = ((ArtistSearch) searchParameter).getArtistID();
-                result = grooveshark.artistGetAllAlbums(artistID);
+                Long artistID = getArtistID(searchParameter);
+                result = artistID != null ? grooveshark.artistGetAllAlbums(artistID) : new Album[0];
                 break;
             default:
                 throw new IllegalArgumentException("invalid search type: " + searchType);
@@ -265,6 +250,25 @@ public class SearchService {
                 if (maxPopularity > Double.MIN_VALUE && rangePopularity > 0.0)
                     scoreable.setPopularityPercentage((scoreable.getPopularity() - minPopularity) / rangePopularity);
             }
+        }
+    }
+
+    private Long getArtistID(SearchParameter searchParameter) throws Exception {
+        if (searchParameter instanceof ArtistURLNameSearch) {
+            // if we only got an url page name then we have to search for the artist ID first, using getItemByPageName()
+            String artistURLName = ((ArtistURLNameSearch) searchParameter).getArtistURLName();
+            ItemByPageNameResult itemByPageName = grooveshark.getItemByPageName(artistURLName);
+            Artist artist = itemByPageName.getArtist();
+            if (artist == null) {
+                log.error("no artist found for name=" + artistURLName);
+                return null;
+            }
+            return artist.getArtistID();
+        } else if (searchParameter instanceof ArtistSearch) {
+            // if we get an ArtistSearch instance we already have the artist ID
+            return ((ArtistSearch) searchParameter).getArtistID();
+        } else {
+            throw new IllegalArgumentException("illegal searchParameter type: " + searchParameter.getClass());
         }
     }
 
