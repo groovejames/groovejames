@@ -60,10 +60,10 @@
 
 
     <target name="dist-bin" depends="readBuildNumber, jar" description="create the binary distribution">
-        <copy file="grooveJames.exe" tofile="out/grooveJames-${version}.exe"/>
+        <copy file="CHANGES.txt" todir="out" overwrite="true"/>
+        <copy file="grooveJames.exe" todir="out" overwrite="true"/>
         <zip destfile="out/grooveJames-${version}-bin.zip">
-            <zipfileset dir="out" includes="grooveJames.jar, grooveJames-${version}.exe"/>
-            <zipfileset dir="." includes="CHANGES.txt"/>
+            <zipfileset dir="out" includes="grooveJames.jar, grooveJames.exe, CHANGES.txt"/>
         </zip>
     </target>
 
@@ -159,7 +159,8 @@
             description="cleanup and create source and binary distribution"/>
 
 
-    <target name="release" depends="checkIfSomeFilesChanged, readBuildNumber, release-src, release-bin" if="filesChanged"
+    <target name="release" depends="checkIfSomeFilesChanged, readBuildNumber, release-src, release-bin"
+            if="filesChanged"
             description="checks if some files have been changed, if true releases files on CodeBeamer/JavaForge"/>
 
 
