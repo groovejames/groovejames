@@ -1,3 +1,6 @@
+r20 (unreleased)
+  -
+
 r19 (2013/01/17)
   - fixed artists and playlist images
   - some refactoring on model and search classes
