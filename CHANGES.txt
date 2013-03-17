@@ -1,5 +1,7 @@
 r20 (unreleased)
-  -
+  - show high-res pictures in player
+  - if songs list with "verified only" is empty, automatically show all songs
+  - if album list with "verified only" is empty, automatically show all albums
 
 r19 (2013/01/17)
   - fixed artists and playlist images

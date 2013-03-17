@@ -99,6 +99,12 @@ public class ImageLoader {
         return image;
     }
 
+    public Image getImageIgnoringCache(ImageObject imageObject, Component target) {
+        String filename = imageObject.getImageFilename();
+        startLoadingImage(filename, imageObject, target);
+        return imageObject.getImage();
+    }
+
     private void startLoadingImage(final String filename, final ImageObject imageObject, final Component target) {
         if (!imageObject.isLoadingImage()) {
             imageObject.setLoadingImage(true);
@@ -126,6 +132,7 @@ public class ImageLoader {
     }
 
     private Image httpGetImage(String uri) throws IOException {
+        log.debug(format("getting image %s", uri));
         HttpResponse httpResponse = Services.getHttpClientService().getHttpClient().execute(new HttpGet(uri));
         HttpEntity httpEntity = httpResponse.getEntity();
         try {

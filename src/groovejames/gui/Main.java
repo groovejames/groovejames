@@ -168,7 +168,7 @@ public class Main implements Application {
         this.settings = loadSettings();
         this.downloadTracks.getListListeners().add(new DownloadTracksListListener());
         this.imageLoader = new ImageLoader();
-        this.imageLoader.setUrlPrefix("http://images.grooveshark.com/static/albums/");
+        this.imageLoader.setUrlPrefix("http://images.grooveshark.com/static/albums/500_");
 
         Services.getPlayService().setListener(new PlaylistListener());
         Services.getPlayService().getPlaylist().getListListeners().add(new PlaylistListListener());
@@ -814,7 +814,7 @@ public class Main implements Application {
             nowPlayingAlbum.setText("");
         }
         nowPlayingImage.setVisible(true);
-        nowPlayingImage.setImage(imageLoader.getImage(track.getSong(), nowPlayingImage));
+        nowPlayingImage.setImage(imageLoader.getImageIgnoringCache(track.getSong(), nowPlayingImage));
         playDownloadProgress.setVisible(true);
         playProgress.setVisible(true);
     }

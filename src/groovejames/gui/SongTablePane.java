@@ -322,6 +322,9 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
             @Override protected void taskExecuted() {
                 Song[] result = getResult();
                 setSongs(result);
+                if (songList.getLength() == 0 || songAlbumList.getLength() == 0) {
+                    showAll.setSelected(true);
+                }
                 if (searchParameter.getSearchType() != SearchType.Album) {
                     boolean groupByAlbum = prefs.node("songTable").node(searchParameter.getSearchType().name()).getBoolean("groupByAlbum", true);
                     songTable.getUserData().put("dontRedistributeColumnWidths", Boolean.TRUE);

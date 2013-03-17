@@ -126,6 +126,9 @@ public class AlbumTablePane extends TablePane implements Bindable, CardPaneConte
             @Override protected void taskExecuted() {
                 Album[] result = getResult();
                 albumList.setSource(new ArrayList<Album>(result));
+                if (albumList.getLength() == 0) {
+                    showAll.setSelected(true);
+                }
             }
 
         };
