@@ -1,4 +1,7 @@
-r20 (unreleased)
+r21 (unreleased)
+  -
+
+r20 (2013/0317)
   - show high-res pictures in player
   - if songs list with "verified only" is empty, automatically show all songs
   - if album list with "verified only" is empty, automatically show all albums
