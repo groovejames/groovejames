@@ -13,6 +13,7 @@ import groovejames.service.search.AlbumSearch;
 import groovejames.service.search.ArtistSearch;
 import groovejames.service.search.SearchParameter;
 import groovejames.service.search.SearchType;
+import groovejames.service.search.SongSearch;
 import groovejames.util.FilteredList;
 import org.apache.pivot.beans.BXML;
 import org.apache.pivot.beans.Bindable;
@@ -48,6 +49,7 @@ import org.apache.pivot.wtk.content.ButtonData;
 
 import java.net.URL;
 import java.util.Comparator;
+import java.util.Set;
 import java.util.prefs.Preferences;
 
 import static groovejames.util.Util.compareNullSafe;
@@ -62,6 +64,7 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
     private @BXML PushButton downloadButton;
     private @BXML PushButton playButton;
     private @BXML PushButton enqueueButton;
+    private @BXML PushButton mailButton;
     private @BXML TextInput songSearchInPage;
     private @BXML ButtonGroup showButtonGroup;
     private @BXML RadioButton showAll;
@@ -74,10 +77,15 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
     private SearchParameter searchParameter;
     private Preferences prefs = Preferences.userNodeForPackage(SearchResultPane.class);
 
+    private Action downloadAction;
+    private Action playAction;
+    private Action enqueueAction;
+    private Action mailAction;
+
     @Override public void initialize(Map<String, Object> namespace, URL location, Resources resources) {
         this.main = (Main) namespace.get("main");
 
-        final Action downloadAction = new Action() {
+        downloadAction = new Action(false) {
             @Override public void perform(Component source) {
                 Sequence<?> selectedRows = songTable.getSelectedRows();
                 for (int i = 0, len = selectedRows.getLength(); i < len; i++) {
@@ -86,27 +94,36 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
                 }
             }
         };
-        downloadAction.setEnabled(false);
 
-        final Action playAction = new Action() {
+        playAction = new Action(false) {
             @Override @SuppressWarnings("unchecked") public void perform(Component source) {
                 Sequence<Song> selectedRows = (Sequence<Song>) songTable.getSelectedRows();
                 main.play(selectedRows, PlayService.AddMode.NOW);
             }
         };
-        playAction.setEnabled(false);
 
-        final Action enqueueAction = new Action() {
+        enqueueAction = new Action(false) {
             @Override @SuppressWarnings("unchecked") public void perform(Component source) {
                 Sequence<Song> selectedRows = (Sequence<Song>) songTable.getSelectedRows();
                 main.play(selectedRows, PlayService.AddMode.LAST);
             }
         };
-        enqueueAction.setEnabled(false);
+
+        mailAction = new Action(false) {
+            @Override @SuppressWarnings("unchecked") public void perform(Component source) {
+                Sequence<Song> selectedRows = (Sequence<Song>) songTable.getSelectedRows();
+                if (selectedRows.getLength() > 0) {
+                    main.mailSongs(selectedRows);
+                } else if (searchParameter.getSearchType() == SearchType.Album) {
+                    main.mailAlbum((AlbumSearch) searchParameter);
+                }
+            }
+        };
 
         downloadButton.setAction(downloadAction);
         playButton.setAction(playAction);
         enqueueButton.setAction(enqueueAction);
+        mailButton.setAction(mailAction);
 
         songGroupByButton.getListButtonSelectionListeners().add(new ListButtonSelectionListener.Adapter() {
             @Override public void selectedIndexChanged(ListButton listButton, int previousSelectedIndex) {
@@ -162,34 +179,19 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
         });
         songTable.getTableViewSelectionListeners().add(new TableViewSelectionListener() {
             @Override public void selectedRangeAdded(TableView tableView, int rangeStart, int rangeEnd) {
-                selectionChanged(tableView);
+                updateToolbarButtons();
             }
 
             @Override public void selectedRangeRemoved(TableView tableView, int rangeStart, int rangeEnd) {
-                selectionChanged(tableView);
+                updateToolbarButtons();
             }
 
             @Override public void selectedRangesChanged(TableView tableView, Sequence<Span> previousSelectedRanges) {
-                selectionChanged(tableView);
+                updateToolbarButtons();
             }
 
             @Override public void selectedRowChanged(TableView tableView, Object previousSelectedRow) {
-                selectionChanged(tableView);
-            }
-
-            private void selectionChanged(TableView tableView) {
-                int length = 0;
-                ImmutableList<Span> ranges = tableView.getSelectedRanges();
-                for (Span span : ranges) {
-                    length += span.getLength();
-                }
-                downloadAction.setEnabled(length > 0);
-                playAction.setEnabled(length > 0);
-                enqueueAction.setEnabled(length > 0);
-                String suffix = length == 0 ? "" : " (" + length + ")";
-                downloadButton.setButtonData(new ButtonData(((ButtonData) downloadButton.getButtonData()).getIcon(), "Download" + suffix));
-                playButton.setButtonData(new ButtonData(((ButtonData) playButton.getButtonData()).getIcon(), "Play Now" + suffix));
-                enqueueButton.setButtonData(new ButtonData(((ButtonData) enqueueButton.getButtonData()).getIcon(), "Enqueue" + suffix));
+                updateToolbarButtons();
             }
         });
         songTable.setMenuHandler(new MenuHandler.Adapter() {
@@ -230,7 +232,36 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
             }
         });
 
+        updateToolbarButtons();
         updateFilter();
+    }
+
+    private void updateToolbarButtons() {
+        boolean isSongsForAlbums = (searchParameter != null && searchParameter.getSearchType() == SearchType.Album);
+        int length = 0;
+        ImmutableList<Span> ranges = songTable.getSelectedRanges();
+        for (Span span : ranges) {
+            length += span.getLength();
+        }
+        downloadAction.setEnabled(length > 0);
+        playAction.setEnabled(length > 0);
+        enqueueAction.setEnabled(length > 0);
+        mailAction.setEnabled(isSongsForAlbums || length > 0);
+
+        String suffix = length == 0 ? "" : " (" + length + ")";
+        downloadButton.setButtonData(new ButtonData(((ButtonData) downloadButton.getButtonData()).getIcon(), "Download" + suffix));
+        playButton.setButtonData(new ButtonData(((ButtonData) playButton.getButtonData()).getIcon(), "Play Now" + suffix));
+        enqueueButton.setButtonData(new ButtonData(((ButtonData) enqueueButton.getButtonData()).getIcon(), "Enqueue" + suffix));
+
+        String mailButtonText = "Share song(s)";
+        if (length == 1) {
+            mailButtonText = "Mail this song";
+        } else if (length > 1) {
+            mailButtonText = "Mail " + length + " songs";
+        } else if (isSongsForAlbums) {
+            mailButtonText = "Mail this album";
+        }
+        mailButton.setButtonData(new ButtonData(((ButtonData) mailButton.getButtonData()).getIcon(), mailButtonText));
     }
 
     private void updateFilter() {
@@ -257,6 +288,8 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
 
     @Override public void afterLoad(SearchParameter searchParameter) {
         this.searchParameter = searchParameter;
+
+        updateToolbarButtons();
 
         WtkUtil.setupColumnWidthSaver(songTable, "songTable", searchParameter.getSearchType().name());
 
@@ -293,6 +326,12 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
                 // don't sort at all
                 songTable.clearSort();
                 break;
+            case Songs:
+                // show all instead of only verified tracks
+                showAll.setSelected(true);
+                // sort by track number (instead of score)
+                songTable.setSort("trackNum", SortDirection.ASCENDING);
+                break;
             default:
                 break;
         }
@@ -300,10 +339,13 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
 
     @Override public GuiAsyncTask<Song[]> getSearchTask(final SearchParameter searchParameter) {
         return new GuiAsyncTask<Song[]>
-            ("searching for songs named \"" + searchParameter.getSimpleSearchString() + "\"") {
+            ("searching for songs named \"" + searchParameter.getDescription() + "\"") {
             @Override protected void beforeExecute() {
-                if (searchParameter.getSearchType() == SearchType.Album) {
+                SearchType searchType = searchParameter.getSearchType();
+                if (searchType == SearchType.Album) {
                     songGroupByButton.setVisible(false);
+                }
+                if (searchType == SearchType.Album || searchType == SearchType.Songs) {
                     songTable.getUserData().put("dontRedistributeColumnWidths", Boolean.TRUE);
                     songGroupByButton.setSelectedIndex(1); // select "Don't Group"
                     songTable.getUserData().put("dontRedistributeColumnWidths", Boolean.FALSE);
@@ -325,11 +367,30 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
                 if (songList.getLength() == 0 || songAlbumList.getLength() == 0) {
                     showAll.setSelected(true);
                 }
-                if (searchParameter.getSearchType() != SearchType.Album) {
+                ArrayList<Song> autoPlaySongs = new ArrayList<Song>();
+                if (searchParameter.getSearchType() == SearchType.Album) {
+                    if (((AlbumSearch) searchParameter).isAutoplay()) {
+                        for (Song song : result) {
+                            autoPlaySongs.add(song);
+                        }
+                    }
+                } else if (searchParameter.getSearchType() == SearchType.Songs) {
+                    Set<Long> autoPlaySongIds = ((SongSearch) searchParameter).getAutoPlaySongIds();
+                    for (Long autoPlaySongId : autoPlaySongIds) {
+                        for (Song song : result) {
+                            if (song.getSongID().equals(autoPlaySongId)) {
+                                autoPlaySongs.add(song);
+                            }
+                        }
+                    }
+                } else {
                     boolean groupByAlbum = prefs.node("songTable").node(searchParameter.getSearchType().name()).getBoolean("groupByAlbum", true);
                     songTable.getUserData().put("dontRedistributeColumnWidths", Boolean.TRUE);
                     songGroupByButton.setSelectedIndex(groupByAlbum ? 0 : 1);
                     songTable.getUserData().put("dontRedistributeColumnWidths", Boolean.FALSE);
+                }
+                if (!autoPlaySongs.isEmpty()) {
+                    main.play(autoPlaySongs, PlayService.AddMode.NOW);
                 }
             }
 

@@ -1,5 +1,6 @@
 r21 (unreleased)
-  -
+  - mail album or list of songs to someone, using a groovejames:// url
+  - listen on clipboard for groovejames:// urls
 
 r20 (2013/0317)
   - show high-res pictures in player

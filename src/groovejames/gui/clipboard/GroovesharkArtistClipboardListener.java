@@ -28,7 +28,7 @@ public class GroovesharkArtistClipboardListener implements ClipboardListener {
     public boolean clipboardContentsChanged(String newClipboardContent) {
         Matcher matcher = pattern1.matcher(newClipboardContent);
         if (matcher.matches()) {
-            String artistName = Util.decodeURL(matcher.group(1));
+            String artistName = Util.urldecode(matcher.group(1));
             long artistID = Long.parseLong(matcher.group(2));
             main.openSearchTab(new ArtistSearch(artistID, artistName));
             return true;

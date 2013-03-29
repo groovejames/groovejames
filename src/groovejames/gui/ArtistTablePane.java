@@ -74,7 +74,7 @@ public class ArtistTablePane extends TablePane implements Bindable, CardPaneCont
 
     @Override public GuiAsyncTask<Artist[]> getSearchTask(final SearchParameter searchParameter) {
         return new GuiAsyncTask<Artist[]>(
-            "searching for artists named \"" + searchParameter.getSimpleSearchString() + "\"") {
+            "searching for artists named \"" + searchParameter.getDescription() + "\"") {
 
             @Override protected void beforeExecute() {
                 artistList.setSource(new ArrayList<Artist>());

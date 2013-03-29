@@ -3,9 +3,13 @@ package groovejames.gui;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pivot.collections.ArrayList;
+import org.apache.pivot.util.concurrent.TaskExecutionException;
+import org.apache.pivot.wtk.ApplicationContext;
 import org.apache.pivot.wtk.TableView;
 import org.apache.pivot.wtk.TableViewColumnListener;
+import org.apache.pivot.wtk.media.Image;
 
+import java.net.URL;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -73,4 +77,23 @@ public class WtkUtil {
         return columnPrefs;
     }
 
+    public static Image getIcon(String iconResource, Class<?> relativeTo) {
+        if (iconResource == null) {
+            throw new IllegalArgumentException("iconResource is null");
+        }
+        URL iconURL = relativeTo.getResource(iconResource);
+        if (iconURL == null) {
+            throw new IllegalArgumentException("iconResource not found: " + iconResource);
+        }
+        Image icon = (Image) ApplicationContext.getResourceCache().get(iconURL);
+        if (icon == null) {
+            try {
+                icon = Image.load(iconURL);
+            } catch (TaskExecutionException ex) {
+                throw new IllegalArgumentException(ex);
+            }
+            ApplicationContext.getResourceCache().put(iconURL, icon);
+        }
+        return icon;
+    }
 }

@@ -1,0 +1,18 @@
+Hi, this is GrooveJames.
+
+{username} wants you to check out {thisOrThese} cool {albumOrSongs}:
+
+{titleList}
+
+To hear {it} do the following:
+
+1. Copy the following link to your clipboard:
+
+    {url}
+
+2. Start GrooveJames
+
+Regards,
+GrooveJames
+
+PS: Note that you need GrooveJames 21 or higher.

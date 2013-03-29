@@ -9,6 +9,7 @@ public class ToggleButton extends PushButton {
 
     public ToggleButton() {
         super(true);
+        setToggleButton(true);
         setTriState(false);
     }
 

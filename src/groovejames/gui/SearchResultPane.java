@@ -73,6 +73,9 @@ public class SearchResultPane extends TablePane implements Bindable {
             case Playlist:
                 addTab("songtablepane.bxml", "Songs");
                 break;
+            case Songs:
+                addTab("songtablepane.bxml", "Songs");
+                break;
             default:
                 throw new IllegalStateException("illegal branch: " + searchParameter.getSearchType());
         }

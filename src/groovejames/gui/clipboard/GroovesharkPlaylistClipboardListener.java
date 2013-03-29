@@ -22,7 +22,7 @@ public class GroovesharkPlaylistClipboardListener implements ClipboardListener {
     public boolean clipboardContentsChanged(String newClipboardContent) {
         Matcher matcher = pattern.matcher(newClipboardContent);
         if (matcher.matches()) {
-            String playlistName = Util.decodeURL(matcher.group(1));
+            String playlistName = Util.urldecode(matcher.group(1));
             long playlistID = Long.parseLong(matcher.group(2));
             main.openSearchTab(new PlaylistSearch(playlistID, playlistName));
             return true;

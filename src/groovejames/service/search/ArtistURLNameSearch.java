@@ -26,7 +26,7 @@ public class ArtistURLNameSearch implements SearchParameter {
     }
 
     @Override
-    public String getSimpleSearchString() {
+    public String getDescription() {
         return artistURLName;
     }
 

@@ -3,6 +3,8 @@ package groovejames.model;
 import groovejames.service.DownloadService;
 import groovejames.service.FilenameSchemeParser;
 
+import java.util.prefs.Preferences;
+
 public class Settings {
 
     private boolean proxyEnabled = false;
@@ -10,6 +12,27 @@ public class Settings {
     private int proxyPort = 80;
     private String downloadLocation = DownloadService.defaultDownloadDir.getAbsolutePath();
     private String filenameScheme = FilenameSchemeParser.DEFAULT_FILENAME_SCHEME;
+    private boolean watchClipboard = true;
+
+    public static Settings load() {
+        Settings settings = new Settings();
+        Preferences prefs = Preferences.userNodeForPackage(Settings.class);
+        settings.setProxyEnabled(prefs.getBoolean("proxyEnabled", settings.isProxyEnabled()));
+        settings.setProxyHost(prefs.get("proxyHost", settings.getProxyHost()));
+        settings.setProxyPort(prefs.getInt("proxyPort", settings.getProxyPort()));
+        settings.setDownloadLocation(prefs.get("downloadLocation", settings.getDownloadLocation()));
+        settings.setFilenameScheme(prefs.get("filenameScheme", settings.getFilenameScheme()));
+        return settings;
+    }
+
+    public void save() {
+        Preferences prefs = Preferences.userNodeForPackage(Settings.class);
+        prefs.putBoolean("proxyEnabled", isProxyEnabled());
+        prefs.put("proxyHost", getProxyHost());
+        prefs.putInt("proxyPort", getProxyPort());
+        prefs.put("downloadLocation", getDownloadLocation());
+        prefs.put("filenameScheme", getFilenameScheme());
+    }
 
     public boolean isProxyEnabled() {
         return proxyEnabled;
@@ -49,5 +72,13 @@ public class Settings {
 
     public void setFilenameScheme(String filenameScheme) {
         this.filenameScheme = filenameScheme;
+    }
+
+    public boolean isWatchClipboard() {
+        return watchClipboard;
+    }
+
+    public void setWatchClipboard(boolean watchClipboard) {
+        this.watchClipboard = watchClipboard;
     }
 }

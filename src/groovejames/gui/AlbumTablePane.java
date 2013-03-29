@@ -109,7 +109,7 @@ public class AlbumTablePane extends TablePane implements Bindable, CardPaneConte
 
     @Override public GuiAsyncTask<Album[]> getSearchTask(final SearchParameter searchParameter) {
         return new GuiAsyncTask<Album[]>(
-            "searching for albums which contain the string or belong to artist \"" + searchParameter.getSimpleSearchString() + "\"") {
+            "searching for albums which contain the string or belong to artist \"" + searchParameter.getDescription() + "\"") {
 
             @Override protected void beforeExecute() {
                 albumList.setSource(new ArrayList<Album>());

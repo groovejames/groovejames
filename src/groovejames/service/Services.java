@@ -1,8 +1,13 @@
 package groovejames.service;
 
+import groovejames.gui.clipboard.WatchClipboardTask;
+import groovejames.model.Settings;
 import groovejames.service.search.SearchService;
 
+import java.io.File;
 import java.io.IOException;
+
+import static groovejames.util.Util.isEmpty;
 
 /**
  * This is something like a Spring ApplicationContext, built manually.
@@ -12,6 +17,7 @@ public class Services {
     private static final HttpClientService httpClientService = new HttpClientService();
     private static final DownloadService downloadService = new DownloadService(httpClientService);
     private static final PlayService playService = new PlayService(downloadService);
+    private static final WatchClipboardTask watchClipboardTask = new WatchClipboardTask();
     private static Grooveshark grooveshark = null; // lazy initialized
 
     /**
@@ -58,6 +64,28 @@ public class Services {
 
     public static synchronized void resetGrooveshark() {
         grooveshark = null;
+    }
+
+    public static WatchClipboardTask getWatchClipboardTask() {
+        return watchClipboardTask;
+    }
+
+    private static synchronized void setWatchClipboardTaskEnabled(boolean enabled) {
+        if (enabled) {
+            if (!watchClipboardTask.isWatching()) {
+                watchClipboardTask.startWatching();
+            }
+        } else {
+            watchClipboardTask.stopWatching();
+        }
+    }
+
+    public static void applySettings(Settings settings) {
+        httpClientService.setProxySettings(settings.isProxyEnabled() && !isEmpty(settings.getProxyHost()) ? new ProxySettings(settings.getProxyHost(), settings.getProxyPort()) : null);
+        downloadService.setDownloadDir(new File(settings.getDownloadLocation()));
+        downloadService.getFilenameSchemeParser().setFilenameScheme(settings.getFilenameScheme());
+        setWatchClipboardTaskEnabled(settings.isWatchClipboard());
+        resetGrooveshark();
     }
 
 }

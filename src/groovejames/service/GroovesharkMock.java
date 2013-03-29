@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
@@ -80,6 +81,11 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
 
     @Override
     public Song[] getResultsFromSearch(SearchSongsResultType type, String query) {
+        Collection<Song> songs = testsongs().values();
+        return songs.toArray(new Song[songs.size()]);
+    }
+
+    private HashMap<Long, Song> testsongs() {
         Song song1 = new Song();
         song1.setSongID(1000L);
         song1.setArtistID(1L);
@@ -166,7 +172,15 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         song7.setScore(0.0);
         song7.setIsVerified(null);
 
-        return new Song[]{song1, song2, song3, song4, song5, song6, song7};
+        HashMap<Long, Song> songs = new HashMap<Long, Song>();
+        songs.put(song1.getSongID(), song1);
+        songs.put(song2.getSongID(), song2);
+        songs.put(song3.getSongID(), song3);
+        songs.put(song4.getSongID(), song4);
+        songs.put(song5.getSongID(), song5);
+        songs.put(song6.getSongID(), song6);
+        songs.put(song7.getSongID(), song7);
+        return songs;
     }
 
     @Override
@@ -309,12 +323,13 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
 
     @Override
     public String getTokenForSong(long songID, Country country) throws Exception {
-        return null;
+        return "t" + songID;
     }
 
     @Override
     public Song getSongFromToken(String token, Country country) throws Exception {
-        return null;
+        long songId = Long.parseLong(token.substring(1));
+        return testsongs().get(songId);
     }
 
     @Override

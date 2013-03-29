@@ -1,7 +1,7 @@
 package groovejames.gui;
 
+import groovejames.gui.components.AbstractApplication;
 import org.apache.pivot.collections.Map;
-import org.apache.pivot.wtk.Application;
 import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.DesktopApplicationContext;
 import org.apache.pivot.wtk.Display;
@@ -9,7 +9,7 @@ import org.apache.pivot.wtk.Meter;
 import org.apache.pivot.wtk.Orientation;
 import org.apache.pivot.wtk.Window;
 
-public class LayoutTest implements Application {
+public class LayoutTest extends AbstractApplication {
 
     public static void main(String[] args) {
         DesktopApplicationContext.main(LayoutTest.class, args);
@@ -30,16 +30,4 @@ public class LayoutTest implements Application {
         window.open(display);
     }
 
-    @Override
-    public boolean shutdown(boolean optional) throws Exception {
-        return false;
-    }
-
-    @Override
-    public void suspend() throws Exception {
-    }
-
-    @Override
-    public void resume() throws Exception {
-    }
 }

@@ -1,8 +1,8 @@
 package groovejames.gui;
 
+import groovejames.gui.components.AbstractApplication;
 import org.apache.pivot.collections.Map;
 import org.apache.pivot.util.Vote;
-import org.apache.pivot.wtk.Application;
 import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.Button;
 import org.apache.pivot.wtk.ButtonPressListener;
@@ -17,7 +17,7 @@ import org.apache.pivot.wtk.Window;
 import org.apache.pivot.wtk.content.ButtonData;
 import org.apache.pivot.wtk.skin.CardPaneSkin;
 
-public class CardPaneTest implements Application {
+public class CardPaneTest extends AbstractApplication {
 
     public static void main(String[] args) {
         DesktopApplicationContext.main(CardPaneTest.class, args);
@@ -70,16 +70,4 @@ public class CardPaneTest implements Application {
         window.open(display);
     }
 
-    @Override
-    public boolean shutdown(boolean optional) throws Exception {
-        return false;
-    }
-
-    @Override
-    public void suspend() throws Exception {
-    }
-
-    @Override
-    public void resume() throws Exception {
-    }
 }

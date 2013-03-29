@@ -1,7 +1,6 @@
 package groovejames.gui.components;
 
 import org.apache.pivot.collections.Map;
-import org.apache.pivot.wtk.Application;
 import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.Button;
 import org.apache.pivot.wtk.ButtonPressListener;
@@ -16,7 +15,7 @@ import org.apache.pivot.wtk.content.ButtonData;
 import java.io.IOException;
 import java.net.URL;
 
-public class AnimatedGifTest implements Application {
+public class AnimatedGifTest extends AbstractApplication {
 
     public static void main(String[] args) throws IOException {
         System.setProperty("http.proxyHost", "bns04px-vm");
@@ -59,16 +58,4 @@ public class AnimatedGifTest implements Application {
         window.open(display);
     }
 
-    @Override
-    public boolean shutdown(boolean optional) throws Exception {
-        return false;
-    }
-
-    @Override
-    public void suspend() throws Exception {
-    }
-
-    @Override
-    public void resume() throws Exception {
-    }
 }

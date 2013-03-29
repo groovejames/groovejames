@@ -1,5 +1,7 @@
 package groovejames.util;
 
+import org.apache.log4j.Logger;
+import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.util.concurrent.TaskExecutionException;
 
 import javax.crypto.Cipher;
@@ -8,22 +10,38 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
 public class Util {
+
+    private static final Logger log = Logger.getLogger(Util.class);
+
+    private static final Pattern QUERY_PARAM_PATTERN = Pattern.compile("([^&=]+)=?([^&=]+)?");
 
     private static final String desKey = "7b0a2751683f601b";
     private static final Cipher desCipher;
@@ -409,16 +427,120 @@ public class Util {
         return sb.toString();
     }
 
-    public static String decodeURL(String s) {
+    public static String urldecode(String s) {
         String r = s, p = null;
         while (!r.equals(p)) {
             p = r;
             try {
                 r = URLDecoder.decode(r, "UTF-8");
             } catch (UnsupportedEncodingException ex) {
-                throw new RuntimeException(ex);
+                throw new RuntimeException("value: " + r, ex);
             }
         }
         return r;
+    }
+
+    public static String urlencode(String s) {
+        try {
+            return URLEncoder.encode(s, "UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            throw new RuntimeException("value: " + s, ex);
+        }
+    }
+
+    public static Map<String, List<String>> parseQueryParams(String uri) throws URISyntaxException {
+        URI u = new URI(uri);
+        return parseQueryParams(u);
+    }
+
+    public static Map<String, List<String>> parseQueryParams(URI uri) {
+        String query = uri.getQuery();
+        Map<String, List<String>> params = new HashMap<String, List<String>>();
+        Matcher m = QUERY_PARAM_PATTERN.matcher(query);
+        while (m.find()) {
+            String name = urldecode(m.group(1));
+            String value = m.groupCount() > 1 ? urldecode(m.group(2)) : null;
+            List<String> values = params.get(name);
+            if (values == null) {
+                values = new LinkedList<String>();
+                params.put(name, values);
+            }
+            if (value != null) {
+                values.add(value);
+            }
+        }
+        return params;
+    }
+
+    public static String clip(String s, int max) {
+        if (s == null)
+            return "";
+        if (s.length() < max)
+            return s;
+        if (s.length() <= 3)
+            return s;
+        if (max <= 3)
+            return s;
+        return s.substring(0, max - 3) + "...";
+    }
+
+    public static String[] filterSystemProperties(String[] args) {
+        ArrayList<String> result = new ArrayList<String>(args.length);
+        for (String arg : args) {
+            if (arg.startsWith("\"") && arg.endsWith("\"")) {
+                arg = arg.substring(1, arg.length() - 1);
+            }
+            if (arg.startsWith("-D")) {
+                String[] arr = arg.substring(2).split("=", 2);
+                String key = arr[0];
+                String value = arr.length > 1 ? arr[1] : "";
+                System.setProperty(key, value);
+            } else {
+                result.add(arg);
+            }
+        }
+        return result.toArray(String[].class);
+    }
+
+    public static String readFully(InputStream inputStream, String charsetName, String streamName) {
+        InputStreamReader reader = createInputStreamReader(inputStream, charsetName);
+        StringWriter sw = new StringWriter();
+        char[] buf = new char[1024];
+        int r;
+        try {
+            while ((r = reader.read(buf)) != -1) {
+                sw.write(buf, 0, r);
+            }
+        } catch (IOException ex) {
+            throw new RuntimeException("error reading from stream " + streamName, ex);
+        } finally {
+            closeQuietly(reader, streamName);
+            closeQuietly(sw);
+        }
+        return sw.toString();
+    }
+
+    public static void closeQuietly(Closeable closeable) {
+        closeQuietly(closeable, null);
+    }
+
+    public static void closeQuietly(Closeable closeable, String streamDescription) {
+        if (closeable != null) {
+            try {
+                closeable.close();
+            } catch (IOException ex) {
+                if (!isEmpty(streamDescription)) {
+                    log.error("error closing stream " + streamDescription + ": " + ex);
+                }
+            }
+        }
+    }
+
+    private static InputStreamReader createInputStreamReader(InputStream inputStream, String charsetName) {
+        try {
+            return new InputStreamReader(inputStream, charsetName);
+        } catch (UnsupportedEncodingException ex) {
+            throw new RuntimeException("unsupported encoding: " + charsetName, ex);
+        }
     }
 }

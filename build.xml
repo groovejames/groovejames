@@ -20,6 +20,7 @@
                deprecation="true"
                source="1.6"
                target="1.6"
+               encoding="UTF-8"
                includeantruntime="false"
                includejavaruntime="false"/>
         <copy todir="out/production/gs">
@@ -30,6 +31,7 @@
                 <include name="**/*.bxml"/>
                 <include name="**/*.json"/>
                 <include name="**/*.ser"/>
+                <include name="**/*.txt"/>
             </fileset>
         </copy>
     </target>

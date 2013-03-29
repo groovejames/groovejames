@@ -5,17 +5,26 @@ import static groovejames.util.Util.isEmpty;
 public class AlbumSearch implements SearchParameter {
 
     private final Long albumID;
+    private final boolean autoplay;
     private final String albumName;
     private final String artistName;
 
     public AlbumSearch(Long albumID, String albumName) {
-        this(albumID, albumName, null);
+        this(albumID, albumName, false);
     }
 
     public AlbumSearch(Long albumID, String albumName, String artistName) {
         this.albumID = albumID;
         this.albumName = albumName != null ? albumName : "";
         this.artistName = artistName;
+        this.autoplay = false;
+    }
+
+    public AlbumSearch(Long albumID, String albumName, boolean autoplay) {
+        this.albumID = albumID;
+        this.albumName = albumName != null ? albumName : "";
+        this.artistName = null;
+        this.autoplay = autoplay;
     }
 
     @Override
@@ -29,13 +38,13 @@ public class AlbumSearch implements SearchParameter {
     }
 
     @Override
-    public String getSimpleSearchString() {
-        return albumName + (isEmpty(artistName) ? "" : " by " + artistName);
+    public String getShortLabel() {
+        return "Album: " + albumName;
     }
 
     @Override
-    public String getShortLabel() {
-        return "Album: " + albumName;
+    public String getDescription() {
+        return albumName + (isEmpty(artistName) ? "" : " by " + artistName);
     }
 
     public Long getAlbumID() {
@@ -48,6 +57,10 @@ public class AlbumSearch implements SearchParameter {
 
     public String getArtistName() {
         return artistName;
+    }
+
+    public boolean isAutoplay() {
+        return autoplay;
     }
 
     @Override

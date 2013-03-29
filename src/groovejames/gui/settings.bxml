@@ -21,7 +21,8 @@
                                 </TabPane.tabData>
                                 <sections>
                                     <Form.Section heading="Proxy">
-                                        <Checkbox bxml:id="proxyEnabled" selectedKey="proxyEnabled" Form.label="Enabled"/>
+                                        <Checkbox bxml:id="proxyEnabled" selectedKey="proxyEnabled"
+                                                  Form.label="Enabled"/>
                                         <TextInput bxml:id="proxyHost" textKey="proxyHost" Form.label="HTTP Proxy"/>
                                         <TextInput bxml:id="proxyPort" textKey="proxyPort" Form.label="Port"
                                                    strictValidation="true" maximumLength="5">
@@ -42,7 +43,8 @@
                                     <Form.Section heading="Location">
                                         <TextInput bxml:id="downloadLocation" textKey="downloadLocation"
                                                    Form.label="Folder" Form.required="true"/>
-                                        <Label preferredWidth="300" styles="{wrapText:true}" text="Where to store the downloaded files. The folder will be created if it doesn't exist."/>
+                                        <Label preferredWidth="300" styles="{wrapText:true}"
+                                               text="Where to store the downloaded files. The folder will be created if it doesn't exist."/>
                                     </Form.Section>
                                     <Form.Section heading="Filename scheme">
                                         <TextInput bxml:id="filenameScheme" textKey="filenameScheme"
@@ -53,6 +55,20 @@
                                         </TextInput>
                                         <Label preferredWidth="300" styles="{wrapText:true}"
                                                text="This is a format string for file path of downloaded files. Use / to create a subdirectory. Use &lt;Artist&gt; to insert the artist's name, &lt;Album&gt; to insert the album title, &lt;Title&gt; to insert the track's name, &lt;#&gt; to insert the track number (if any). Use &lt;##&gt; or &lt;###&gt; to pad the track number with leading zeroes. &lt;ALBUM&gt; inserts the album name in uppercase, &lt;album&gt; in lowercase (likewise for &lt;Artist&gt; and &lt;Title&gt;). &lt;Album?text&gt; inserts 'text' only if the album name is not empty (likewise for &lt;Artist&gt;, &lt;Title&gt; and &lt;#&gt;)."/>
+                                    </Form.Section>
+                                </sections>
+                            </Form>
+                            <Form bxml:id="miscForm" styles="{fill:true, showFlagIcons:false}">
+                                <TabPane.tabData>
+                                    <content:ButtonData text="Misc"/>
+                                </TabPane.tabData>
+                                <sections>
+                                    <Form.Section heading="Clipboard">
+                                        <Checkbox bxml:id="watchClipboardButton" selectedKey="watchClipboard">
+                                            <buttonData>
+                                                <content:ButtonData text="Watch clipboard for Grooveshark URLs"/>
+                                            </buttonData>
+                                        </Checkbox>
                                     </Form.Section>
                                 </sections>
                             </Form>

@@ -12,6 +12,7 @@
         <TablePane.Column width="-1"/>
         <TablePane.Column width="-1"/>
         <TablePane.Column width="-1"/>
+        <TablePane.Column width="-1"/>
         <TablePane.Column width="1*"/>
         <TablePane.Column width="-1"/>
         <TablePane.Column width="-1"/>
@@ -35,9 +36,15 @@
                     <content:ButtonData text="Enqueue" icon="@images/player_enqueue.png"/>
                 </buttonData>
             </PushButton>
+            <PushButton bxml:id="mailButton" enabled="false">
+                <buttonData>
+                    <content:ButtonData text="Share song(s)" icon="@images/mail.png"/>
+                </buttonData>
+            </PushButton>
             <TablePane.Filler/>
             <RadioButton bxml:id="showAll" buttonData="Show All" buttonGroup="$showButtonGroup" selected="false"/>
-            <RadioButton bxml:id="showVerified" buttonData="Only Verified" buttonGroup="$showButtonGroup" selected="true"/>
+            <RadioButton bxml:id="showVerified" buttonData="Only Verified" buttonGroup="$showButtonGroup"
+                         selected="true"/>
             <ListButton bxml:id="songGroupByButton" selectedIndex="0">
                 <listData>
                     <collections:ArrayList>
@@ -49,7 +56,7 @@
             <TextInput bxml:id="songSearchInPage" prompt="Search in page..."/>
         </TablePane.Row>
         <TablePane.Row height="1*">
-            <SplitPane bxml:id="songSplitPane" splitRatio="0.25" orientation="horizontal" TablePane.columnSpan="8">
+            <SplitPane bxml:id="songSplitPane" splitRatio="0.25" orientation="horizontal" TablePane.columnSpan="9">
                 <left>
                     <Border>
                         <content>

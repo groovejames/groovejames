@@ -1,5 +1,6 @@
 package groovejames.gui;
 
+import groovejames.gui.components.ToggleButton;
 import groovejames.gui.validation.FilenameSchemeTextValidator;
 import groovejames.model.Settings;
 import org.apache.commons.logging.Log;
@@ -48,6 +49,7 @@ public class SettingsDialog {
 
         final Form networkForm = (Form) serializer.getNamespace().get("networkForm");
         final Form downloadForm = (Form) serializer.getNamespace().get("downloadForm");
+        final Form miscForm = (Form) serializer.getNamespace().get("miscForm");
         final Checkbox proxyEnabled = (Checkbox) serializer.getNamespace().get("proxyEnabled");
         final TextInput proxyHost = (TextInput) serializer.getNamespace().get("proxyHost");
         final TextInput proxyPort = (TextInput) serializer.getNamespace().get("proxyPort");
@@ -55,9 +57,11 @@ public class SettingsDialog {
         final Button cancelButton = (Button) serializer.getNamespace().get("cancelButton");
         final TextInput filenameScheme = (TextInput) serializer.getNamespace().get("filenameScheme");
         final Label errorLabel = (Label) serializer.getNamespace().get("errorLabel");
+        final ToggleButton clipboardButton = (ToggleButton) serializer.getNamespace().get("clipboardButton");
 
         networkForm.load(settings);
         downloadForm.load(settings);
+        miscForm.load(settings);
 
         proxyHost.setEnabled(settings.isProxyEnabled());
         proxyPort.setEnabled(settings.isProxyEnabled());
@@ -124,6 +128,7 @@ public class SettingsDialog {
                 if (sheet.getResult()) {
                     networkForm.store(settings);
                     downloadForm.store(settings);
+                    miscForm.store(settings);
                 }
             }
         });

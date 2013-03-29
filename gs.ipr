@@ -146,6 +146,7 @@
       <entry name="?*.bxml" />
       <entry name="?*.json" />
       <entry name="?*.ser" />
+      <entry name="?*.txt" />
     </wildcardResourcePatterns>
     <annotationProcessing enabled="false" useClasspath="true" />
   </component>
@@ -244,7 +245,7 @@
     </option>
   </component>
   <component name="JavacSettings">
-    <option name="ADDITIONAL_OPTIONS_STRING" value="-Xlint:unchecked" />
+    <option name="ADDITIONAL_OPTIONS_STRING" value="-Xlint:all,-path -encoding UTF-8" />
   </component>
   <component name="JavadocGenerationManager">
     <option name="OUTPUT_DIRECTORY" />

@@ -22,7 +22,7 @@ public class GroovesharkAlbumClipboardListener implements ClipboardListener {
     public boolean clipboardContentsChanged(String newClipboardContent) {
         Matcher matcher = pattern.matcher(newClipboardContent);
         if (matcher.matches()) {
-            String albumName = Util.decodeURL(matcher.group(1));
+            String albumName = Util.urldecode(matcher.group(1));
             long albumID = Long.parseLong(matcher.group(2));
             main.openSearchTab(new AlbumSearch(albumID, albumName));
             return true;

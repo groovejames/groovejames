@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 public class SearchService {
@@ -93,6 +94,28 @@ public class SearchService {
                 Long playlistID = ((PlaylistSearch) searchParameter).getPlaylistID();
                 Songs songs = grooveshark.playlistGetSongs(playlistID);
                 result = songs.getSongs();
+                // renumber tracks in playlist order
+                long trackNum = 1L;
+                for (Song song : result) {
+                    song.setTrackNum(trackNum++);
+                }
+                break;
+            }
+            case Songs: {
+                Set<Long> songIDs = ((SongSearch) searchParameter).getSongIDs();
+                List<Song> songs = new ArrayList<Song>();
+                for (long songID : songIDs) {
+                    try {
+                        String token = grooveshark.getTokenForSong(songID, Country.DEFAULT_COUNTRY);
+                        Song song = grooveshark.getSongFromToken(token, Country.DEFAULT_COUNTRY);
+                        if (song != null && song.getSongID() != null) {
+                            songs.add(song);
+                        }
+                    } catch (Exception ex) {
+                        log.error("cannot convert songID=" + songID + " to song", ex);
+                    }
+                }
+                result = songs.toArray(new Song[songs.size()]);
                 // renumber tracks in playlist order
                 long trackNum = 1L;
                 for (Song song : result) {

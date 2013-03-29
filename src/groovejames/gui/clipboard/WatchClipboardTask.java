@@ -3,8 +3,6 @@ package groovejames.gui.clipboard;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pivot.wtk.Clipboard;
-import org.apache.pivot.wtk.ClipboardContentListener;
-import org.apache.pivot.wtk.LocalManifest;
 import org.apache.pivot.wtk.Manifest;
 
 import java.io.IOException;
@@ -12,19 +10,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class WatchClipboardTask extends Thread {
+import static groovejames.util.Util.clip;
+
+public class WatchClipboardTask {
 
     private static final Log log = LogFactory.getLog(WatchClipboardTask.class);
 
     private static int instanceCount;
 
-    private volatile long pollDelay = 1000;
-    private String oldText = null;
-    private List<ClipboardListener> clipboardListeners = new CopyOnWriteArrayList<ClipboardListener>();
+    private final List<ClipboardListener> clipboardListeners = new CopyOnWriteArrayList<ClipboardListener>();
+    private final Object mutex = new Object();
 
-    public WatchClipboardTask() {
-        super("WatchClipboardTask-" + ++instanceCount);
-    }
+    private volatile long pollDelay = 1000;
+    private volatile WatcherThread watcherThread = null;
 
     public long getPollDelay() {
         return pollDelay;
@@ -46,69 +44,106 @@ public class WatchClipboardTask extends Thread {
         return new ArrayList<ClipboardListener>(clipboardListeners);
     }
 
-    public void requestAbort() {
-        log.info("thread " + getName() + ": interrupt requested.");
-        interrupt();
+    public synchronized void startWatching() {
+        if (watcherThread != null)
+            stopWatching();
+        watcherThread = new WatcherThread();
+        watcherThread.start();
     }
 
-    @Override public void run() {
-        log.info("thread " + getName() + " started.");
-        oldText = getClipboardText();
-        if (oldText != null && oldText.length() > 0) {
-            LocalManifest localManifest = new LocalManifest();
-            localManifest.putText(oldText);
-            Clipboard.setContent(localManifest, new ClipboardContentListener() {
-                @Override public void contentChanged(LocalManifest previousContent) {
-                    log.debug("thread " + getName() + ": lost clipboard ownership");
-                    oldText = null;
+    public synchronized void stopWatching() {
+        if (watcherThread == null)
+            return;
+        log.info("stop requested...");
+        watcherThread.shouldRun = false;
+        synchronized (mutex) {
+            mutex.notifyAll();
+        }
+        watcherThread = null;
+    }
+
+    public synchronized boolean isWatching() {
+        return watcherThread != null && watcherThread.isAlive();
+    }
+
+    public void checkNow() {
+        log.info("check forced...");
+        if (watcherThread == null)
+            startWatching();
+        watcherThread.oldText = null;
+        synchronized (mutex) {
+            mutex.notifyAll();
+        }
+    }
+
+    public static void main(String[] args) {
+        new WatchClipboardTask().startWatching();
+    }
+
+    private class WatcherThread extends Thread {
+        private volatile boolean shouldRun = true;
+        private volatile String oldText = null;
+
+        public WatcherThread() {
+            super("WatchClipboardTask-" + ++WatchClipboardTask.instanceCount);
+            setDaemon(true);
+        }
+
+        @Override public void run() {
+            log.info("thread " + getName() + " started.");
+            oldText = getClipboardText();
+            while (shouldRun) {
+                try {
+                    work();
+                    synchronized (mutex) {
+                        mutex.wait(pollDelay);
+                    }
+                } catch (InterruptedException e) {
+                    log.info("thread " + getName() + ": interrupted.");
+                    break;
+                } catch (Exception ex) {
+                    log.error("thread " + getName() + ": error processing clipboard contents", ex);
                 }
-            });
+            }
+            log.info("thread " + getName() + " ends.");
         }
-        while (!isInterrupted()) {
+
+        private void work() throws IOException {
+            String text = getClipboardText();
+            if (text != null) {
+                if (!text.equals(oldText)) {
+                    oldText = text;
+                    clipboardContentsChanged(text);
+                }
+            }
+        }
+
+        private String getClipboardText() {
             try {
-                work();
-                Thread.sleep(pollDelay);
-            } catch (InterruptedException e) {
-                log.info("thread " + getName() + ": interrupted.");
-                break;
+                Manifest content = Clipboard.getContent();
+                if (content != null && content.containsText()) {
+                    return content.getText();
+                }
             } catch (IOException ex) {
-                log.error("error getting clipboard contents", ex);
+                log.error("thread " + getName() + ": error getting clipboard text contents: " + ex);
             }
+            return null;
         }
-        log.info("thread " + getName() + " ends.");
-    }
 
-    private void work() throws IOException {
-        String text = getClipboardText();
-        if (text != null) {
-            if (!text.equals(oldText)) {
-                clipboardContentsChanged(text);
+        private void clipboardContentsChanged(String text) {
+            log.debug("thread " + getName() + ": clipboard contents changed: " + clip(text, 100));
+            for (ClipboardListener clipboardListener : clipboardListeners) {
+                try {
+                    boolean consumed = clipboardListener.clipboardContentsChanged(text);
+                    if (consumed) {
+                        log.debug("thread " + getName() + ": handled by clipboard listener " + clipboardListener);
+                        return;
+                    }
+                } catch (Exception ex) {
+                    log.error("thread " + getName() + ": error in clipboard listener " + clipboardListener, ex);
+                }
             }
-            oldText = text;
+            log.debug("thread " + getName() + ": not handled by any clipboard listener");
         }
-    }
-
-    private String getClipboardText() {
-        Manifest content = Clipboard.getContent();
-        if (content != null && content.containsText()) {
-            try {
-                return content.getText();
-            } catch (IOException ex) {
-                log.error("thread " + getName() + ": error getting clipboard text contents", ex);
-            }
-        }
-        return null;
-    }
-
-    private void clipboardContentsChanged(String text) {
-        log.debug("thread " + getName() + ": clipboard contents changed: " + text.substring(0, Math.min(text.length(), 300)));
-        for (ClipboardListener clipboardListener : clipboardListeners) {
-            boolean consumed = clipboardListener.clipboardContentsChanged(text);
-            if (consumed) {
-                log.debug("thread " + getName() + ": handled by clipboard listener " + clipboardListener);
-                return;
-            }
-        }
-        log.debug("thread " + getName() + ": not handled by any clipboard listener");
     }
 }

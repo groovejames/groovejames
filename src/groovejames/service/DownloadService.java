@@ -6,6 +6,7 @@ import groovejames.model.Song;
 import groovejames.model.Store;
 import groovejames.model.StreamKey;
 import groovejames.model.Track;
+import groovejames.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
@@ -20,7 +21,6 @@ import org.apache.http.protocol.HTTP;
 import org.apache.pivot.collections.ArrayList;
 
 import javax.swing.filechooser.FileSystemView;
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -259,7 +259,7 @@ public class DownloadService {
                 }
             } finally {
                 close(httpEntity);
-                close(outputStream);
+                Util.closeQuietly(outputStream, track.getStore().getDescription());
             }
         }
 
@@ -289,8 +289,8 @@ public class DownloadService {
                 // write ID tags
                 store.writeTrackInfo(track);
             } finally {
-                close(outputStream);
-                close(instream);
+                Util.closeQuietly(outputStream, store.getDescription());
+                Util.closeQuietly(instream, file.getAbsolutePath());
             }
         }
 
@@ -314,16 +314,6 @@ public class DownloadService {
                 ((BasicManagedEntity) httpEntity).abortConnection();
             } catch (IOException ignore) {
                 // ignored
-            }
-        }
-
-        private void close(Closeable closeable) {
-            if (closeable != null) {
-                try {
-                    closeable.close();
-                } catch (IOException ignore) {
-                    // ignored
-                }
             }
         }
 

@@ -5,5 +5,6 @@ public enum SearchType {
     Artist,
     Album,
     User,
-    Playlist
+    Playlist,
+    Songs
 }

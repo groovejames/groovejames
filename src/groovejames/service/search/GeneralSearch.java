@@ -28,7 +28,7 @@ public class GeneralSearch implements SearchParameter {
     }
 
     @Override
-    public String getSimpleSearchString() {
+    public String getDescription() {
         return generalSearchString;
     }
 

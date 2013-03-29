@@ -75,7 +75,7 @@ public class PlaylistTablePane extends TablePane implements Bindable, CardPaneCo
 
     @Override public GuiAsyncTask<Playlist[]> getSearchTask(final SearchParameter searchParameter) {
         return new GuiAsyncTask<Playlist[]>(
-            "searching for playlists named \"" + searchParameter.getSimpleSearchString() + "\"") {
+            "searching for playlists named \"" + searchParameter.getDescription() + "\"") {
 
             @Override protected void beforeExecute() {
                 playlistList.setSource(new ArrayList<Playlist>());

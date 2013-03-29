@@ -75,7 +75,7 @@ public class PeopleTablePane extends TablePane implements Bindable, CardPaneCont
 
     @Override public GuiAsyncTask<User[]> getSearchTask(final SearchParameter searchParameter) {
         return new GuiAsyncTask<User[]>(
-            "searching for people named \"" + searchParameter.getSimpleSearchString() + "\"") {
+            "searching for people named \"" + searchParameter.getDescription() + "\"") {
 
             @Override protected void beforeExecute() {
                 peopleList.setSource(new ArrayList<User>());
