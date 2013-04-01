@@ -13,7 +13,7 @@ public abstract class BaseModelObject implements ImageObject, Scoreable, Verifia
     protected double scorePercentage;
     protected double popularity;
     protected double popularityPercentage;
-    protected String isVerified; // "1" or "0"
+    protected boolean isVerified;
 
     @Override public abstract String getImageFilename();
 
@@ -65,11 +65,11 @@ public abstract class BaseModelObject implements ImageObject, Scoreable, Verifia
         this.popularityPercentage = max(min(popularityPercentage, 1.0), 0.0);
     }
 
-    @Override public String getIsVerified() {
+    @Override public boolean getIsVerified() {
         return isVerified;
     }
 
-    @Override public void setIsVerified(String isVerified) {
+    @Override public void setIsVerified(boolean isVerified) {
         this.isVerified = isVerified;
     }
 }

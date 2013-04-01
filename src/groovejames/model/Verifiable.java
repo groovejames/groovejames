@@ -2,8 +2,8 @@ package groovejames.model;
 
 public interface Verifiable {
 
-    String getIsVerified();
+    boolean getIsVerified();
 
-    void setIsVerified(String isVerified);
+    void setIsVerified(boolean isVerified);
 
 }

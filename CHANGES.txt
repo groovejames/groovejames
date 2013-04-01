@@ -1,8 +1,9 @@
 r21 (unreleased)
-  - mail album or list of songs to someone, using a groovejames:// url
-  - listen on clipboard for groovejames:// urls
+  - NEW: mail album or list of songs to someone, using a groovejames:// url
+  - NEW: listen on clipboard for groovejames:// urls
+  - fixed radio fetch next song
 
-r20 (2013/0317)
+r20 (2013/03/17)
   - show high-res pictures in player
   - if songs list with "verified only" is empty, automatically show all songs
   - if album list with "verified only" is empty, automatically show all albums

@@ -430,9 +430,8 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
                 if (!songListSelectedAlbumID.equals(song.getAlbumID()))
                     return false;
             boolean showOnlyVerified = showVerified.isSelected();
-            if (showOnlyVerified)
-                if (!"1".equals(song.getIsVerified()))
-                    return false;
+            if (showOnlyVerified && !song.getIsVerified())
+                return false;
             String searchString = songSearchInPage.getText().trim();
             if (containsIgnoringCase(song.getSongName(), searchString))
                 return true;
@@ -452,10 +451,7 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
             if (song.getAlbumID() == null) // "All Albums" entry
                 return true;
             boolean showOnlyVerified = showVerified.isSelected();
-            if (showOnlyVerified)
-                if (!"1".equals(song.getIsVerified()))
-                    return false;
-            return true;
+            return !showOnlyVerified || song.getIsVerified();
         }
     }
 }

@@ -97,7 +97,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         song1.setEstimateDuration(278.0);
         song1.setScore(10000.0);
         song1.setPopularity(43049344.0);
-        song1.setIsVerified("1");
+        song1.setIsVerified(true);
 
         Song song2 = new Song();
         song2.setSongID(1001L);
@@ -110,7 +110,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         song2.setEstimateDuration(328.0);
         song2.setScore(8500.0);
         song2.setPopularity(42042352.0);
-        song2.setIsVerified("1");
+        song2.setIsVerified(true);
 
         Song song3 = new Song();
         song3.setSongID(1002L);
@@ -123,7 +123,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         song3.setEstimateDuration(60.0);
         song3.setScore(5000.0);
         song3.setPopularity(41320393.0);
-        song3.setIsVerified("1");
+        song3.setIsVerified(true);
 
         Song song4 = new Song();
         song4.setSongID(1003L);
@@ -136,7 +136,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         song4.setEstimateDuration(2032.0);
         song4.setScore(0.0);
         song4.setPopularity(40584948.0);
-        song4.setIsVerified("1");
+        song4.setIsVerified(true);
 
         Song song5 = new Song();
         song5.setSongID(1004L);
@@ -148,7 +148,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         song5.setTrackNum(3L);
         song5.setEstimateDuration(30.0);
         song5.setScore(0.0);
-        song5.setIsVerified("1");
+        song5.setIsVerified(true);
 
         Song song6 = new Song();
         song6.setSongID(1L);
@@ -159,7 +159,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         song6.setTrackNum(1L);
         song6.setEstimateDuration(37.0);
         song6.setScore(0.0);
-        song6.setIsVerified("0");
+        song6.setIsVerified(false);
 
         Song song7 = new Song();
         song7.setSongID(2L);
@@ -170,7 +170,6 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         song7.setTrackNum(2L);
         song7.setEstimateDuration(28.0);
         song7.setScore(0.0);
-        song7.setIsVerified(null);
 
         HashMap<Long, Song> songs = new HashMap<Long, Song>();
         songs.put(song1.getSongID(), song1);
@@ -191,7 +190,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         album1.setAlbumID(1L);
         album1.setAlbumName("Odelay");
         album1.setPopularity(43049344.0);
-        album1.setIsVerified("1");
+        album1.setIsVerified(true);
         album1.setReleaseType("1");
 
         Album album2 = new Album();
@@ -200,7 +199,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         album2.setAlbumID(2L);
         album2.setAlbumName("Black Celebration");
         album2.setPopularity(43040000.0);
-        album2.setIsVerified("1");
+        album2.setIsVerified(true);
         album2.setReleaseType("2");
 
         Album album3 = new Album();
@@ -208,7 +207,6 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         album3.setArtistName("Depeche Mode");
         album3.setAlbumID(3L);
         album3.setAlbumName("Some Broken Frame");
-        album3.setIsVerified("0");
 
         return new Album[]{album1, album2, album3};
     }

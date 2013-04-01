@@ -103,7 +103,7 @@ public class Album extends BaseModelObject {
         sb.append("Album");
         sb.append("{albumID=").append(albumID);
         sb.append(", albumName='").append(albumName).append('\'');
-        sb.append(", isVerified='").append(isVerified).append('\'');
+        sb.append(", isVerified=").append(isVerified);
         sb.append(", releaseType='").append(releaseType).append('\'');
         sb.append(", coverArtFilename='").append(coverArtFilename).append('\'');
         sb.append('}');

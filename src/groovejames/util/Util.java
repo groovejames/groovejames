@@ -207,7 +207,7 @@ public class Util {
     public static Object coerce(String value, Class<?> type) {
         Object coercedValue;
         if (type == Boolean.class || type == Boolean.TYPE) {
-            coercedValue = Boolean.parseBoolean(value);
+            coercedValue = "1".equals(value) || Boolean.parseBoolean(value);
         } else if (type == Character.class || type == Character.TYPE) {
             if (value.length() == 1) {
                 coercedValue = value.charAt(0);

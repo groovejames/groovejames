@@ -88,7 +88,7 @@ public class AlbumTablePane extends TablePane implements Bindable, CardPaneConte
         final String searchString = albumSearchInPage.getText().trim();
         albumList.setFilter(new Filter<Album>() {
             @Override public boolean include(Album album) {
-                return (!showOnlyVerified || "1".equals(album.getIsVerified()))
+                return (!showOnlyVerified || album.getIsVerified())
                     && (containsIgnoringCase(album.getAlbumName(), searchString) || containsIgnoringCase(album.getArtistName(), searchString));
             }
         });
