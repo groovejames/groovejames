@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static groovejames.util.Util.isEmpty;
+
 public class SearchService {
 
     private static final Log log = LogFactory.getLog(SearchService.class);
@@ -194,7 +196,14 @@ public class SearchService {
                 break;
             case Artist:
                 Long artistID = getArtistID(searchParameter);
+                String artistName = getArtistName(searchParameter);
                 result = artistID != null ? grooveshark.artistGetAllAlbums(artistID) : new Album[0];
+                // sometimes grooveshark doesn't send artist names when we search by artistID, so:
+                for (Album album : result) {
+                    if (isEmpty(album.getArtistName())) {
+                        album.setArtistName(artistName);
+                    }
+                }
                 break;
             default:
                 throw new IllegalArgumentException("invalid search type: " + searchType);
@@ -295,4 +304,13 @@ public class SearchService {
         }
     }
 
+    private String getArtistName(SearchParameter searchParameter) throws Exception {
+        if (searchParameter instanceof ArtistURLNameSearch) {
+            return ((ArtistURLNameSearch) searchParameter).getArtistName();
+        } else if (searchParameter instanceof ArtistSearch) {
+            return ((ArtistSearch) searchParameter).getArtistName();
+        } else {
+            throw new IllegalArgumentException("illegal searchParameter type: " + searchParameter.getClass());
+        }
+    }
 }

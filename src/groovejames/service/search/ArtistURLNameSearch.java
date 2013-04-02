@@ -34,6 +34,10 @@ public class ArtistURLNameSearch implements SearchParameter {
         return artistURLName;
     }
 
+    public String getArtistName() {
+        return artistBeautifiedName;
+    }
+
     @Override
     public boolean equals(SearchParameter o) {
         if (this == o) return true;
