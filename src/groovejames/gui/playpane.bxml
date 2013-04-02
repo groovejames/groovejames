@@ -87,6 +87,11 @@
                                 <content:ButtonData icon="@images/trash.png"/>
                             </buttonData>
                         </PushButton>
+                        <PushButton action="songShare">
+                            <buttonData>
+                                <content:ButtonData text="Share song(s)" icon="@images/mail.png"/>
+                            </buttonData>
+                        </PushButton>
                         <PushButton bxml:id="radioButton" action="toggleRadio" toggleButton="true"
                                     tooltipText="Play similar tracks like the one(s) on the left">
                             <buttonData>

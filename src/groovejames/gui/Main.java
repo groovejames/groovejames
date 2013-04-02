@@ -8,6 +8,7 @@ import groovejames.gui.action.SongKeepAction;
 import groovejames.gui.action.SongNextAction;
 import groovejames.gui.action.SongPlayPauseAction;
 import groovejames.gui.action.SongPreviousAction;
+import groovejames.gui.action.SongShareAction;
 import groovejames.gui.action.ToggleRadioAction;
 import groovejames.gui.clipboard.GrooveJamesAlbumClipboardListener;
 import groovejames.gui.clipboard.GrooveJamesSongClipboardListener;
@@ -330,6 +331,7 @@ public class Main extends AbstractApplication {
         Action.getNamedActions().put("songNext", new SongNextAction());
         Action.getNamedActions().put("songKeep", new SongKeepAction(this));
         Action.getNamedActions().put("songClearPlaylist", new SongClearPlaylistAction(this));
+        Action.getNamedActions().put("songShare", new SongShareAction(this));
         Action.getNamedActions().put("toggleRadio", new ToggleRadioAction());
     }
 

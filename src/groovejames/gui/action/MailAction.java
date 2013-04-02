@@ -51,9 +51,11 @@ public class MailAction extends Action {
     }
 
     public void perform(Component source) {
-        String mailSubject = createMailSubject();
-        String mailBody = createMailBody();
-        openMailClient(mailSubject, mailBody);
+        if (album != null || (songs != null && songs.getLength() > 1)) {
+            String mailSubject = createMailSubject();
+            String mailBody = createMailBody();
+            openMailClient(mailSubject, mailBody);
+        }
     }
 
     private String createMailSubject() {

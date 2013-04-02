@@ -36,7 +36,7 @@
                     <content:ButtonData text="Enqueue" icon="@images/player_enqueue.png"/>
                 </buttonData>
             </PushButton>
-            <PushButton bxml:id="mailButton" enabled="false">
+            <PushButton bxml:id="shareButton" enabled="false">
                 <buttonData>
                     <content:ButtonData text="Share song(s)" icon="@images/mail.png"/>
                 </buttonData>

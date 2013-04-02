@@ -64,7 +64,7 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
     private @BXML PushButton downloadButton;
     private @BXML PushButton playButton;
     private @BXML PushButton enqueueButton;
-    private @BXML PushButton mailButton;
+    private @BXML PushButton shareButton;
     private @BXML TextInput songSearchInPage;
     private @BXML ButtonGroup showButtonGroup;
     private @BXML RadioButton showAll;
@@ -80,7 +80,7 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
     private Action downloadAction;
     private Action playAction;
     private Action enqueueAction;
-    private Action mailAction;
+    private Action shareAction;
 
     @Override public void initialize(Map<String, Object> namespace, URL location, Resources resources) {
         this.main = (Main) namespace.get("main");
@@ -109,7 +109,7 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
             }
         };
 
-        mailAction = new Action(false) {
+        shareAction = new Action(false) {
             @Override @SuppressWarnings("unchecked") public void perform(Component source) {
                 Sequence<Song> selectedRows = (Sequence<Song>) songTable.getSelectedRows();
                 if (selectedRows.getLength() > 0) {
@@ -123,7 +123,7 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
         downloadButton.setAction(downloadAction);
         playButton.setAction(playAction);
         enqueueButton.setAction(enqueueAction);
-        mailButton.setAction(mailAction);
+        shareButton.setAction(shareAction);
 
         songGroupByButton.getListButtonSelectionListeners().add(new ListButtonSelectionListener.Adapter() {
             @Override public void selectedIndexChanged(ListButton listButton, int previousSelectedIndex) {
@@ -202,17 +202,20 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
                 for (Span span : ranges) {
                     length += span.getLength();
                 }
-                String suffix = length == 0 ? "" : length == 1 ? " this file" : " " + length + " files";
+                String suffix = length == 0 ? "" : length == 1 ? " this song" : " " + length + " songs";
                 Menu.Item downloadMenuItem = new Menu.Item("Download" + suffix);
                 downloadMenuItem.setAction(downloadAction);
                 Menu.Item playMenuItem = new Menu.Item("Play" + suffix);
                 playMenuItem.setAction(playAction);
                 Menu.Item enqueueMenuItem = new Menu.Item("Enqueue" + suffix);
                 enqueueMenuItem.setAction(enqueueAction);
+                Menu.Item shareMenuItem = new Menu.Item("Share" + suffix);
+                shareMenuItem.setAction(shareAction);
                 Menu.Section menuSection = new Menu.Section();
                 menuSection.add(downloadMenuItem);
                 menuSection.add(playMenuItem);
                 menuSection.add(enqueueMenuItem);
+                menuSection.add(shareMenuItem);
                 menu.getSections().add(menuSection);
                 return false;
             }
@@ -246,22 +249,22 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
         downloadAction.setEnabled(length > 0);
         playAction.setEnabled(length > 0);
         enqueueAction.setEnabled(length > 0);
-        mailAction.setEnabled(isSongsForAlbums || length > 0);
+        shareAction.setEnabled(isSongsForAlbums || length > 0);
 
         String suffix = length == 0 ? "" : " (" + length + ")";
         downloadButton.setButtonData(new ButtonData(((ButtonData) downloadButton.getButtonData()).getIcon(), "Download" + suffix));
         playButton.setButtonData(new ButtonData(((ButtonData) playButton.getButtonData()).getIcon(), "Play Now" + suffix));
         enqueueButton.setButtonData(new ButtonData(((ButtonData) enqueueButton.getButtonData()).getIcon(), "Enqueue" + suffix));
 
-        String mailButtonText = "Share song(s)";
+        String shareButtonText = "Share song(s)";
         if (length == 1) {
-            mailButtonText = "Mail this song";
+            shareButtonText = "Share this song";
         } else if (length > 1) {
-            mailButtonText = "Mail " + length + " songs";
+            shareButtonText = "Share " + length + " songs";
         } else if (isSongsForAlbums) {
-            mailButtonText = "Mail this album";
+            shareButtonText = "Share this album";
         }
-        mailButton.setButtonData(new ButtonData(((ButtonData) mailButton.getButtonData()).getIcon(), mailButtonText));
+        shareButton.setButtonData(new ButtonData(((ButtonData) shareButton.getButtonData()).getIcon(), shareButtonText));
     }
 
     private void updateFilter() {

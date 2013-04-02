@@ -1,5 +1,6 @@
 r22 (unreleased)
   - fixed missing artist names in album search
+  - share songs in play pane, too
 
 r21 (2013/04/01)
   - NEW: mail album or list of songs to someone, using a groovejames:// url
