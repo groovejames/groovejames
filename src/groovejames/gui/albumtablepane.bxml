@@ -12,8 +12,16 @@
     <rows>
         <TablePane.Row>
             <BoxPane styles="{fill:true, horizontalAlignment:'right'}">
-                <RadioButton bxml:id="showAll" buttonData="Show All" buttonGroup="$showButtonGroup" selected="false"/>
-                <RadioButton bxml:id="showVerified" buttonData="Only Verified" buttonGroup="$showButtonGroup" selected="true"/>
+                <MenuButton buttonData="View" styles="{toolbar:true}">
+                    <Menu>
+                        <Menu.Section>
+                            <Menu.Item bxml:id="showAll" buttonData="All albums" toggleButton="true"
+                                       buttonGroup="$showButtonGroup" selected="false"/>
+                            <Menu.Item bxml:id="showVerified" buttonData="Verified albums only" toggleButton="true"
+                                       buttonGroup="$showButtonGroup" selected="true"/>
+                        </Menu.Section>
+                    </Menu>
+                </MenuButton>
                 <TextInput bxml:id="albumSearchInPage" prompt="Search in page..."/>
             </BoxPane>
         </TablePane.Row>

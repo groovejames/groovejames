@@ -8,6 +8,7 @@ r21 (2013/04/01)
   - NEW: mail album or list of songs to someone, using a groovejames:// url
   - NEW: listen on clipboard for groovejames:// urls
   - fixed radio fetch next song
+  - moved radio buttons "show all/verified only" to submenu
 
 r20 (2013/03/17)
   - show high-res pictures in player

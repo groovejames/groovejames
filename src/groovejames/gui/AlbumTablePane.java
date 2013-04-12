@@ -24,8 +24,8 @@ import org.apache.pivot.wtk.ButtonGroup;
 import org.apache.pivot.wtk.ButtonGroupListener;
 import org.apache.pivot.wtk.Component;
 import org.apache.pivot.wtk.ComponentKeyListener;
+import org.apache.pivot.wtk.Menu;
 import org.apache.pivot.wtk.Mouse;
-import org.apache.pivot.wtk.RadioButton;
 import org.apache.pivot.wtk.SortDirection;
 import org.apache.pivot.wtk.TablePane;
 import org.apache.pivot.wtk.TableView;
@@ -43,8 +43,8 @@ public class AlbumTablePane extends TablePane implements Bindable, CardPaneConte
     private @BXML ClickableTableView albumTable;
     private @BXML TextInput albumSearchInPage;
     private @BXML ButtonGroup showButtonGroup;
-    private @BXML RadioButton showAll;
-    private @BXML RadioButton showVerified;
+    private @BXML Menu.Item showAll;
+    private @BXML Menu.Item showVerified;
 
     @Override public void initialize(Map<String, Object> namespace, URL location, Resources resources) {
         this.main = (Main) namespace.get("main");

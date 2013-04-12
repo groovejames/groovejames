@@ -3,7 +3,6 @@ package groovejames.gui;
 import groovejames.gui.components.ClickableTableListener;
 import groovejames.gui.components.ClickableTableView;
 import groovejames.gui.components.DefaultTableViewSortListener;
-import groovejames.gui.components.ListIdItem;
 import groovejames.gui.components.TableSelectAllKeyListener;
 import groovejames.gui.components.TooltipTableMouseListener;
 import groovejames.model.Song;
@@ -29,15 +28,13 @@ import org.apache.pivot.wtk.Action;
 import org.apache.pivot.wtk.Button;
 import org.apache.pivot.wtk.ButtonGroup;
 import org.apache.pivot.wtk.ButtonGroupListener;
+import org.apache.pivot.wtk.ButtonStateListener;
 import org.apache.pivot.wtk.Component;
 import org.apache.pivot.wtk.ComponentKeyListener;
-import org.apache.pivot.wtk.ListButton;
-import org.apache.pivot.wtk.ListButtonSelectionListener;
 import org.apache.pivot.wtk.Menu;
 import org.apache.pivot.wtk.MenuHandler;
 import org.apache.pivot.wtk.Mouse;
 import org.apache.pivot.wtk.PushButton;
-import org.apache.pivot.wtk.RadioButton;
 import org.apache.pivot.wtk.SortDirection;
 import org.apache.pivot.wtk.Span;
 import org.apache.pivot.wtk.SplitPane;
@@ -59,7 +56,6 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
 
     private @BXML ClickableTableView songTable;
     private @BXML TableView songAlbumTable;
-    private @BXML ListButton songGroupByButton;
     private @BXML SplitPane songSplitPane;
     private @BXML PushButton downloadButton;
     private @BXML PushButton playButton;
@@ -67,8 +63,9 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
     private @BXML PushButton shareButton;
     private @BXML TextInput songSearchInPage;
     private @BXML ButtonGroup showButtonGroup;
-    private @BXML RadioButton showAll;
-    private @BXML RadioButton showVerified;
+    private @BXML Menu.Item showAll;
+    private @BXML Menu.Item showVerified;
+    private @BXML Menu.Item groupByAlbum;
 
     private Main main;
     private FilteredList<Song> songList = new FilteredList<Song>();
@@ -125,12 +122,10 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
         enqueueButton.setAction(enqueueAction);
         shareButton.setAction(shareAction);
 
-        songGroupByButton.getListButtonSelectionListeners().add(new ListButtonSelectionListener.Adapter() {
-            @Override public void selectedIndexChanged(ListButton listButton, int previousSelectedIndex) {
-                int selectedIndex = listButton.getSelectedIndex();
-                if (selectedIndex != previousSelectedIndex) {
-                    ListIdItem selectedListIdItem = (ListIdItem) listButton.getListData().get(selectedIndex);
-                    boolean groupByAlbum = "groupByAlbum".equals(selectedListIdItem.getId());
+        groupByAlbum.getButtonStateListeners().add(new ButtonStateListener() {
+            @Override public void stateChanged(Button button, Button.State previousState) {
+                if (button.getState() != previousState) {
+                    boolean groupByAlbum = button.isSelected();
                     setSongsGroupByAlbum(groupByAlbum);
                     // save setting
                     prefs.node("songTable").node(searchParameter.getSearchType().name()).putBoolean("groupByAlbum", groupByAlbum);
@@ -346,11 +341,11 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
             @Override protected void beforeExecute() {
                 SearchType searchType = searchParameter.getSearchType();
                 if (searchType == SearchType.Album) {
-                    songGroupByButton.setVisible(false);
+                    groupByAlbum.setEnabled(false);
                 }
                 if (searchType == SearchType.Album || searchType == SearchType.Songs) {
                     songTable.getUserData().put("dontRedistributeColumnWidths", Boolean.TRUE);
-                    songGroupByButton.setSelectedIndex(1); // select "Don't Group"
+                    groupByAlbum.setSelected(false);
                     songTable.getUserData().put("dontRedistributeColumnWidths", Boolean.FALSE);
                 }
                 setSongs(new Song[]{});
@@ -387,9 +382,9 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
                         }
                     }
                 } else {
-                    boolean groupByAlbum = prefs.node("songTable").node(searchParameter.getSearchType().name()).getBoolean("groupByAlbum", true);
+                    boolean pGroupByAlbum = prefs.node("songTable").node(searchParameter.getSearchType().name()).getBoolean("groupByAlbum", true);
                     songTable.getUserData().put("dontRedistributeColumnWidths", Boolean.TRUE);
-                    songGroupByButton.setSelectedIndex(groupByAlbum ? 0 : 1);
+                    groupByAlbum.setSelected(pGroupByAlbum);
                     songTable.getUserData().put("dontRedistributeColumnWidths", Boolean.FALSE);
                 }
                 if (!autoPlaySongs.isEmpty()) {
