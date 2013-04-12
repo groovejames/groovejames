@@ -20,6 +20,7 @@ import org.apache.pivot.wtk.TextArea;
 import org.apache.pivot.wtk.Window;
 
 import java.awt.Desktop;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -51,7 +52,7 @@ public class MailAction extends Action {
     }
 
     public void perform(Component source) {
-        if (album != null || (songs != null && songs.getLength() > 1)) {
+        if (album != null || (songs != null && songs.getLength() > 0)) {
             String mailSubject = createMailSubject();
             String mailBody = createMailBody();
             openMailClient(mailSubject, mailBody);
@@ -80,7 +81,17 @@ public class MailAction extends Action {
 
     private void openMailClient(String mailSubject, String mailBody) {
         try {
-            Desktop.getDesktop().mail(toMailUri(mailSubject, mailBody));
+            URI mailtoURI = toMailUri(mailSubject, mailBody);
+            try {
+                Desktop.getDesktop().mail(mailtoURI);
+            } catch (IOException ex) {
+                if (Util.isLinux()) {
+                    log.warn("error opening mail client -- trying xdg-open now...", ex);
+                    Util.exec("xdg-open", mailtoURI.toASCIIString());
+                } else {
+                    throw ex;
+                }
+            }
         } catch (Exception ex) {
             log.error("error opening mail client", ex);
             alert("Sorry, I tried to open the mail client but it failed. (See log for details).", mailBody);
@@ -121,7 +132,7 @@ public class MailAction extends Action {
     }
 
     private String createUrl() {
-        return urlencode(album != null ? createGroovejamesLink(album) : createGroovejamesLink(songs));
+        return album != null ? createGroovejamesLink(album) : createGroovejamesLink(songs);
     }
 
     private static String createGroovejamesLink(AlbumSearch albumSearch) {

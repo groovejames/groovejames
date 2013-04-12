@@ -31,11 +31,14 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
+
+import static java.util.Arrays.asList;
 
 public class Util {
 
@@ -543,4 +546,21 @@ public class Util {
             throw new RuntimeException("unsupported encoding: " + charsetName, ex);
         }
     }
+
+    public static boolean isLinux() {
+        String osname = System.getProperty("os.name");
+        return osname != null && osname.toLowerCase(Locale.US).contains("linux");
+    }
+
+    public static void exec(String... args) throws IOException {
+        if (args == null)
+            throw new IllegalArgumentException("args is null");
+        if (args.length < 1)
+            throw new IllegalArgumentException("command is missing");
+        ProcessBuilder processBuilder = new ProcessBuilder().command(args).redirectErrorStream(true);
+        log.debug("starting " + asList(args) + " ...");
+        Process process = processBuilder.start();
+        new ProcessStreamReader(process.getInputStream(), args[0]).start();
+    }
+
 }
