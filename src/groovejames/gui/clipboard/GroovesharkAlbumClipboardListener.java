@@ -24,7 +24,7 @@ public class GroovesharkAlbumClipboardListener implements ClipboardListener {
         if (matcher.matches()) {
             String albumName = Util.urldecode(matcher.group(1));
             long albumID = Long.parseLong(matcher.group(2));
-            main.openSearchTab(new AlbumSearch(albumID, albumName));
+            main.openSearchTab(new AlbumSearch(albumID, albumName, null, false, false));
             return true;
         }
         return false;

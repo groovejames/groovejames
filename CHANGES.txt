@@ -3,6 +3,8 @@ r22 (unreleased)
   - fixed missing artist names in album search
   - fixed possibility to share a single song
   - fixed opening mail program on Linux without Gnome2 libs (fallback to xdg-open)
+  - share album: care about the "verified only" flag when sharing
+  - share album: if autoplay enabled, play in the right order
 
 r21 (2013/04/01)
   - NEW: mail album or list of songs to someone, using a groovejames:// url

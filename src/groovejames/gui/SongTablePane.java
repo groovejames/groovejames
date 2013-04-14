@@ -18,6 +18,7 @@ import org.apache.pivot.beans.BXML;
 import org.apache.pivot.beans.Bindable;
 import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.collections.HashSet;
+import org.apache.pivot.collections.List;
 import org.apache.pivot.collections.Map;
 import org.apache.pivot.collections.Sequence;
 import org.apache.pivot.collections.immutable.ImmutableList;
@@ -112,7 +113,9 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
                 if (selectedRows.getLength() > 0) {
                     main.mailSongs(selectedRows);
                 } else if (searchParameter.getSearchType() == SearchType.Album) {
-                    main.mailAlbum((AlbumSearch) searchParameter);
+                    AlbumSearch currentAlbumSearch = (AlbumSearch) searchParameter;
+                    AlbumSearch newAlbumSearch = new AlbumSearch(currentAlbumSearch.getAlbumID(), currentAlbumSearch.getAlbumName(), currentAlbumSearch.getArtistName(), true, showVerified.isSelected());
+                    main.mailAlbum(newAlbumSearch);
                 }
             }
         };
@@ -167,7 +170,7 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
                 if ("artistName".equals(column.getName())) {
                     main.openSearchTab(new ArtistSearch(song.getArtistID(), song.getArtistName()));
                 } else if ("albumName".equals(column.getName())) {
-                    main.openSearchTab(new AlbumSearch(song.getAlbumID(), song.getAlbumName(), song.getArtistName()));
+                    main.openSearchTab(new AlbumSearch(song.getAlbumID(), song.getAlbumName(), song.getArtistName(), false, false));
                 }
                 return false;
             }
@@ -362,32 +365,38 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
             @Override protected void taskExecuted() {
                 Song[] result = getResult();
                 setSongs(result);
+                if (searchParameter.getSearchType() == SearchType.Album) {
+                    showAll.setSelected(!((AlbumSearch) searchParameter).isVerifiedOnly());
+                }
                 if (songList.getLength() == 0 || songAlbumList.getLength() == 0) {
                     showAll.setSelected(true);
                 }
-                ArrayList<Song> autoPlaySongs = new ArrayList<Song>();
+                Set<Long> autoPlaySongIds = new java.util.HashSet<Long>();
                 if (searchParameter.getSearchType() == SearchType.Album) {
                     if (((AlbumSearch) searchParameter).isAutoplay()) {
                         for (Song song : result) {
-                            autoPlaySongs.add(song);
-                        }
-                    }
-                } else if (searchParameter.getSearchType() == SearchType.Songs) {
-                    Set<Long> autoPlaySongIds = ((SongSearch) searchParameter).getAutoPlaySongIds();
-                    for (Long autoPlaySongId : autoPlaySongIds) {
-                        for (Song song : result) {
-                            if (song.getSongID().equals(autoPlaySongId)) {
-                                autoPlaySongs.add(song);
+                            if (!((AlbumSearch) searchParameter).isVerifiedOnly() || song.getIsVerified()) {
+                                autoPlaySongIds.add(song.getSongID());
                             }
                         }
                     }
+                } else if (searchParameter.getSearchType() == SearchType.Songs) {
+                    autoPlaySongIds = ((SongSearch) searchParameter).getAutoPlaySongIds();
                 } else {
                     boolean pGroupByAlbum = prefs.node("songTable").node(searchParameter.getSearchType().name()).getBoolean("groupByAlbum", true);
                     songTable.getUserData().put("dontRedistributeColumnWidths", Boolean.TRUE);
                     groupByAlbum.setSelected(pGroupByAlbum);
                     songTable.getUserData().put("dontRedistributeColumnWidths", Boolean.FALSE);
                 }
-                if (!autoPlaySongs.isEmpty()) {
+                if (!autoPlaySongIds.isEmpty()) {
+                    List<Song> autoPlaySongs = new ArrayList<Song>();
+                    List<?> tableData = songTable.getTableData();
+                    for (Object o : tableData) {
+                        Song song = (Song) o;
+                        if (autoPlaySongIds.contains(song.getSongID())) {
+                            autoPlaySongs.add(song);
+                        }
+                    }
                     main.play(autoPlaySongs, PlayService.AddMode.NOW);
                 }
             }

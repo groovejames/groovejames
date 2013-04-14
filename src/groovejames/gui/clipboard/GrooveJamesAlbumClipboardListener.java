@@ -40,8 +40,8 @@ public class GrooveJamesAlbumClipboardListener implements ClipboardListener {
             log.debug("found match: " + uri);
             try {
                 Map<String, List<String>> queryParams = Util.parseQueryParams(uri);
-                List<String> autoplayStrings = queryParams.get("autoplay");
-                boolean autoplay = !usedAutoplayOnce && autoplayStrings != null && autoplayStrings.contains("true");
+                boolean verifiedOnly = getBoolean("verifiedOnly", queryParams);
+                boolean autoplay = !usedAutoplayOnce && getBoolean("autoplay", queryParams);
                 List<String> albumIdList = queryParams.get("id");
                 List<String> albumNameList = queryParams.get("albumName");
                 if (albumIdList != null) {
@@ -50,7 +50,7 @@ public class GrooveJamesAlbumClipboardListener implements ClipboardListener {
                         long albumID = Long.parseLong(albumIdString);
                         String albumName = albumNameList != null && albumNameList.size() > i ? albumNameList.get(i) : null;
                         log.debug("found album id=" + albumID + "; autoplay=" + autoplay + "; albumName=" + albumName);
-                        main.openSearchTab(new AlbumSearch(albumID, albumName, autoplay));
+                        main.openSearchTab(new AlbumSearch(albumID, albumName, null, autoplay, verifiedOnly));
                         foundMatch = true;
                         if (autoplay) {
                             usedAutoplayOnce = true;
@@ -66,4 +66,15 @@ public class GrooveJamesAlbumClipboardListener implements ClipboardListener {
         return foundMatch;
     }
 
+    private boolean getBoolean(String paramName, Map<String, List<String>> queryParams) {
+        List<String> strings = queryParams.get(paramName);
+        if (strings != null) {
+            for (int i = strings.size() - 1; i >= 0; i--) {
+                if ("true".equals(strings.get(i))) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

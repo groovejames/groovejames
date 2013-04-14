@@ -140,7 +140,8 @@ public class MailAction extends Action {
         if (!isEmpty(albumSearch.getAlbumName())) {
             sb.append("&albumName=").append(urlencode(albumSearch.getAlbumName()));
         }
-        sb.append("&autoplay=true");
+        sb.append("&autoplay=").append(albumSearch.isAutoplay());
+        sb.append("&verifiedOnly=").append(albumSearch.isVerifiedOnly());
         return sb.toString();
     }
 
@@ -180,14 +181,13 @@ public class MailAction extends Action {
 
     public static void main(String[] args) {
         DesktopApplicationContext.main(MailActionTestApp.class, args);
-
     }
 
     public static class MailActionTestApp extends AbstractApplication {
         @Override public void startup(Display display, Map<String, String> properties) throws Exception {
             Window window = new Window();
             window.open(display);
-            AlbumSearch albumSearch = new AlbumSearch(1234L, "Hello World", "The Cool Artist");
+            AlbumSearch albumSearch = new AlbumSearch(1234L, "Hello World", "The Cool Artist", false, false);
             new MailAction(window, albumSearch).perform(null);
             Song song1 = new Song();
             song1.setSongID(1234L);

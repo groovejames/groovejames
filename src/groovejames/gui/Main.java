@@ -379,7 +379,7 @@ public class Main extends AbstractApplication {
                 if ("artistName".equals(column.getName())) {
                     openSearchTab(new ArtistSearch(song.getArtistID(), song.getArtistName()));
                 } else if ("albumName".equals(column.getName())) {
-                    openSearchTab(new AlbumSearch(song.getAlbumID(), song.getAlbumName(), song.getArtistName()));
+                    openSearchTab(new AlbumSearch(song.getAlbumID(), song.getAlbumName(), song.getArtistName(), false, false));
                 }
                 return false;
             }
@@ -409,7 +409,7 @@ public class Main extends AbstractApplication {
                 if ("artistName".equals(column.getName())) {
                     openSearchTab(new ArtistSearch(song.getArtistID(), song.getArtistName()));
                 } else if ("albumName".equals(column.getName())) {
-                    openSearchTab(new AlbumSearch(song.getAlbumID(), song.getAlbumName(), song.getArtistName()));
+                    openSearchTab(new AlbumSearch(song.getAlbumID(), song.getAlbumName(), song.getArtistName(), false, false));
                 }
                 return false;
             }
