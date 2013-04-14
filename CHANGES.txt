@@ -1,4 +1,4 @@
-r22 (unreleased)
+r22 (2013/04/14)
   - NEW: share songs in play pane, too
   - fixed missing artist names in album search
   - fixed possibility to share a single song
