@@ -1,3 +1,6 @@
+r23 (unrelease)
+  -
+
 r22 (2013/04/14)
   - NEW: share songs in play pane, too
   - fixed missing artist names in album search
