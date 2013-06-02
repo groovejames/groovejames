@@ -12,6 +12,4 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 public @interface Header {
     String clientName();
-    String clientRevision();
-    String secret();
 }

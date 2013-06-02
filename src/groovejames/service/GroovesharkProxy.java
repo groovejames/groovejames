@@ -55,19 +55,22 @@ class GroovesharkProxy implements InvocationHandler {
         this.sessionID = getSessionID();
     }
 
-    @Override @SuppressWarnings({"unchecked"})
+    @Override
+    @SuppressWarnings({"unchecked"})
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         if (methodsOfClassObject.contains(method))
             return null;
 
         String clientName = Grooveshark.CLIENT_NAME;
         String clientRevision = Grooveshark.CLIENT_REVISION;
-        String secret = Grooveshark.SECRET;
+        String secret = Grooveshark.CLIENT_SECRET;
         Header headerAnnotation = method.getAnnotation(Header.class);
         if (headerAnnotation != null) {
-            clientName = headerAnnotation.clientName();
-            clientRevision = headerAnnotation.clientRevision();
-            secret = headerAnnotation.secret();
+            if ("jsqueue".equals(headerAnnotation.clientName())) {
+                clientName = Grooveshark.JSQUEUE_NAME;
+                clientRevision = Grooveshark.JSQUEUE_REVISION;
+                secret = Grooveshark.JSQUEUE_SECRET;
+            }
         }
 
         String methodName = method.getName();

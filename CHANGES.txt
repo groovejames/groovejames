@@ -1,5 +1,5 @@
-r23 (unrelease)
-  -
+r23 (2013/06/02)
+  - updated grooveshark secrets
 
 r22 (2013/04/14)
   - NEW: share songs in play pane, too
