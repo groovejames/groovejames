@@ -11,3 +11,5 @@ http://forums.hak5.org/index.php?s=07fcf19a758571f0b0c612a8c4bb314e&showtopic=14
 http://groove-walrus.turnip-town.net/dru/
 http://code.google.com/p/turnip-town/
 http://code.google.com/p/turnip-town/source/browse/#svn%2Ftrunk
+
+http://groovesquid.com/groovepwn.php
