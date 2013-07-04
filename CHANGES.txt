@@ -1,5 +1,5 @@
-r25 (unrelease)
-  -
+r25 (unreleased)
+  - log to $HOME/.groovejames.log
 
 r24 (2013/07/04)
   - fixed share action mail encoding problem
