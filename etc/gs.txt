@@ -13,3 +13,6 @@ http://code.google.com/p/turnip-town/
 http://code.google.com/p/turnip-town/source/browse/#svn%2Ftrunk
 
 http://groovesquid.com/groovepwn.php
+
+SWF decompiler:
+http://www.showmycode.com/
