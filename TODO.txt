@@ -6,10 +6,4 @@
       "http://grooveshark.com/s/" + songname + getTokenForSong(songID) + "?src=5"
   - gs song token to song: getSongFromToken(token, country)
 
-  - lastfm song url:
-      http://www.lastfm.de/music/Isobel%2BCampbell%2B%2526%2BMark%2BLanegan/_/Get+Behind+Me
-      http://www.lastfm.de/music/Kid%2BCreole%2B%2526%2BThe%2BCoconuts/_/Annie%2C+I%27m+Not+Your+Daddy
-      (Kid Creole & The Coconuts - Annie, I'm Not Your Daddy)
-
-  - lastfm artist url:
-      http://www.lastfm.de/music/Kid%2BCreole%2B%2526%2BThe%2BCoconuts (Kid Creole & The Coconuts)
+- persist current downloads list so that it survives restarts?!?
