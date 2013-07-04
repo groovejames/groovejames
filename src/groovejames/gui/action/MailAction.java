@@ -99,8 +99,8 @@ public class MailAction extends Action {
     }
 
     private URI toMailUri(String subject, String body) throws URISyntaxException, UnsupportedEncodingException {
-        String u = "mailto://?subject=" + urlencode(subject) + "&body=" + urlencode(body);
-        URI uri = new URI(u);
+        String u = "subject=" + subject + "&body=" + body;
+        URI uri = new URI("mailto", null, "//", u, null);
         log.debug("created mail uri: " + uri);
         return uri;
     }
@@ -184,7 +184,8 @@ public class MailAction extends Action {
     }
 
     public static class MailActionTestApp extends AbstractApplication {
-        @Override public void startup(Display display, Map<String, String> properties) throws Exception {
+        @Override
+        public void startup(Display display, Map<String, String> properties) throws Exception {
             Window window = new Window();
             window.open(display);
             AlbumSearch albumSearch = new AlbumSearch(1234L, "Hello World", "The Cool Artist", false, false);

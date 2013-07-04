@@ -1,5 +1,5 @@
-r24 (unreleased)
-  -
+r24 (2013/07/04)
+  - fixed share action mail encoding problem
 
 r23 (2013/06/02)
   - updated grooveshark secrets
