@@ -99,13 +99,11 @@ public class MailAction extends Action {
     }
 
     private URI toMailUri(String subject, String body) throws URISyntaxException, UnsupportedEncodingException {
-        String u = "subject=" + subject + "&body=" + body;
-        URI uri = new URI("mailto", null, "//", u, null);
+        URI uri = new URI("mailto:?to=&subject=" + enc(subject) + "&body=" + enc(body));
         log.debug("created mail uri: " + uri);
         return uri;
     }
 
-    //mailto://?subject=%5BGrooveJames%5D+song+tips+from+dirk&body=Hi%2C+this+is+GrooveJames.%0A%0Adirk+wants+you+to+check+out+this+cool+song%3A%0A%0A++++%22Devil%27s+Haircut+%28track1%29%22+by+Beck%0A%0ATo+hear+it+do+the+following%3A%0A%0A1.+Copy+the+following+link+to+your+clipboard%3A%0A%0A++++groovejames%3A%2F%2Fsong%3Fid%3D1001%26songName%3DDevil%2527s%2BHaircut%2B%2528track1%2529%26autoplay%3Dtrue%0A%0A2.+Start+GrooveJames%0A%0ARegards%2C%0AGrooveJames%0A%0APS%3A+Note+that+you+need+GrooveJames+21+or+higher.
     private void alert(String msg, String mailText) {
         TextArea mailTextArea = new TextArea();
         mailTextArea.setText(mailText);
@@ -179,6 +177,18 @@ public class MailAction extends Action {
         return t;
     }
 
+    private static String enc(String s) {
+        StringBuilder sb = new StringBuilder(s.length() + 50);
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c < 128 && Character.isLetterOrDigit(c))
+                sb.append(c);
+            else
+                sb.append(String.format("%%%02X", (int) c));
+        }
+        return sb.toString();
+    }
+
     public static void main(String[] args) {
         DesktopApplicationContext.main(MailActionTestApp.class, args);
     }
@@ -188,11 +198,13 @@ public class MailAction extends Action {
         public void startup(Display display, Map<String, String> properties) throws Exception {
             Window window = new Window();
             window.open(display);
-            AlbumSearch albumSearch = new AlbumSearch(1234L, "Hello World", "The Cool Artist", false, false);
+            /*
+            AlbumSearch albumSearch = new AlbumSearch(1234L, "Hello World", "The Cool & Groovy Artist", false, false);
             new MailAction(window, albumSearch).perform(null);
+            */
             Song song1 = new Song();
             song1.setSongID(1234L);
-            song1.setSongName("Song 2");
+            song1.setSongName("Song 2 & Song 3");
             song1.setArtistName("Blur");
             Song song2 = new Song();
             song2.setSongID(43444343L);

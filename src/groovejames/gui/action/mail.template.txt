@@ -10,7 +10,7 @@ To hear {it} do the following:
 
     {url}
 
-2. Start GrooveJames
+2. Start GrooveJames, if you haven't already done so.
 
 Regards,
 GrooveJames
