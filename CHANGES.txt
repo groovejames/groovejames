@@ -1,3 +1,6 @@
+r26 (unreleased)
+  -
+
 r25 (2013/07/22)
   - NEW: on click on the album image in playlist show the full image in the system's default image viewer
   - fixed creation of mailto url
