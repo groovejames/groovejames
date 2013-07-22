@@ -457,7 +457,7 @@ public class Util {
     }
 
     public static Map<String, List<String>> parseQueryParams(URI uri) {
-        String query = uri.getQuery();
+        String query = uri.getRawQuery();
         Map<String, List<String>> params = new HashMap<String, List<String>>();
         Matcher m = QUERY_PARAM_PATTERN.matcher(query);
         while (m.find()) {

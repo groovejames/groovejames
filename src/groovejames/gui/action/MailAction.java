@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.Properties;
 
 import static groovejames.util.Util.isEmpty;
@@ -179,12 +180,12 @@ public class MailAction extends Action {
 
     private static String enc(String s) {
         StringBuilder sb = new StringBuilder(s.length() + 50);
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            if (c < 128 && Character.isLetterOrDigit(c))
-                sb.append(c);
+        byte[] bytes = s.getBytes(Charset.forName("UTF-8"));
+        for (byte b : bytes) {
+            if (b < 128 && b != '?' && b != '&' && Character.isLetterOrDigit(b))
+                sb.append((char) b);
             else
-                sb.append(String.format("%%%02X", (int) c));
+                sb.append(String.format("%%%02X", b));
         }
         return sb.toString();
     }
@@ -199,17 +200,17 @@ public class MailAction extends Action {
             Window window = new Window();
             window.open(display);
             /*
-            AlbumSearch albumSearch = new AlbumSearch(1234L, "Hello World", "The Cool & Groovy Artist", false, false);
+            AlbumSearch albumSearch = new AlbumSearch(1L, "Hell\u00f6 W\u00f6rld", "The? Cool & Groovy \u00c4rtist", false, false);
             new MailAction(window, albumSearch).perform(null);
             */
             Song song1 = new Song();
-            song1.setSongID(1234L);
-            song1.setSongName("Song 2 & Song 3");
-            song1.setArtistName("Blur");
+            song1.setSongID(1000L);
+            song1.setSongName("S\u00f6ng 2 & S\u00f6ng 3");
+            song1.setArtistName("Bl\u00fcr");
             Song song2 = new Song();
-            song2.setSongID(43444343L);
-            song2.setSongName("Caravan Of Love");
-            song2.setArtistName("The Housemartins");
+            song2.setSongID(1004L);
+            song2.setSongName("Caravan? Of L\u00f6ve");
+            song2.setArtistName("The Housem\u00e4rtins");
             List<Song> songs = new ArrayList<Song>(song1, song2);
             new MailAction(window, songs).perform(null);
         }
