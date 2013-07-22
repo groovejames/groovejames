@@ -58,6 +58,8 @@ import org.apache.pivot.wtk.ButtonPressListener;
 import org.apache.pivot.wtk.Component;
 import org.apache.pivot.wtk.ComponentKeyListener;
 import org.apache.pivot.wtk.ComponentMouseButtonListener;
+import org.apache.pivot.wtk.ComponentMouseListener;
+import org.apache.pivot.wtk.Cursor;
 import org.apache.pivot.wtk.DesktopApplicationContext;
 import org.apache.pivot.wtk.Display;
 import org.apache.pivot.wtk.ImageView;
@@ -83,8 +85,15 @@ import org.apache.pivot.wtk.Theme;
 import org.apache.pivot.wtk.Tooltip;
 import org.apache.pivot.wtk.Window;
 import org.apache.pivot.wtk.content.ButtonData;
+import org.apache.pivot.wtk.effects.SaturationDecorator;
+import org.apache.pivot.wtk.media.BufferedImageSerializer;
 import org.apache.pivot.wtk.media.Image;
+import org.apache.pivot.wtk.media.Picture;
 
+import java.awt.Desktop;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -503,6 +512,52 @@ public class Main extends AbstractApplication {
                     Preferences splitPanePrefs = Preferences.userNodeForPackage(Main.class).node("mainSplitPane");
                     splitPanePrefs.putFloat("splitRatio", splitPane.getSplitRatio());
                 }
+            }
+        });
+
+        final SaturationDecorator decorator = new SaturationDecorator(1.0f);
+        nowPlayingImage.getDecorators().add(decorator);
+        nowPlayingImage.getComponentMouseListeners().add(new ComponentMouseListener() {
+            @Override
+            public boolean mouseMove(Component component, int x, int y) {
+                return false;
+            }
+
+            @Override
+            public void mouseOver(Component component) {
+                decorator.setMultiplier(0.5f);
+                nowPlayingImage.setCursor(Cursor.HAND);
+                nowPlayingImage.repaint();
+            }
+
+            @Override
+            public void mouseOut(Component component) {
+                decorator.setMultiplier(1.0f);
+                nowPlayingImage.setCursor(null);
+                nowPlayingImage.repaint();
+            }
+        });
+        nowPlayingImage.getComponentMouseButtonListeners().add(new ComponentMouseButtonListener.Adapter() {
+            @Override public boolean mouseClick(Component component, Mouse.Button button, int x, int y, int count) {
+                Image image = nowPlayingImage.getImage();
+                if (image != null && image instanceof Picture) {
+                    Picture picture = (Picture) image;
+                    try {
+                        BufferedImage bufferedImage = picture.getBufferedImage();
+                        File tempFile = File.createTempFile("groovejames", ".png");
+                        FileOutputStream fos = new FileOutputStream(tempFile);
+                        try {
+                            new BufferedImageSerializer(BufferedImageSerializer.Format.PNG).writeObject(bufferedImage, fos);
+                        } finally {
+                            fos.close();
+                        }
+                        Desktop.getDesktop().open(tempFile);
+                        return true;
+                    } catch (Exception ex) {
+                        log.error("could not show image " + nowPlayingImage, ex);
+                    }
+                }
+                return false;
             }
         });
     }

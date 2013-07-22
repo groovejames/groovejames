@@ -1,4 +1,5 @@
 r25 (unreleased)
+  - NEW: on click on the album image in playlist show the full image in the system's default image viewer
   - fixed creation of mailto url
   - log to $HOME/.groovejames.log
 

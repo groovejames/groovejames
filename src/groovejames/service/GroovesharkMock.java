@@ -98,6 +98,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         song1.setScore(10000.0);
         song1.setPopularity(43049344.0);
         song1.setIsVerified(true);
+        song1.setCoverArtFilename("111102.jpg");
 
         Song song2 = new Song();
         song2.setSongID(1001L);
@@ -111,6 +112,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         song2.setScore(8500.0);
         song2.setPopularity(42042352.0);
         song2.setIsVerified(true);
+        song2.setCoverArtFilename("111102.jpg");
 
         Song song3 = new Song();
         song3.setSongID(1002L);
@@ -124,6 +126,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         song3.setScore(5000.0);
         song3.setPopularity(41320393.0);
         song3.setIsVerified(true);
+        song3.setCoverArtFilename("163137.jpg");
 
         Song song4 = new Song();
         song4.setSongID(1003L);
@@ -137,6 +140,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         song4.setScore(0.0);
         song4.setPopularity(40584948.0);
         song4.setIsVerified(true);
+        song4.setCoverArtFilename("1744206.jpg");
 
         Song song5 = new Song();
         song5.setSongID(1004L);
@@ -149,6 +153,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         song5.setEstimateDuration(30.0);
         song5.setScore(0.0);
         song5.setIsVerified(true);
+        song5.setCoverArtFilename("1744206.jpg");
 
         Song song6 = new Song();
         song6.setSongID(1L);
@@ -160,6 +165,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         song6.setEstimateDuration(37.0);
         song6.setScore(0.0);
         song6.setIsVerified(false);
+        song6.setCoverArtFilename("571642.jpg");
 
         Song song7 = new Song();
         song7.setSongID(2L);
@@ -170,6 +176,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         song7.setTrackNum(2L);
         song7.setEstimateDuration(28.0);
         song7.setScore(0.0);
+        song7.setCoverArtFilename("571642.jpg");
 
         HashMap<Long, Song> songs = new HashMap<Long, Song>();
         songs.put(song1.getSongID(), song1);
