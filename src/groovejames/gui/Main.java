@@ -85,6 +85,7 @@ import org.apache.pivot.wtk.Theme;
 import org.apache.pivot.wtk.Tooltip;
 import org.apache.pivot.wtk.Window;
 import org.apache.pivot.wtk.content.ButtonData;
+import org.apache.pivot.wtk.content.MenuItemData;
 import org.apache.pivot.wtk.effects.SaturationDecorator;
 import org.apache.pivot.wtk.media.BufferedImageSerializer;
 import org.apache.pivot.wtk.media.Image;
@@ -167,6 +168,7 @@ public class Main extends AbstractApplication {
 
         initActions();
         window = createWindow();
+        initShortcuts();
         initComponents();
         window.open(display);
         searchField.requestFocus();
@@ -328,6 +330,8 @@ public class Main extends AbstractApplication {
     private void initActions() {
         Action.getNamedActions().put("showSettings", new ShowSettingsAction(this));
         Action.getNamedActions().put("reloadGUI", new ReloadGUIAction());
+        Action.getNamedActions().put("closeCurrentTab", new CloseCurrentTabAction());
+        Action.getNamedActions().put("closeAllTabs", new CloseAllTabsAction());
         Action.getNamedActions().put("clearSelectedDownloads", new RemoveDownloadsAction(this, true, false, false));
         Action.getNamedActions().put("clearSuccessfulDownloads", new RemoveDownloadsAction(this, false, true, false));
         Action.getNamedActions().put("clearFinishedDownloads", new RemoveDownloadsAction(this, false, false, false));
@@ -342,6 +346,21 @@ public class Main extends AbstractApplication {
         Action.getNamedActions().put("songClearPlaylist", new SongClearPlaylistAction(this));
         Action.getNamedActions().put("songShare", new SongShareAction(this));
         Action.getNamedActions().put("toggleRadio", new ToggleRadioAction());
+    }
+
+    private void initShortcuts() {
+        // Global shortcut: Reload GUI with Ctrl-R
+        window.getActionMappings().add(new Window.ActionMapping(
+            new Keyboard.KeyStroke(Keyboard.KeyCode.R, Platform.getCommandModifier().getMask()),
+            "reloadGUI"));
+        // Global shortcut: Close currently active tab with Ctrl-W
+        window.getActionMappings().add(new Window.ActionMapping(
+            new Keyboard.KeyStroke(Keyboard.KeyCode.W, Platform.getCommandModifier().getMask()),
+            "closeCurrentTab"));
+        // Global shortcut: Close all tabs with Ctrl-Shift-W
+        window.getActionMappings().add(new Window.ActionMapping(
+            new Keyboard.KeyStroke(Keyboard.KeyCode.W, Platform.getCommandModifier().getMask() + Keyboard.Modifier.SHIFT.getMask()),
+            "closeAllTabs"));
     }
 
     private Window createWindow() throws IOException, SerializationException {
@@ -359,9 +378,6 @@ public class Main extends AbstractApplication {
         window.getIcons().add(WtkUtil.getIcon("images/butler-32.png", Main.class));
         window.getIcons().add(WtkUtil.getIcon("images/butler-48.png", Main.class));
         window.getIcons().add(WtkUtil.getIcon("images/butler-64.png", Main.class));
-        window.getActionMappings().add(new Window.ActionMapping(
-            new Keyboard.KeyStroke(Keyboard.KeyCode.R, Platform.getCommandModifier().getMask()),
-            "reloadGUI"));
 
         downloadsTable.setTableData(downloadTracks);
         downloadsTable.getTableViewSortListeners().add(new DefaultTableViewSortListener());
@@ -479,9 +495,9 @@ public class Main extends AbstractApplication {
         tabPane.setMenuHandler(new MenuHandler.Adapter() {
             @Override public boolean configureContextMenu(Component component, Menu menu, int x, int y) {
                 if (tabPane.getTabs().getLength() > 0) {
-                    Menu.Item closeCurrentTab = new Menu.Item("Close Tab");
+                    Menu.Item closeCurrentTab = new Menu.Item(new MenuItemData(null, "Close Tab", new Keyboard.KeyStroke(Keyboard.KeyCode.W, Platform.getCommandModifier().getMask())));
                     closeCurrentTab.setAction(tabCloseAction);
-                    Menu.Item closeAllTabs = new Menu.Item("Close All Tabs");
+                    Menu.Item closeAllTabs = new Menu.Item(new MenuItemData(null, "Close All Tabs", new Keyboard.KeyStroke(Keyboard.KeyCode.W, Platform.getCommandModifier().getMask() + Keyboard.Modifier.SHIFT.getMask())));
                     closeAllTabs.setAction(tabCloseAllAction);
                     Menu.Section menuSection = new Menu.Section();
                     menuSection.add(closeCurrentTab);
@@ -681,6 +697,23 @@ public class Main extends AbstractApplication {
                 else
                     System.exit(1);
             }
+        }
+    }
+
+
+    private class CloseCurrentTabAction extends Action {
+        public void perform(Component source) {
+            int currentTab = tabPane.getSelectedIndex();
+            if (currentTab >= 0) {
+                tabPane.getTabs().remove(currentTab, 1);
+            }
+        }
+    }
+
+
+    private class CloseAllTabsAction extends Action {
+        public void perform(Component source) {
+            tabPane.getTabs().remove(0, tabPane.getTabs().getLength());
         }
     }
 
