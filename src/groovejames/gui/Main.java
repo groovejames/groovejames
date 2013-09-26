@@ -332,6 +332,7 @@ public class Main extends AbstractApplication {
         Action.getNamedActions().put("reloadGUI", new ReloadGUIAction());
         Action.getNamedActions().put("closeCurrentTab", new CloseCurrentTabAction());
         Action.getNamedActions().put("closeAllTabs", new CloseAllTabsAction());
+        Action.getNamedActions().put("closeOtherTabs", new CloseOtherTabsAction());
         Action.getNamedActions().put("clearSelectedDownloads", new RemoveDownloadsAction(this, true, false, false));
         Action.getNamedActions().put("clearSuccessfulDownloads", new RemoveDownloadsAction(this, false, true, false));
         Action.getNamedActions().put("clearFinishedDownloads", new RemoveDownloadsAction(this, false, false, false));
@@ -476,31 +477,25 @@ public class Main extends AbstractApplication {
             }
         });
 
-        final Action tabCloseAction = new Action() {
-            @Override public void perform(Component source) {
-                tabPane.getTabs().remove(tabPane.getSelectedTab());
-            }
-        };
-        tabCloseAction.setEnabled(false);
-        final Action tabCloseAllAction = new Action() {
-            @Override public void perform(Component source) {
-                TabPane.TabSequence tabs = tabPane.getTabs();
-                for (int i = tabs.getLength() - 1; i >= 0; i--) {
-                    tabPane.getTabs().remove(tabs.get(i));
-                }
-            }
-        };
-        tabCloseAllAction.setEnabled(false);
+        final Action closeCurrentTabAction = Action.getNamedActions().get("closeCurrentTab");
+        closeCurrentTabAction.setEnabled(false);
+        final Action closeOtherTabsAction = Action.getNamedActions().get("closeOtherTabs");
+        closeOtherTabsAction.setEnabled(false);
+        final Action closeAllTabsAction = Action.getNamedActions().get("closeAllTabs");
+        closeAllTabsAction.setEnabled(false);
 
         tabPane.setMenuHandler(new MenuHandler.Adapter() {
             @Override public boolean configureContextMenu(Component component, Menu menu, int x, int y) {
                 if (tabPane.getTabs().getLength() > 0) {
                     Menu.Item closeCurrentTab = new Menu.Item(new MenuItemData(null, "Close Tab", new Keyboard.KeyStroke(Keyboard.KeyCode.W, Platform.getCommandModifier().getMask())));
-                    closeCurrentTab.setAction(tabCloseAction);
+                    closeCurrentTab.setAction(closeCurrentTabAction);
+                    Menu.Item closeOtherTabs = new Menu.Item(new MenuItemData(null, "Close Other Tabs"));
+                    closeOtherTabs.setAction(closeOtherTabsAction);
                     Menu.Item closeAllTabs = new Menu.Item(new MenuItemData(null, "Close All Tabs", new Keyboard.KeyStroke(Keyboard.KeyCode.W, Platform.getCommandModifier().getMask() + Keyboard.Modifier.SHIFT.getMask())));
-                    closeAllTabs.setAction(tabCloseAllAction);
+                    closeAllTabs.setAction(closeAllTabsAction);
                     Menu.Section menuSection = new Menu.Section();
                     menuSection.add(closeCurrentTab);
+                    menuSection.add(closeOtherTabs);
                     menuSection.add(closeAllTabs);
                     menu.getSections().add(menuSection);
                 }
@@ -510,15 +505,17 @@ public class Main extends AbstractApplication {
         tabPane.getTabPaneListeners().add(new TabPaneListener.Adapter() {
             @Override public void tabInserted(TabPane tabPane, int index) {
                 int numTabs = tabPane.getTabs().getLength();
-                tabCloseAction.setEnabled(numTabs > 0);
-                tabCloseAllAction.setEnabled(numTabs > 0);
+                closeCurrentTabAction.setEnabled(numTabs > 0);
+                closeOtherTabsAction.setEnabled(numTabs > 0);
+                closeAllTabsAction.setEnabled(numTabs > 0);
             }
 
             @Override public void tabsRemoved(TabPane tabPane, int index, Sequence<Component> tabs) {
                 int numTabs = tabPane.getTabs().getLength();
                 tabPane.setSelectedIndex(min(max(0, index), numTabs - 1));
-                tabCloseAction.setEnabled(numTabs > 0);
-                tabCloseAllAction.setEnabled(numTabs > 0);
+                closeCurrentTabAction.setEnabled(numTabs > 0);
+                closeOtherTabsAction.setEnabled(numTabs > 0);
+                closeAllTabsAction.setEnabled(numTabs > 0);
             }
         });
 
@@ -714,6 +711,22 @@ public class Main extends AbstractApplication {
     private class CloseAllTabsAction extends Action {
         public void perform(Component source) {
             tabPane.getTabs().remove(0, tabPane.getTabs().getLength());
+        }
+    }
+
+
+    private class CloseOtherTabsAction extends Action {
+        public void perform(Component source) {
+            int currentTab = tabPane.getSelectedIndex();
+            int numTabs = tabPane.getTabs().getLength();
+            if (currentTab >= 0 && numTabs > 1) {
+                if (currentTab < numTabs - 1) {
+                    tabPane.getTabs().remove(currentTab + 1, numTabs - currentTab - 1);
+                }
+                if (currentTab > 0) {
+                    tabPane.getTabs().remove(0, currentTab);
+                }
+            }
         }
     }
 

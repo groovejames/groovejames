@@ -1,5 +1,5 @@
 r26 (unreleased)
-  - added shortcut ctrl-w / ctrl-shift-w to close current tab / all tabs
+  - added shortcut ctrl-w / ctrl-shift-w to close current tab / all tabs, added action "close other tabs"
   -
 
 r25 (2013/07/22)
