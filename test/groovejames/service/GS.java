@@ -27,12 +27,12 @@ import java.util.UUID;
 public class GS {
 
     private static final String SEARCH_CLIENT_NAME = "htmlshark";
-    private static final String SEARCH_CLIENT_REVISION = "20120312";
-    private static final String SEARCH_SECRET = "breakfastBurritos";
+    private static final String SEARCH_CLIENT_REVISION = "20130520";
+    private static final String SEARCH_SECRET = "20130520";
 
     private static final String PLAY_CLIENT_NAME = "jsqueue";
-    private static final String PLAY_CLIENT_REVISION = "20120312.08";
-    private static final String PLAY_SECRET = "circlesAndSquares";
+    private static final String PLAY_CLIENT_REVISION = "20130520";
+    private static final String PLAY_SECRET = "chickenFingers";
 
     private UUID uuid = UUID.randomUUID();
     private String sessionID = Util.createRandomHexNumber(32);

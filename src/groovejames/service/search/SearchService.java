@@ -70,7 +70,7 @@ public class SearchService {
             case Artist: {
                 // search for all songs of the given artist
                 Long artistID = getArtistID(searchParameter);
-                Song[] songs = artistID != null ? grooveshark.artistGetAllSongs(artistID) : new Song[0];
+                Song[] songs = artistID != null ? grooveshark.artistGetArtistSongs(artistID) : new Song[0];
                 result = filterDuplicateSongs(songs);
                 break;
             }

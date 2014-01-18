@@ -1,6 +1,7 @@
-r26 (unreleased)
+r26 (2014/01/18)
   - added shortcut ctrl-w / ctrl-shift-w to close current tab / all tabs, added action "close other tabs"
-  -
+  - fixed invalid token error (again)
+  - fixed getting songs of an artist
 
 r25 (2013/07/22)
   - NEW: on click on the album image in playlist show the full image in the system's default image viewer

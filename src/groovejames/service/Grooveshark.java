@@ -51,7 +51,7 @@ public interface Grooveshark {
 
     Song[] albumGetAllSongs(@Param("albumID") Long albumID) throws Exception;
 
-    Song[] artistGetAllSongs(@Param("artistID") Long artistID) throws Exception;
+    Song[] artistGetArtistSongs(@Param("artistID") Long artistID) throws Exception;
 
     @ResultPath("albums")
     Album[] artistGetAllAlbums(@Param("artistID") Long artistID) throws Exception;

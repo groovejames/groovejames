@@ -266,7 +266,7 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
     }
 
     @Override
-    public Song[] artistGetAllSongs(Long artistID) {
+    public Song[] artistGetArtistSongs(Long artistID) {
         return getResultsFromSearch(SearchSongsResultType.Songs, null);
     }
 
