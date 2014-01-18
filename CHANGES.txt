@@ -1,3 +1,6 @@
+r27 (unreleased)
+  -
+
 r26 (2014/01/18)
   - added shortcut ctrl-w / ctrl-shift-w to close current tab / all tabs, added action "close other tabs"
   - fixed invalid token error (again)
