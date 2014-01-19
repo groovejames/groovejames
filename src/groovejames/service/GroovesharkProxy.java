@@ -55,8 +55,8 @@ class GroovesharkProxy implements InvocationHandler {
         this.sessionID = getSessionID();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    @SuppressWarnings({"unchecked"})
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         if (methodsOfClassObject.contains(method))
             return null;

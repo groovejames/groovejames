@@ -1,5 +1,5 @@
 r27 (unreleased)
-  -
+  - switched from Ant to Gradle
 
 r26 (2014/01/18)
   - added shortcut ctrl-w / ctrl-shift-w to close current tab / all tabs, added action "close other tabs"

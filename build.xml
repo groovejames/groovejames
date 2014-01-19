@@ -85,24 +85,6 @@
     </target>
 
 
-    <target name="release-bin" depends="checkIfSomeFilesChanged, readBuildNumber, dist-bin" if="filesChanged">
-        <CBRelease file="out/grooveJames-${version}-bin.zip"
-                   tofile="grooveJames-${version}-bin.zip"
-                   todir="binaries"
-                   description="GrooveJames ${version} binary files"
-                   descriptionformat="T"/>
-    </target>
-
-
-    <target name="release-src" depends="checkIfSomeFilesChanged, readBuildNumber, dist-src" if="filesChanged">
-        <CBRelease file="out/grooveJames-${version}-src.zip"
-                   tofile="grooveJames-${version}-src.zip"
-                   todir="sources"
-                   description="GrooveJames ${version} sources"
-                   descriptionformat="T"/>
-    </target>
-
-
     <target name="readBuildNumber">
         <!-- set build.date in build.properties to current date -->
         <propertyfile file="src/groovejames/gui/build.properties">
@@ -120,54 +102,8 @@
     </target>
 
 
-    <target name="checkIfSomeFilesChanged" depends="computeChecksumOfAllFiles">
-        <!-- load checksum of previous check -->
-        <property file="lastrelease.properties"/>
-        <echo message="   last checksum: ${last.checksum}" level="info"/>
-        <echo message="current checksum: ${checksum}" level="info"/>
-        <!-- compare with new checksum (this works even if there is no old checksum) -->
-        <condition property="filesChanged">
-            <not>
-                <equals arg1="${last.checksum}" arg2="${checksum}" trim="true"/>
-            </not>
-        </condition>
-        <!-- remember current checksum of all files for next check -->
-        <propertyfile file="lastrelease.properties">
-            <entry key="last.checksum" value="${checksum}"/>
-        </propertyfile>
-    </target>
-
-
-    <target name="computeChecksumOfAllFiles">
-        <delete dir="out/checksums"/>
-        <mkdir dir="out/checksums"/>
-        <checksum todir="out/checksums" totalproperty="checksum" algorithm="MD5">
-            <fileset dir=".">
-                <exclude name="**/.svn/**"/>
-                <exclude name="out/**"/>
-                <exclude name="gs.iws"/>
-                <exclude name="**/*.log"/>
-                <exclude name="**/*.log.*"/>
-                <exclude name="**/Thumbs.db"/>
-                <exclude name="lastrelease.properties"/>
-                <exclude name="src/groovejames/gui/build.properties"/>
-            </fileset>
-        </checksum>
-        <echo message="checksum of all files: ${checksum}" level="debug"/>
-    </target>
-
-
     <target name="all" depends="clean, dist-bin, dist-src"
             description="cleanup and create source and binary distribution"/>
-
-
-    <target name="release" depends="checkIfSomeFilesChanged, readBuildNumber, release-src, release-bin"
-            if="filesChanged"
-            description="checks if some files have been changed, if true releases files on CodeBeamer/JavaForge"/>
-
-
-    <target name="all-release" depends="all, release"
-            description="builds all and releases (if files have been changed)"/>
 
 
     <target name="clean" description="cleanup">
