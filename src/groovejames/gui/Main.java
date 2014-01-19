@@ -613,16 +613,16 @@ public class Main extends AbstractApplication {
     }
 
     private String getVersionNumberAndDate() {
-        Properties properties = loadProperties("version.properties");
+        Properties properties = loadProperties("build.properties");
         String buildNumber = properties.getProperty("build.number", "");
-        properties = loadProperties("build.properties");
         String buildDate = properties.getProperty("build.date", "");
         String versionNumberAndDate = "";
         if (!buildNumber.isEmpty()) {
             versionNumberAndDate += "r" + buildNumber;
         }
-        if (!buildDate.isEmpty())
+        if (!buildDate.isEmpty()) {
             versionNumberAndDate += " (built on " + buildDate + ")";
+        }
         return versionNumberAndDate;
     }
 

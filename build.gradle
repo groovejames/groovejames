@@ -33,13 +33,9 @@ dependencies {
 }
 
 
-task updateVersionProperties {
-    // TODO: those two files could be joined into one, and they don't need to be under version control
-    file('src/groovejames/gui/version.properties').withWriter { w ->
-        w << "build.number=$version"
-    }
+task updateVersionProperties << {
     file('src/groovejames/gui/build.properties').withWriter { w ->
-        w << "build.date=" << new Date()
+        w << "build.number=$version" << "\n" << "build.date=" << new Date()
     }
 }
 compileJava.dependsOn updateVersionProperties
