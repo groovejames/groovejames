@@ -243,7 +243,7 @@ public class Main extends AbstractApplication {
         new MailAction(window, album).perform(window);
     }
 
-    public void showError(String message, Exception ex) {
+    public void showError(String message, Throwable ex) {
         log.error(message, ex);
         TextArea errorText = new TextArea();
         errorText.setEditable(false);
@@ -457,7 +457,7 @@ public class Main extends AbstractApplication {
                     doSearch();
                 }
 
-                @Override public void executeGetSuggestionsFailed(String query, Exception exception) {
+                @Override public void executeGetSuggestionsFailed(String query, Throwable exception) {
                     log.error(format("could not autocomplete '%s': %s", query, toErrorString(exception, "; reason: ")));
                 }
             });

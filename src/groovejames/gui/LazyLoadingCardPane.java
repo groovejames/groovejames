@@ -79,7 +79,7 @@ public class LazyLoadingCardPane extends CardPane implements Bindable {
 
         @Override public void executeFailed(Task<V> task) {
             taskExecuted = true;
-            Exception ex = task.getFault();
+            Throwable ex = task.getFault();
             hideActivityPane();
             main.showError("Error: " + ((GuiAsyncTask) task).getDescription(), ex);
         }

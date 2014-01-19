@@ -8,13 +8,13 @@ public interface SuggestionsProvider<V> {
 
     void accepted(String text);
 
-    void executeGetSuggestionsFailed(String query, Exception exception);
+    void executeGetSuggestionsFailed(String query, Throwable exception);
 
     public static abstract class Adapter<V> implements SuggestionsProvider<V> {
         @Override public void accepted(String text) {
         }
 
-        @Override public void executeGetSuggestionsFailed(String query, Exception exception) {
+        @Override public void executeGetSuggestionsFailed(String query, Throwable exception) {
         }
     }
 }

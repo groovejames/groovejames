@@ -18,18 +18,20 @@ sourceSets.test.java.srcDir 'test'
 repositories { mavenCentral() }
 
 dependencies {
-    compile('log4j:log4j:1.2.15') { // TODO: newest is 1.2.17
+    compile('log4j:log4j:1.2.17') {
         exclude group: 'javax.mail', module: 'mail'
         exclude group: 'javax.jms', module: 'jms'
         exclude group: 'com.sun.jdmk', module: 'jmxtools'
         exclude group: 'com.sun.jmx', module: 'jmxri'
     }
-    compile 'org.apache.httpcomponents:httpclient:4.0.1' // TODO: newest 4.0.x is 4.0.3, newest is 4.3.1
-    compile 'com.googlecode.json-simple:json-simple:1.1' // TODO: newest is 1.1.1
+    compile 'org.apache.httpcomponents:httpclient:4.0.1' // TODO: newest is 4.3.1
+    compile('com.googlecode.json-simple:json-simple:1.1.1') {
+        exclude group: 'junit', module: 'junit'
+    }
     compile 'org.blinkenlights.jid3:JID3:0.46'
-    compile 'org.apache.pivot:pivot:2.0' // TODO: newest is 2.0.3
-    compile 'org.apache.pivot:pivot-wtk:2.0' // TODO: newest is 2.0.3
-    compile 'org.apache.pivot:pivot-wtk-terra:2.0' // TODO: newest is 2.0.3
+    compile 'org.apache.pivot:pivot-core:2.0.3'
+    compile 'org.apache.pivot:pivot-wtk:2.0.3'
+    compile 'org.apache.pivot:pivot-wtk-terra:2.0.3'
 }
 
 

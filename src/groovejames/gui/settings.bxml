@@ -53,8 +53,8 @@
                                                 <gjvalidation:FilenameSchemeTextValidator/>
                                             </validator>
                                         </TextInput>
-                                        <Label preferredWidth="300" styles="{wrapText:true}"
-                                               text="This is a format string for file path of downloaded files. Use / to create a subdirectory. Use &lt;Artist&gt; to insert the artist's name, &lt;Album&gt; to insert the album title, &lt;Title&gt; to insert the track's name, &lt;#&gt; to insert the track number (if any). Use &lt;##&gt; or &lt;###&gt; to pad the track number with leading zeroes. &lt;ALBUM&gt; inserts the album name in uppercase, &lt;album&gt; in lowercase (likewise for &lt;Artist&gt; and &lt;Title&gt;). &lt;Album?text&gt; inserts 'text' only if the album name is not empty (likewise for &lt;Artist&gt;, &lt;Title&gt; and &lt;#&gt;)."/>
+                                        <Label preferredWidth="370" styles="{wrapText:true}"
+                                               text="This is a format string for file path of downloaded files.&#xA;Use / to create a subdirectory. Available placeholders:&#xA;&#xA;  &lt;Artist&gt;: artist's name&#xA;  &lt;Album&gt;: album title&#xA;  &lt;Title&gt;: track's name&#xA;  &lt;#&gt;: track number (if any)&#xA;  &lt;##&gt; or &lt;###&gt;: track number padded with leading zeroes&#xA;&#xA;The following applies to all tags:&#xA;  &lt;Tag?text&gt; inserts 'text' only if the tag's value is not empty&#xA;  &lt;TAGNAME&gt; the tag's value in uppercase&#xA;  &lt;tagname&gt;: the tag's value in lowercase"/>
                                     </Form.Section>
                                 </sections>
                             </Form>

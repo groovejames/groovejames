@@ -78,7 +78,7 @@ public class SettingsDialog {
             @Override
             public void textChanged(TextInput textInput) {
                 String errorText = new FilenameSchemeTextValidator().getErrorText(textInput.getText());
-                errorLabel.setText(errorText);
+                errorLabel.setText(errorText != null ? errorText : "");
                 if (errorText != null) {
                     Form.setFlag(filenameScheme, new Form.Flag(MessageType.ERROR, errorText));
                 } else {
