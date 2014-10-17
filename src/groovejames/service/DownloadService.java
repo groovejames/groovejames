@@ -60,7 +60,6 @@ public class DownloadService {
     private final FilenameSchemeParser filenameSchemeParser;
 
     private File downloadDir;
-    private long nextSongMustSleepUntil;
 
     public DownloadService(HttpClientService httpClientService) {
         this.httpClientService = httpClientService;
@@ -103,19 +102,17 @@ public class DownloadService {
 
     private Track download(Song song, Store store, DownloadListener downloadListener, boolean forPlay) {
         Track track = new Track(song, store);
-        int additionalAbortDelay = 0;
+        int initialDelay = 0;
         boolean downloadWasInterrupted = cancelDownload(track, true);
         if (downloadWasInterrupted && !forPlay)
-            additionalAbortDelay += 5000;
-        additionalAbortDelay += Math.max(nextSongMustSleepUntil - System.currentTimeMillis(), 0);
-        DownloadTask downloadTask = new DownloadTask(track, additionalAbortDelay, downloadListener);
+            initialDelay += 5000;
+        DownloadTask downloadTask = new DownloadTask(track, initialDelay, downloadListener);
         currentlyRunningDownloads.add(downloadTask);
         if (forPlay) {
             executorServiceForPlay.submit(downloadTask);
         } else {
             executorService.submit(downloadTask);
         }
-        nextSongMustSleepUntil = Math.max(System.currentTimeMillis(), nextSongMustSleepUntil + 1000);
         return track;
     }
 
