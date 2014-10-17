@@ -125,7 +125,11 @@ public class ImageLoader {
                     images.put(filename, new WeakReference<Image>(image));
                     imageObject.setImage(image);
                     imageObject.setLoadingImage(false);
-                    target.repaint();
+                    ApplicationContext.queueCallback(new Runnable() {
+                        @Override public void run() {
+                            target.repaint();
+                        }
+                    });
                 }
             });
         }

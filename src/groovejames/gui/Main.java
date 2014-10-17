@@ -761,7 +761,11 @@ public class Main extends AbstractApplication {
                 timer.scheduleAtFixedRate(new TimerTask() {
                     @Override public void run() {
                         if (downloadsTable != null) {
-                            downloadsTable.repaint();
+                            ApplicationContext.queueCallback(new Runnable() {
+                                @Override public void run() {
+                                    downloadsTable.repaint();
+                                }
+                            });
                         }
                     }
                 }, 0, 500);
