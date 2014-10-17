@@ -1,6 +1,7 @@
 r27 (unreleased)
+  - fixed problem when downloading many files, wait interval got longer and longer
   - switched from Ant to Gradle
-  - updated libs (Pivot 2.0 -> 2.0.3, log4j 1.2.15 -> 1.2.17, json-simple 1.1 -> 1.1.1)
+  - updated libs (Pivot 2.0 -> 2.0.4, log4j 1.2.15 -> 1.2.17, json-simple 1.1 -> 1.1.1)
 
 r26 (2014/01/18)
   - added shortcut ctrl-w / ctrl-shift-w to close current tab / all tabs, added action "close other tabs"

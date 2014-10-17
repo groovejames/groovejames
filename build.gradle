@@ -24,14 +24,14 @@ dependencies {
         exclude group: 'com.sun.jdmk', module: 'jmxtools'
         exclude group: 'com.sun.jmx', module: 'jmxri'
     }
-    compile 'org.apache.httpcomponents:httpclient:4.0.1' // TODO: newest is 4.3.1
+    compile 'org.apache.httpcomponents:httpclient:4.0.1'
     compile('com.googlecode.json-simple:json-simple:1.1.1') {
         exclude group: 'junit', module: 'junit'
     }
     compile 'org.blinkenlights.jid3:JID3:0.46'
-    compile 'org.apache.pivot:pivot-core:2.0.3'
-    compile 'org.apache.pivot:pivot-wtk:2.0.3'
-    compile 'org.apache.pivot:pivot-wtk-terra:2.0.3'
+    compile 'org.apache.pivot:pivot-core:2.0.4'
+    compile 'org.apache.pivot:pivot-wtk:2.0.4'
+    compile 'org.apache.pivot:pivot-wtk-terra:2.0.4'
 }
 
 
