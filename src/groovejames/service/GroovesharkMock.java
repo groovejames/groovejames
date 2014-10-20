@@ -246,7 +246,6 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         Playlist playlist1 = new Playlist();
         playlist1.setPlaylistID(1L);
         playlist1.setName("Willi Wonka's Playlist");
-        playlist1.setArtists("Some very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very long artist list.");
         playlist1.setUserID(300L);
         playlist1.setScore(40954.0);
 
@@ -254,7 +253,6 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         playlist2.setPlaylistID(2L);
         playlist2.setName("Mad Hatter's playlist");
         playlist2.setUserID(302L);
-        playlist2.setArtists("Depeche Mode, Dead Kennedys, Beck");
         playlist2.setScore(4322323.3);
 
         return new Playlist[]{playlist1, playlist2};
