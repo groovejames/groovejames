@@ -9,10 +9,11 @@ public abstract class BaseModelObject implements ImageObject, Scoreable, Verifia
 
     protected volatile Image image;
     protected volatile boolean loadingImage;
-    protected double score;
+    protected Double score;
     protected double scorePercentage;
-    protected double popularity;
+    protected Double popularity;
     protected double popularityPercentage;
+    protected Long popularityIndex;
     protected boolean isVerified;
 
     @Override public abstract String getImageFilename();
@@ -33,11 +34,11 @@ public abstract class BaseModelObject implements ImageObject, Scoreable, Verifia
         this.loadingImage = loadingImage;
     }
 
-    @Override public double getScore() {
+    @Override public Double getScore() {
         return score;
     }
 
-    @Override public void setScore(double score) {
+    @Override public void setScore(Double score) {
         this.score = score;
     }
 
@@ -49,12 +50,22 @@ public abstract class BaseModelObject implements ImageObject, Scoreable, Verifia
         this.scorePercentage = max(min(scorePercentage, 1.0), 0.0);
     }
 
-    @Override public double getPopularity() {
+    @Override public Double getPopularity() {
         return popularity;
     }
 
-    @Override public void setPopularity(double popularity) {
+    @Override public void setPopularity(Double popularity) {
         this.popularity = popularity;
+    }
+
+    @Override
+    public Long getPopularityIndex() {
+        return popularityIndex;
+    }
+
+    @Override
+    public void setPopularityIndex(Long popularityIndex) {
+        this.popularityIndex = popularityIndex;
     }
 
     @Override public double getPopularityPercentage() {

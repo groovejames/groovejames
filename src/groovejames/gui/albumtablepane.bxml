@@ -33,7 +33,7 @@
                             <guicomponents:ClickableTableView bxml:id="albumTable" selectMode="single"
                                                               clickableColumns="1,2"
                                                               styles="{font:{bold:true, size:'130%'}, showHorizontalGridLines:false, showVerticalGridLines:false}"
-                                                              sort="[{columnName:'albumName', sortDirection:'ASCENDING'}]">
+                                                              sort="[{columnName:'popularityPercentage', sortDirection:'DESCENDING'}]">
                                 <columns>
                                     <TableView.Column name="image" width="50">
                                         <cellRenderer>

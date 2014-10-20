@@ -97,19 +97,13 @@
                                             bxml:id="songTable"
                                             clickableColumns="2,3"
                                             selectMode="multi"
-                                            sort="[{columnName:'scorePercentage', sortDirection:'DESCENDING'}]">
+                                            sort="[{columnName:'popularityPercentage', sortDirection:'DESCENDING'}]">
                                         <columns>
                                             <TableView.Column name="trackNum" headerData="#" width="30"/>
                                             <TableView.Column name="songName" headerData="Name" width="220"/>
                                             <TableView.Column name="artistName" headerData="Artist" width="180"/>
                                             <TableView.Column name="albumName" headerData="Album" width="180"/>
-                                            <TableView.Column name="estimateDuration" headerData="Length" width="45">
-                                                <cellRenderer>
-                                                    <gui:TimeTableCellRenderer/>
-                                                </cellRenderer>
-                                            </TableView.Column>
-                                            <TableView.Column name="popularityPercentage" headerData="Popularity"
-                                                              width="1*">
+                                            <TableView.Column name="popularityPercentage" headerData="Popularity" width="1*">
                                                 <cellRenderer>
                                                     <guicomponents:MeterTableCellRenderer/>
                                                 </cellRenderer>

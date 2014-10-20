@@ -2,17 +2,21 @@ package groovejames.model;
 
 public interface Scoreable {
 
-    double getScore();
+    Double getScore();
 
-    void setScore(double score);
+    void setScore(Double score);
 
     double getScorePercentage();
 
     void setScorePercentage(double scorePercentage);
 
-    double getPopularity();
+    Double getPopularity();
 
-    void setPopularity(double popularity);
+    void setPopularity(Double popularity);
+
+    Long getPopularityIndex();
+
+    void setPopularityIndex(Long popularityIndex);
 
     double getPopularityPercentage();
 

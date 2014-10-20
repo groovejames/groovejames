@@ -298,16 +298,12 @@ public class SongTablePane extends TablePane implements Bindable, CardPaneConten
             case Artist:
                 // remove "Artist" column
                 WtkUtil.removeColumn(songTable, "artistName");
-                // remove "Relevance" column because it is always 0 if we search for artist's songs
-                WtkUtil.removeColumn(songTable, "scorePercentage");
                 // sort by popularity (instead of score)
                 songTable.setSort("popularityPercentage", SortDirection.DESCENDING);
                 break;
             case Album:
                 // remove "Album" column
                 WtkUtil.removeColumn(songTable, "albumName");
-                // remove "Relevance" column because it is always 0 if we search for album's songs
-                WtkUtil.removeColumn(songTable, "scorePercentage");
                 // sort by track number (instead of score)
                 songTable.setSort("trackNum", SortDirection.ASCENDING);
                 break;

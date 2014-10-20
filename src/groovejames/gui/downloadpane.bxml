@@ -66,11 +66,6 @@
                                     <TableView.Column name="songName" headerData="Name" width="190"/>
                                     <TableView.Column name="artistName" headerData="Artist" width="155"/>
                                     <TableView.Column name="albumName" headerData="Album" width="155"/>
-                                    <TableView.Column name="song.estimateDuration" headerData="Length" width="45">
-                                        <cellRenderer>
-                                            <gui:TimeTableCellRenderer/>
-                                        </cellRenderer>
-                                    </TableView.Column>
                                     <TableView.Column name="progress" headerData="Progress" width="1*">
                                         <cellRenderer>
                                             <gui:DownloadProgressTableCellRenderer/>

@@ -12,7 +12,7 @@ public class Song extends BaseModelObject {
     private String coverArtFilename;
     private String year;
     private Long trackNum;
-    private Double estimateDuration; // in seconds
+    private Double estimateDuration; // in seconds, alas not reliable; often 0.00
 
     public Long getArtistID() {
         return artistID;
@@ -140,6 +140,7 @@ public class Song extends BaseModelObject {
         sb.append(", songName='").append(songName).append('\'');
         sb.append(", isVerified=").append(isVerified);
         sb.append(", coverArtFilename='").append(coverArtFilename).append('\'');
+        sb.append(", estimateDuration=").append(estimateDuration);
         sb.append('}');
         return sb.toString();
     }

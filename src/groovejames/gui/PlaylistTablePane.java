@@ -60,8 +60,7 @@ public class PlaylistTablePane extends TablePane implements Bindable, CardPaneCo
                 final String searchString = ((TextInput) searchField).getText().trim();
                 playlistList.setFilter(new Filter<Playlist>() {
                     @Override public boolean include(Playlist playlist) {
-                        return containsIgnoringCase(playlist.getName(), searchString)
-                            || containsIgnoringCase(playlist.getArtists(), searchString);
+                        return containsIgnoringCase(playlist.getName(), searchString);
                     }
                 });
                 return false;

@@ -1,6 +1,5 @@
 <gui:PlaylistTablePane xmlns="org.apache.pivot.wtk"
                        xmlns:bxml="http://pivot.apache.org/bxml"
-                       xmlns:content="org.apache.pivot.wtk.content"
                        xmlns:gui="groovejames.gui"
                        xmlns:guicomponents="groovejames.gui.components"
                        styles="{verticalSpacing:6}">
@@ -33,21 +32,8 @@
                                                     defaultImage="@images/unknownSong.png"/>
                                         </cellRenderer>
                                     </TableView.Column>
-                                    <TableView.Column name="name" headerData="Name" width="300"/>
+                                    <TableView.Column name="name" headerData="Name" width="1*"/>
                                     <TableView.Column name="numSongs" headerData="# Songs" width="55"/>
-                                    <TableView.Column name="artists" headerData="Artists" width="1*">
-                                        <cellRenderer>
-                                            <content:TableViewTextAreaCellRenderer/>
-                                        </cellRenderer>
-                                    </TableView.Column>
-                                    <!-- Field "about" is not always filled, and in most cases it's empty -->
-                                    <!--
-                                    <TableView.Column name="about" headerData="Description" width="1*">
-                                        <cellRenderer>
-                                            <content:TableViewTextAreaCellRenderer/>
-                                        </cellRenderer>
-                                    </TableView.Column>
-                                    -->
                                 </columns>
                             </guicomponents:ClickableTableView>
                         </view>

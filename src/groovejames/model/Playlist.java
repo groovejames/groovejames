@@ -5,7 +5,6 @@ public class Playlist extends BaseModelObject {
     private long playlistID;
     private String name;
     private String about;
-    private String artists;
     private Long numSongs;
     private Long userID;
     private String picture;
@@ -32,14 +31,6 @@ public class Playlist extends BaseModelObject {
 
     public void setAbout(String about) {
         this.about = about;
-    }
-
-    public String getArtists() {
-        return artists;
-    }
-
-    public void setArtists(String artists) {
-        this.artists = artists;
     }
 
     public Long getNumSongs() {

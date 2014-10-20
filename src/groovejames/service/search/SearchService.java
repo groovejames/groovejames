@@ -260,28 +260,39 @@ public class SearchService {
     }
 
     private void normalize(Scoreable[] scoreables) {
-        double minScore = Double.MAX_VALUE, maxScore = Double.MIN_VALUE;
-        double minPopularity = Double.MAX_VALUE, maxPopularity = Double.MIN_VALUE;
+        Double minScore = null, maxScore = null;
+        Long minPopularityIndex = null, maxPopularityIndex = null;
+        Double minPopularity = null, maxPopularity = null;
         for (Scoreable scoreable : scoreables) {
-            if (scoreable.getScore() > 0.0) {
-                minScore = Math.min(minScore, scoreable.getScore());
-                maxScore = Math.max(maxScore, scoreable.getScore());
+            Double score = scoreable.getScore();
+            if (score != null && score > 0.0) {
+                if (minScore == null || score < minScore) minScore = score;
+                if (maxScore == null || score > maxScore) maxScore = score;
             }
-            if (scoreable.getPopularity() > 0.0) {
-                minPopularity = Math.min(minPopularity, scoreable.getPopularity());
-                maxPopularity = Math.max(maxPopularity, scoreable.getPopularity());
+            Long popularityIndex = scoreable.getPopularityIndex();
+            if (popularityIndex != null && popularityIndex > 0) {
+                if (minPopularityIndex == null || popularityIndex < minPopularityIndex) minPopularityIndex = popularityIndex;
+                if (maxPopularityIndex == null || popularityIndex > maxPopularityIndex) maxPopularityIndex = popularityIndex;
+            }
+            Double popularity = scoreable.getPopularity();
+            if (popularity != null && popularity > 0.0) {
+                if (minPopularity == null || popularity < minPopularity) minPopularity = popularity;
+                if (maxPopularity == null || popularity > maxPopularity) maxPopularity = popularity;
             }
         }
-        double rangeScore = maxScore - minScore;
-        double rangePopularity = maxPopularity - minPopularity;
-        if (maxScore > Double.MIN_VALUE || maxPopularity > Double.MIN_VALUE
-            || rangeScore > 0.0 || rangePopularity > 0.0) {
-            for (Scoreable scoreable : scoreables) {
-                if (maxScore > Double.MIN_VALUE && rangeScore > 0.0)
-                    scoreable.setScorePercentage((scoreable.getScore() - minScore) / rangeScore);
-                if (maxPopularity > Double.MIN_VALUE && rangePopularity > 0.0)
-                    scoreable.setPopularityPercentage((scoreable.getPopularity() - minPopularity) / rangePopularity);
-            }
+        boolean canAdjustScore = minScore != null && maxScore != null && minScore < maxScore;
+        boolean canAdjustPopularityIndex = minPopularityIndex != null && maxPopularityIndex != null && minPopularityIndex < maxPopularityIndex;
+        boolean canAdjustPopularity = minPopularity != null && maxPopularity != null && minPopularity < maxPopularity;
+        if (!canAdjustScore && !canAdjustPopularityIndex && !canAdjustPopularity) {
+            return;
+        }
+        for (Scoreable scoreable : scoreables) {
+            if (canAdjustScore)
+                scoreable.setScorePercentage((scoreable.getScore() - minScore) / (maxScore - minScore));
+            if (canAdjustPopularityIndex)
+                scoreable.setPopularityPercentage(((double) (scoreable.getPopularityIndex() - minPopularityIndex)) / ((double) (maxPopularityIndex - minPopularityIndex)));
+            else if (canAdjustPopularity)
+                scoreable.setPopularityPercentage((scoreable.getPopularity() - minPopularity) / (maxPopularity - minPopularity));
         }
     }
 
