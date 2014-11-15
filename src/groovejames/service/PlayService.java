@@ -10,7 +10,9 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.collections.LinkedList;
 import org.apache.pivot.collections.Sequence;
+import org.apache.pivot.wtk.ApplicationContext;
 
+import java.awt.EventQueue;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -50,7 +52,7 @@ public class PlayService {
         return playlist;
     }
 
-    public synchronized void add(Sequence<Song> songs, AddMode addMode) {
+    public synchronized void add(final Sequence<Song> songs, final AddMode addMode) {
         if (songs.getLength() == 0) {
             return;
         }
@@ -61,11 +63,7 @@ public class PlayService {
         for (int i = 0; i < songs.getLength(); i++) {
             Song song = songs.get(i);
             log.info("adding: " + song);
-            if (insertIdx < playlist.getLength()) {
-                playlist.insert(song, insertIdx);
-            } else {
-                insertIdx = playlist.add(song);
-            }
+            insertIdx = addSong(song, insertIdx);
             if (i == 0 && (addMode == AddMode.NOW || addMode == AddMode.REPLACE)) {
                 currentSongIndex = insertIdx;
             }
@@ -76,6 +74,15 @@ public class PlayService {
             stopPlaying();
             startPlaying(song, 0, 0);
         }
+    }
+
+    private int addSong(Song song, int insertIdx) {
+        SongAdder songAdder = new SongAdder(song, insertIdx);
+        if (EventQueue.isDispatchThread())
+            songAdder.run();
+        else
+            ApplicationContext.queueCallback(songAdder, /*wait*/ true); // must wait to get the new insertedIdx
+        return songAdder.getNewInsertIdx();
     }
 
     public synchronized void play() {
@@ -193,13 +200,13 @@ public class PlayService {
 
     public void setRadio(boolean radio) {
         if (!radio) { // switch off radio
-            this.radio = radio;
+            this.radio = false;
             return;
         }
         // to enable radio playlist must not be empty
         if (playlist.isEmpty())
             return;
-        this.radio = radio;
+        this.radio = true;
         addNextRadioSong();
     }
 
@@ -295,6 +302,38 @@ public class PlayService {
         if (listener != null)
             listener.exception(track, ex);
         stop();
+    }
+
+
+    /**
+     * This class performs the complicated task of adding a song to the playlist.
+     * Since the playlist is a (Pivot) observable ArrayList, modifications to the
+     * list must be done from the event dispatch thread, so that's why this class
+     * is a Runnable which will be scheduled on EDT in
+     * {@link PlayService#addSong(Song, int)}.
+     */
+    private class SongAdder implements Runnable {
+        private final Song song;
+        private final int insertIdx;
+        private int newInsertIdx;
+
+        private SongAdder(Song song, int insertIdx) {
+            this.song = song;
+            this.insertIdx = insertIdx;
+        }
+
+        @Override public void run() {
+            if (insertIdx < playlist.getLength()) {
+                playlist.insert(song, insertIdx);
+                newInsertIdx = insertIdx;
+            } else {
+                newInsertIdx = playlist.add(song);
+            }
+        }
+
+        public int getNewInsertIdx() {
+            return newInsertIdx;
+        }
     }
 
 
