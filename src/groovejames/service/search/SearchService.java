@@ -288,11 +288,20 @@ public class SearchService {
         }
         for (Scoreable scoreable : scoreables) {
             if (canAdjustScore)
-                scoreable.setScorePercentage((scoreable.getScore() - minScore) / (maxScore - minScore));
+                if (scoreable.getScore() != null)
+                    scoreable.setScorePercentage((scoreable.getScore() - minScore) / (maxScore - minScore));
+                else
+                    scoreable.setScore(0.0);
             if (canAdjustPopularityIndex)
-                scoreable.setPopularityPercentage(((double) (scoreable.getPopularityIndex() - minPopularityIndex)) / ((double) (maxPopularityIndex - minPopularityIndex)));
+                if (scoreable.getPopularityIndex() != null)
+                    scoreable.setPopularityPercentage(((double) (scoreable.getPopularityIndex() - minPopularityIndex)) / ((double) (maxPopularityIndex - minPopularityIndex)));
+                else
+                    scoreable.setPopularityIndex(0L);
             else if (canAdjustPopularity)
-                scoreable.setPopularityPercentage((scoreable.getPopularity() - minPopularity) / (maxPopularity - minPopularity));
+                if (scoreable.getPopularity() != null)
+                    scoreable.setPopularityPercentage((scoreable.getPopularity() - minPopularity) / (maxPopularity - minPopularity));
+                else
+                    scoreable.setPopularity(0.0);
         }
     }
 
