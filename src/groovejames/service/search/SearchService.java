@@ -279,6 +279,9 @@ public class SearchService {
                 if (minPopularity == null || popularity < minPopularity) minPopularity = popularity;
                 if (maxPopularity == null || popularity > maxPopularity) maxPopularity = popularity;
             }
+            if (scoreable instanceof Song) {
+                fixup((Song) scoreable);
+            }
         }
         boolean canAdjustScore = minScore != null && maxScore != null && minScore < maxScore;
         boolean canAdjustPopularityIndex = minPopularityIndex != null && maxPopularityIndex != null && minPopularityIndex < maxPopularityIndex;
@@ -302,6 +305,14 @@ public class SearchService {
                     scoreable.setPopularityPercentage((scoreable.getPopularity() - minPopularity) / (maxPopularity - minPopularity));
                 else
                     scoreable.setPopularity(0.0);
+        }
+    }
+
+    private void fixup(Song song) {
+        if (song.getEstimateDuration() != null) {
+            if (song.getEstimateDuration() <= 0 || song.getEstimateDuration() >= 4096.0 /* unreasonable value (1:08h) */) {
+                song.setEstimateDuration(null);
+            }
         }
     }
 

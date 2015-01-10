@@ -1,4 +1,5 @@
 r27 (unreleased)
+  - fixed display of wrong song lengths (Grooveshark's song lengths are unreliable unless you play the song)
   - fixed problem when downloading many files, wait interval got longer and longer
   - switched from Ant to Gradle
   - updated libs (Pivot 2.0 -> 2.0.4, log4j 1.2.15 -> 1.2.17, json-simple 1.1 -> 1.1.1)
