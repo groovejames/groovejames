@@ -1,4 +1,4 @@
-r27 (unreleased)
+r27 (2015/01/11)
   - nicer display of album image in playlist
   - fixed display of wrong song lengths (Grooveshark's song lengths are unreliable unless you play the song)
   - fixed problem when downloading many files, wait interval got longer and longer
