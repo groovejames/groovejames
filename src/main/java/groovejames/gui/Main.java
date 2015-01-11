@@ -76,6 +76,7 @@ import org.apache.pivot.wtk.PushButton;
 import org.apache.pivot.wtk.ScrollPane;
 import org.apache.pivot.wtk.SplitPane;
 import org.apache.pivot.wtk.SplitPaneListener;
+import org.apache.pivot.wtk.StackPane;
 import org.apache.pivot.wtk.TabPane;
 import org.apache.pivot.wtk.TabPaneListener;
 import org.apache.pivot.wtk.TableView;
@@ -130,12 +131,13 @@ public class Main extends AbstractApplication {
     @BXML private PushButton searchButton;
     @BXML private ClickableTableView downloadsTable;
     @BXML private ClickableTableView playerTable;
+    @BXML private StackPane nowPlayingStackPane;
     @BXML private Label nowPlayingLabel;
     @BXML private Label nowPlayingArtist;
     @BXML private Label nowPlayingSongname;
-    @BXML private Label nowPlayingFromTheAlbum;
     @BXML private Label nowPlayingAlbum;
     @BXML private ImageView nowPlayingImage;
+    @BXML private ImageView nowPlayingImageGradient;
     @BXML private Meter playProgress;
     @BXML private Meter playDownloadProgress;
     @BXML private PushButton songPlayPauseButton;
@@ -299,11 +301,11 @@ public class Main extends AbstractApplication {
         nowPlayingArtist.setText("");
         nowPlayingSongname.setVisible(false);
         nowPlayingSongname.setText("");
-        nowPlayingFromTheAlbum.setVisible(false);
         nowPlayingAlbum.setVisible(false);
         nowPlayingAlbum.setText("");
         nowPlayingImage.setVisible(false);
         nowPlayingImage.setImage((Image) null);
+        nowPlayingImageGradient.setVisible(false);
         playDownloadProgress.setVisible(false);
         playDownloadProgress.setPercentage(0.0);
         playProgress.setVisible(false);
@@ -530,7 +532,7 @@ public class Main extends AbstractApplication {
 
         final SaturationDecorator decorator = new SaturationDecorator(1.0f);
         nowPlayingImage.getDecorators().add(decorator);
-        nowPlayingImage.getComponentMouseListeners().add(new ComponentMouseListener() {
+        nowPlayingStackPane.getComponentMouseListeners().add(new ComponentMouseListener() {
             @Override
             public boolean mouseMove(Component component, int x, int y) {
                 return false;
@@ -539,18 +541,18 @@ public class Main extends AbstractApplication {
             @Override
             public void mouseOver(Component component) {
                 decorator.setMultiplier(0.5f);
-                nowPlayingImage.setCursor(Cursor.HAND);
+                nowPlayingStackPane.setCursor(Cursor.HAND);
                 nowPlayingImage.repaint();
             }
 
             @Override
             public void mouseOut(Component component) {
                 decorator.setMultiplier(1.0f);
-                nowPlayingImage.setCursor(null);
+                nowPlayingStackPane.setCursor(null);
                 nowPlayingImage.repaint();
             }
         });
-        nowPlayingImage.getComponentMouseButtonListeners().add(new ComponentMouseButtonListener.Adapter() {
+        nowPlayingStackPane.getComponentMouseButtonListeners().add(new ComponentMouseButtonListener.Adapter() {
             @Override public boolean mouseClick(Component component, Mouse.Button button, int x, int y, int count) {
                 Image image = nowPlayingImage.getImage();
                 if (image != null && image instanceof Picture) {
@@ -651,16 +653,15 @@ public class Main extends AbstractApplication {
         nowPlayingSongname.setVisible(true);
         nowPlayingSongname.setText(track.getSongName());
         if (!isEmpty(track.getAlbumName())) {
-            nowPlayingFromTheAlbum.setVisible(true);
             nowPlayingAlbum.setVisible(true);
-            nowPlayingAlbum.setText("«" + track.getAlbumName() + "»");
+            nowPlayingAlbum.setText("from «" + track.getAlbumName() + "»");
         } else {
-            nowPlayingFromTheAlbum.setVisible(false);
             nowPlayingAlbum.setVisible(false);
             nowPlayingAlbum.setText("");
         }
         nowPlayingImage.setVisible(true);
         nowPlayingImage.setImage(imageLoader.getImageIgnoringCache(track.getSong(), nowPlayingImage));
+        nowPlayingImageGradient.setVisible(true);
         playDownloadProgress.setVisible(true);
         playProgress.setVisible(true);
     }
