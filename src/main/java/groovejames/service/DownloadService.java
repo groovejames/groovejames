@@ -265,7 +265,7 @@ public class DownloadService {
             Thread.sleep(1000);
             String songName = track.getSongName();
             songName = songName.contains("track1") ? "track1" : songName.contains("track2") ? "track2" : songName;
-            File file = new File(format("test/groovejames/mp3player/%s.mp3", songName));
+            File file = new File(format("src/test/resources/%s.mp3", songName));
             Store store = track.getStore();
             OutputStream storeOutputStream = store.getOutputStream();
             OutputStream outputStream = new MonitoredOutputStream(storeOutputStream);

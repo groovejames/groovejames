@@ -11,8 +11,8 @@ import java.io.InputStreamReader;
 
 public class MP3PlayerTest {
 
-    public static final File TRACK1 = new File("test/groovejames/mp3player/track1.mp3");
-    public static final File TRACK2 = new File("test/groovejames/mp3player/track2.mp3");
+    public static final File TRACK1 = new File("src/test/resources/track1.mp3");
+    public static final File TRACK2 = new File("src/test/resources/track2.mp3");
 
     private static volatile PlayThread playThread;
 

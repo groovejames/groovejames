@@ -11,9 +11,6 @@ compileTestJava.options.encoding = 'utf-8'
 compileTestJava.options.compilerArgs << "-Xlint:unchecked"
 compileTestJava.sourceCompatibility = '1.6'
 compileTestJava.targetCompatibility = '1.6'
-sourceSets.main.java.srcDir 'src'
-sourceSets.test.java.srcDir 'test'
-
 
 repositories { mavenCentral() }
 
@@ -36,7 +33,7 @@ dependencies {
 
 
 task updateVersionProperties << {
-    file('src/groovejames/gui/build.properties').withWriter { w ->
+    file('src/main/resources/groovejames/gui/build.properties').withWriter { w ->
         w << "build.number=$version" << "\n" << "build.date=" << new Date()
     }
 }
@@ -44,15 +41,15 @@ compileJava.dependsOn updateVersionProperties
 
 // Copy resources files from src (*.bxml files) to classes dir.
 // Note that we don't mark src as resource folder as it causes problems with IntelliJ
-compileJava {
-    doLast {
-        copy {
-            from "src"
-            into sourceSets.main.output.classesDir
-            exclude "**/*.java"
-        }
-    }
-}
+//compileJava {
+//    doLast {
+//        copy {
+//            from "src"
+//            into sourceSets.main.output.classesDir
+//            exclude "**/*.java"
+//        }
+//    }
+//}
 
 
 jar {
