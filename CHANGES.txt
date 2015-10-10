@@ -1,5 +1,6 @@
 r28 (unreleased)
-  -
+  - since Grooveshark is dead, GrooveJames now uses music.163.com aka NetEase
+  - now requires Java7 or higher (instead of Java6)
 
 r27 (2015/01/11)
   - nicer display of album image in playlist

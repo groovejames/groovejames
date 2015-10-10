@@ -19,8 +19,10 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
@@ -175,7 +177,7 @@ public class Util {
 
     public static boolean containsIgnoringCase(String s, String searchString) {
         return searchString == null || searchString.isEmpty()
-            || (s != null && (!s.isEmpty() && s.toLowerCase().contains(searchString.toLowerCase())));
+                || (s != null && (!s.isEmpty() && s.toLowerCase().contains(searchString.toLowerCase())));
     }
 
     public static int compareNullSafe(String s1, String s2) {
@@ -304,7 +306,7 @@ public class Util {
      *
      * @param file file or directory to delete, can be <code>null</code>
      * @return <code>true</code> if the file or directory was deleted, otherwise
-     *         <code>false</code>
+     * <code>false</code>
      */
     public static boolean deleteQuietly(File file) {
         if (file == null) {
@@ -448,6 +450,22 @@ public class Util {
             return URLEncoder.encode(s, "UTF-8");
         } catch (UnsupportedEncodingException ex) {
             throw new RuntimeException("value: " + s, ex);
+        }
+    }
+
+    /**
+     * strip path and query from url so that only protocol, userinfo,
+     * host and port remains (that is, the "authority").
+     *
+     * @return stripped url or {@code null} if the given url is malformed
+     */
+    public static String stripPath(String url) {
+        if (url == null) return null;
+        try {
+            URL u = new URL(url);
+            return u.getProtocol() + "://" + u.getAuthority();
+        } catch (MalformedURLException e) {
+            return null;
         }
     }
 

@@ -5,12 +5,12 @@ version '28'
 
 compileJava.options.encoding = 'utf-8'
 compileJava.options.compilerArgs << "-Xlint:unchecked"
-compileJava.sourceCompatibility = '1.6'
-compileJava.targetCompatibility = '1.6'
+compileJava.sourceCompatibility = '1.7'
+compileJava.targetCompatibility = '1.7'
 compileTestJava.options.encoding = 'utf-8'
 compileTestJava.options.compilerArgs << "-Xlint:unchecked"
-compileTestJava.sourceCompatibility = '1.6'
-compileTestJava.targetCompatibility = '1.6'
+compileTestJava.sourceCompatibility = '1.7'
+compileTestJava.targetCompatibility = '1.7'
 
 repositories { mavenCentral() }
 
@@ -29,6 +29,9 @@ dependencies {
     compile 'org.apache.pivot:pivot-core:2.0.4'
     compile 'org.apache.pivot:pivot-wtk:2.0.4'
     compile 'org.apache.pivot:pivot-wtk-terra:2.0.4'
+    compile 'com.mashape.unirest:unirest-java:1.4.7'
+    //compile 'com.fasterxml.jackson.core:jackson-core:2.6.2'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.6.2'
 }
 
 

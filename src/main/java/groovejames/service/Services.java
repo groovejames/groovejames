@@ -2,6 +2,7 @@ package groovejames.service;
 
 import groovejames.gui.clipboard.WatchClipboardTask;
 import groovejames.model.Settings;
+import groovejames.service.netease.NetEaseService;
 import groovejames.service.search.SearchService;
 
 import java.io.File;
@@ -15,6 +16,7 @@ import static groovejames.util.Util.isEmpty;
 public class Services {
 
     private static final HttpClientService httpClientService = new HttpClientService();
+    private static final NetEaseService neteaseService = new NetEaseService(httpClientService);
     private static final DownloadService downloadService = new DownloadService(httpClientService);
     private static final PlayService playService = new PlayService(downloadService);
     private static final WatchClipboardTask watchClipboardTask = new WatchClipboardTask();
@@ -26,6 +28,11 @@ public class Services {
     public static HttpClientService getHttpClientService() {
         return httpClientService;
     }
+
+    /**
+     * scope: singleton, init:eager.
+     */
+    public static NetEaseService getNeteaseService() { return neteaseService; }
 
     /**
      * scope: singleton, init:eager.
@@ -45,7 +52,7 @@ public class Services {
      * scope: prototype.
      */
     public static SearchService getSearchService() throws IOException {
-        return new SearchService(getGrooveshark());
+        return new SearchService(neteaseService);
     }
 
     /**

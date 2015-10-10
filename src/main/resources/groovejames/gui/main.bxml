@@ -29,6 +29,7 @@
                                 <rows>
                                     <TablePane.Row>
                                         <TextInput bxml:id="searchField"
+                                                   text="beck"
                                                    prompt="%main.searchField.prompt"
                                                    styles="%main.searchField.styles"/>
                                         <PushButton bxml:id="searchButton" styles="%main.searchButton.styles">

@@ -1,27 +1,25 @@
 package groovejames.service.search;
 
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
 import groovejames.model.Album;
 import groovejames.model.Artist;
-import groovejames.model.AutocompleteType;
-import groovejames.model.Country;
 import groovejames.model.ItemByPageNameResult;
 import groovejames.model.Playlist;
 import groovejames.model.Scoreable;
-import groovejames.model.SearchAlbumsResultType;
-import groovejames.model.SearchArtistsResultType;
-import groovejames.model.SearchPlaylistsResultType;
-import groovejames.model.SearchSongsResultType;
-import groovejames.model.SearchUsersResultType;
 import groovejames.model.Song;
-import groovejames.model.Songs;
 import groovejames.model.StreamKey;
 import groovejames.model.User;
-import groovejames.service.Grooveshark;
+import groovejames.service.netease.NESong;
+import groovejames.service.netease.NESongDetails;
+import groovejames.service.netease.NESongDetailsResultResponse;
+import groovejames.service.netease.NetEaseException;
+import groovejames.service.netease.NetEaseService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -35,19 +33,27 @@ public class SearchService {
 
     private static final Log log = LogFactory.getLog(SearchService.class);
 
-    private final Grooveshark grooveshark;
+    private final NetEaseService netEaseService;
 
-    public SearchService(Grooveshark grooveshark) {
-        this.grooveshark = grooveshark;
+    public SearchService(NetEaseService netEaseService) {
+        this.netEaseService = netEaseService;
     }
 
     public List<String> getAutocomplete(String query) throws Exception {
-        Artist[] autocomplete = grooveshark.getAutocomplete(AutocompleteType.artist, query);
-        ArrayList<String> result = new ArrayList<String>(autocomplete.length);
-        for (Artist artist : autocomplete) {
-            result.add(artist.getArtistName());
-        }
-        return result;
+        return Collections.emptyList();
+    }
+
+    public NESongDetails getSongDetails(long songID) throws Exception {
+        NESongDetails songDetails = netEaseService.getSongDetails(songID);
+
+        HttpResponse<NESongDetailsResultResponse> r = Unirest.post("http://music.163.com/api/song/detail")
+                .header("Referer", "http://music.163.com")
+                .field("ids", "[" + songID + "]")
+                .asObject(NESongDetailsResultResponse.class);
+        NESongDetailsResultResponse result = r.getBody();
+        if (result.code != 200) throw new NetEaseException("error getting song details: " + result.code);
+        if (result.songs == null || result.songs.length == 0) throw new NetEaseException("song id not found: " + songID);
+        return result.songs[0];
     }
 
     public Song[] searchSongs(SearchParameter searchParameter) throws Exception {
@@ -57,72 +63,53 @@ public class SearchService {
             case General: {
                 // search for song names via string search
                 String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
-                result = grooveshark.getResultsFromSearch(SearchSongsResultType.Songs, searchString);
+                List<NESong> songs = netEaseService.searchSongs(searchString);
+                result = new Song[songs.size()];
+                int i = 0;
+                for (NESong neSong : songs) {
+                    Song song = new Song();
+                    song.setName(neSong.name);
+                    song.setSongName(neSong.name);
+                    song.setSongID(neSong.id);
+                    song.setAlbumName(neSong.album.name);
+                    song.setAlbumID(neSong.album.id);
+                    song.setArtistName(neSong.artists[0].name);
+                    song.setArtistID(neSong.artists[0].id);
+                    result[i++] = song;
+                }
                 break;
             }
             case Album: {
                 // search for songs of the given album
                 Long albumID = ((AlbumSearch) searchParameter).getAlbumID();
-                Song[] songs = grooveshark.albumGetAllSongs(albumID);
-                result = filterDuplicateSongs(songs);
+                Song[] songs = new Song[0];
+                result = songs;
                 break;
             }
             case Artist: {
                 // search for all songs of the given artist
                 Long artistID = getArtistID(searchParameter);
-                Song[] songs = artistID != null ? grooveshark.artistGetArtistSongs(artistID) : new Song[0];
+                Song[] songs = new Song[0];
                 result = filterDuplicateSongs(songs);
                 break;
             }
             case User: {
                 // search for library songs of the given user
                 String userID = ((UserSearch) searchParameter).getUserID().toString();
-                java.util.ArrayList<Song> allSongs = new java.util.ArrayList<Song>();
-                int page = 0;
-                boolean hasMore = true;
-                while (hasMore) {
-                    Songs songs = grooveshark.userGetSongsInLibrary(userID, page);
-                    allSongs.addAll(Arrays.asList(songs.getSongs()));
-                    hasMore = songs.isHasMore();
-                    page++;
-                }
-                // search for favorites, too
-                Song[] favorites = grooveshark.getFavorites(userID, SearchSongsResultType.Songs);
-                allSongs.addAll(Arrays.asList(favorites));
-                result = filterDuplicateSongs(allSongs.toArray(new Song[allSongs.size()]));
+                Song[] songs = new Song[0];
+                result = filterDuplicateSongs(songs);
                 break;
             }
             case Playlist: {
                 Long playlistID = ((PlaylistSearch) searchParameter).getPlaylistID();
-                Songs songs = grooveshark.playlistGetSongs(playlistID);
-                result = songs.getSongs();
-                // renumber tracks in playlist order
-                long trackNum = 1L;
-                for (Song song : result) {
-                    song.setTrackNum(trackNum++);
-                }
+                Song[] songs = new Song[0];
+                result = filterDuplicateSongs(songs);
                 break;
             }
             case Songs: {
                 Set<Long> songIDs = ((SongSearch) searchParameter).getSongIDs();
-                List<Song> songs = new ArrayList<Song>();
-                for (long songID : songIDs) {
-                    try {
-                        String token = grooveshark.getTokenForSong(songID, Country.DEFAULT_COUNTRY);
-                        Song song = grooveshark.getSongFromToken(token, Country.DEFAULT_COUNTRY);
-                        if (song != null && song.getSongID() != null) {
-                            songs.add(song);
-                        }
-                    } catch (Exception ex) {
-                        log.error("cannot convert songID=" + songID + " to song", ex);
-                    }
-                }
-                result = songs.toArray(new Song[songs.size()]);
-                // renumber tracks in playlist order
-                long trackNum = 1L;
-                for (Song song : result) {
-                    song.setTrackNum(trackNum++);
-                }
+                Song[] songs = new Song[0];
+                result = filterDuplicateSongs(songs);
                 break;
             }
             default: {
@@ -134,17 +121,7 @@ public class SearchService {
     }
 
     public StreamKey getStreamKeyFromSongID(long songID) throws Exception {
-        Exception lastEx = null;
-        for (int i = 1, maxRetries = 5; i <= maxRetries; i++) {
-            try {
-                return grooveshark.getStreamKeyFromSongIDEx(songID, /*type*/ 0, /*mobile*/ false, /*prefetch*/ false, Country.DEFAULT_COUNTRY);
-            } catch (Exception ex) {
-                lastEx = ex;
-                log.warn("error calling getStreamKeyFromSongIDEx retry #" + i + "/" + maxRetries + ": " + ex);
-                Thread.sleep(300);
-            }
-        }
-        throw lastEx;
+        return new StreamKey("dummy", "ip");
     }
 
     public Song autoplayGetSong(Iterable<Song> songsAlreadySeen) throws Exception {
@@ -159,15 +136,16 @@ public class SearchService {
         }
         Map<String, String> seedArtists = new HashMap<String, String>();
         seedArtists.put(recentArtistIDs.iterator().next().toString(), "p");
-        return grooveshark.autoplayGetSong(
-            songIDsAlreadySeen,
-            recentArtistIDs,
-            /*minDuration*/ 60,
-            /*maxDuration*/ 1500,
-            seedArtists,
-            /*frowns*/ new ArrayList<Long>(),
-            /*songQueueID*/ 0,
-            Country.DEFAULT_COUNTRY);
+//        return grooveshark.autoplayGetSong(
+//            songIDsAlreadySeen,
+//            recentArtistIDs,
+//            /*minDuration*/ 60,
+//            /*maxDuration*/ 1500,
+//            seedArtists,
+//            /*frowns*/ new ArrayList<Long>(),
+//            /*songQueueID*/ 0,
+//            Country.DEFAULT_COUNTRY);
+        return null;
     }
 
 
@@ -177,7 +155,7 @@ public class SearchService {
         switch (searchType) {
             case General:
                 String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
-                result = grooveshark.getResultsFromSearch(SearchArtistsResultType.Artists, searchString);
+                result = new Artist[0];
                 break;
             default:
                 throw new IllegalArgumentException("invalid search type: " + searchType);
@@ -192,12 +170,12 @@ public class SearchService {
         switch (searchType) {
             case General:
                 String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
-                result = grooveshark.getResultsFromSearch(SearchAlbumsResultType.Albums, searchString);
+                result = new Album[0];
                 break;
             case Artist:
                 Long artistID = getArtistID(searchParameter);
                 String artistName = getArtistName(searchParameter);
-                result = artistID != null ? grooveshark.artistGetAllAlbums(artistID) : new Album[0];
+                result = new Album[0];
                 // sometimes grooveshark doesn't send artist names when we search by artistID, so:
                 for (Album album : result) {
                     if (isEmpty(album.getArtistName())) {
@@ -218,7 +196,7 @@ public class SearchService {
         switch (searchType) {
             case General:
                 String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
-                result = grooveshark.getResultsFromSearch(SearchUsersResultType.Users, searchString);
+                result = new User[0];
                 break;
             default:
                 throw new IllegalArgumentException("invalid search type: " + searchType);
@@ -233,11 +211,11 @@ public class SearchService {
         switch (searchType) {
             case General:
                 String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
-                result = grooveshark.getResultsFromSearch(SearchPlaylistsResultType.Playlists, searchString);
+                result = new Playlist[0];
                 break;
             case User:
                 Long userID = ((UserSearch) searchParameter).getUserID();
-                result = grooveshark.userGetPlaylists(userID);
+                result = new Playlist[0];
                 break;
             default:
                 throw new IllegalArgumentException("invalid search type: " + searchType);
@@ -320,7 +298,7 @@ public class SearchService {
         if (searchParameter instanceof ArtistURLNameSearch) {
             // if we only got an url page name then we have to search for the artist ID first, using getItemByPageName()
             String artistURLName = ((ArtistURLNameSearch) searchParameter).getArtistURLName();
-            ItemByPageNameResult itemByPageName = grooveshark.getItemByPageName(artistURLName);
+            ItemByPageNameResult itemByPageName = null; //grooveshark.getItemByPageName(artistURLName);
             Artist artist = itemByPageName.getArtist();
             if (artist == null) {
                 log.error("no artist found for name=" + artistURLName);
@@ -344,4 +322,5 @@ public class SearchService {
             throw new IllegalArgumentException("illegal searchParameter type: " + searchParameter.getClass());
         }
     }
+
 }

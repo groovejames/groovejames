@@ -4,9 +4,12 @@ import groovejames.model.FileStore;
 import groovejames.model.MemoryStore;
 import groovejames.model.Song;
 import groovejames.model.Store;
-import groovejames.model.StreamKey;
 import groovejames.model.Track;
+import groovejames.service.netease.NEPlayDetails;
+import groovejames.service.netease.NESongDetails;
+import groovejames.service.netease.NetEaseException;
 import groovejames.util.Util;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
@@ -14,10 +17,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.BasicManagedEntity;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.protocol.HTTP;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.HttpClientUtils;
 import org.apache.pivot.collections.ArrayList;
 
 import javax.swing.filechooser.FileSystemView;
@@ -26,6 +27,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -158,7 +164,7 @@ public class DownloadService {
         private final Track track;
         private final int initialDelay;
         private final DownloadListener downloadListener;
-        private volatile HttpPost httpPost;
+        private volatile HttpGet httpGet;
         private volatile boolean aborted;
 
         public DownloadTask(Track track, int initialDelay, DownloadListener downloadListener) {
@@ -177,16 +183,15 @@ public class DownloadService {
                 log.info("start download track " + track);
                 track.setStatus(Track.Status.INITIALIZING);
                 fireDownloadStatusChanged();
-                StreamKey streamKey = Services.getSearchService().getStreamKeyFromSongID(track.getSong().getSongID());
-                track.setStatus(Track.Status.DOWNLOADING);
+                NESongDetails songDetails = Services.getSearchService().getSongDetails(track.getSong().getSongID());
                 track.setStartDownloadTime(System.currentTimeMillis());
-                if (streamKey.getuSecs() > 0)
-                    track.getSong().setEstimateDuration(streamKey.getuSecs() / 1000000.0);
+                if (songDetails.duration > 0)
+                    track.getSong().setEstimateDuration(songDetails.duration / 1000.0);
                 fireDownloadStatusChanged();
                 if (Boolean.getBoolean("mockNet"))
-                    fakedownload(streamKey);
+                    fakedownload(songDetails);
                 else
-                    download(streamKey);
+                    download(songDetails);
                 track.setStatus(Track.Status.FINISHED);
                 fireDownloadStatusChanged();
                 log.info("finished download track " + track);
@@ -207,30 +212,30 @@ public class DownloadService {
                     currentlyRunningDownloads.remove(this);
                 }
                 synchronized (this) {
-                    httpPost = null;
+                    httpGet = null;
                 }
                 fireDownloadStatusChanged();
             }
         }
 
         public synchronized boolean abort() {
-            if (httpPost != null) {
+            if (httpGet != null) {
                 aborted = true;
-                httpPost.abort();
+                httpGet.abort();
                 return true;
             }
             return false;
         }
 
-        private void download(StreamKey streamKey) throws IOException {
-            String url = format("http://%s/stream.php", streamKey.getIp());
-            httpPost = new HttpPost(url);
-            httpPost.setHeader(HTTP.CONTENT_TYPE, "application/x-www-form-urlencoded");
-            httpPost.setHeader(HTTP.CONN_KEEP_ALIVE, "300");
-            httpPost.setEntity(new StringEntity("streamKey=" + streamKey.getStreamKey()));
-            HttpResponse httpResponse = httpClientService.getHttpClient().execute(httpPost);
+        private void download(NESongDetails songDetails) throws IOException {
+            String url = createDownloadUrl(songDetails);
+            httpGet = new HttpGet(url);
+            HttpResponse httpResponse = httpClientService.getHttpClient().execute(httpGet);
             HttpEntity httpEntity = httpResponse.getEntity();
+            track.setStatus(Track.Status.DOWNLOADING);
+            fireDownloadStatusChanged();
             OutputStream outputStream = null;
+            InputStream instream = null;
             try {
                 StatusLine statusLine = httpResponse.getStatusLine();
                 int statusCode = statusLine.getStatusCode();
@@ -239,7 +244,7 @@ public class DownloadService {
                     Store store = track.getStore();
                     OutputStream storeOutputStream = store.getOutputStream();
                     outputStream = new MonitoredOutputStream(storeOutputStream);
-                    InputStream instream = httpEntity.getContent();
+                    instream = httpEntity.getContent();
                     byte[] buf = new byte[downloadBufferSize];
                     int l;
                     while ((l = instream.read(buf)) != -1) {
@@ -252,16 +257,17 @@ public class DownloadService {
                     store.writeTrackInfo(track);
                 } else {
                     throw new HttpResponseException(statusCode,
-                        format("%s: %d %s", url, statusCode, statusLine.getReasonPhrase()));
+                            format("%s: %d %s", url, statusCode, statusLine.getReasonPhrase()));
                 }
             } finally {
-                close(httpEntity);
+                Util.closeQuietly(instream, track.getStore().getDescription());
                 Util.closeQuietly(outputStream, track.getStore().getDescription());
             }
         }
 
-        private void fakedownload(StreamKey streamKey) throws InterruptedException, IOException {
-            httpPost = new HttpPost(format("http://%s/stream.php", streamKey.getIp()));
+        private void fakedownload(NESongDetails songDetails) throws InterruptedException, IOException {
+            String url = createDownloadUrl(songDetails);
+            httpGet = new HttpGet(url);
             Thread.sleep(1000);
             String songName = track.getSongName();
             songName = songName.contains("track1") ? "track1" : songName.contains("track2") ? "track2" : songName;
@@ -291,6 +297,51 @@ public class DownloadService {
             }
         }
 
+        private Random random = new Random();
+
+        private String createDownloadUrl(NESongDetails songDetails) {
+            // TODO: move to NetEaseService
+            NEPlayDetails playDetails = findBestPlayDetails(songDetails);
+            if (playDetails == null) {
+                if (songDetails.mp3Url == null || songDetails.mp3Url.isEmpty())
+                    throw new NetEaseException("no download location for song id " + songDetails.id);
+                return songDetails.mp3Url;
+            }
+            String encryptedId = encryptId(playDetails);
+            String baseUrl = Util.stripPath(songDetails.mp3Url);
+            if (baseUrl == null) baseUrl = "http://m1.music.126.net";
+            return String.format("%s/%s/%s.%s", baseUrl, encryptedId, playDetails.dfsId, playDetails.extension);
+        }
+
+        private NEPlayDetails findBestPlayDetails(NESongDetails songDetails) {
+            if (songDetails.hMusic != null) return songDetails.hMusic;
+            if (songDetails.mMusic != null) return songDetails.mMusic;
+            if (songDetails.lMusic != null) return songDetails.lMusic;
+            return songDetails.bMusic;
+        }
+
+        private String encryptId(NEPlayDetails playDetails) {
+            try {
+                // from https://github.com/yanunon/NeteaseCloudMusic
+                byte[] byte1 = "3go8&$8*3*3h0k(2)2".getBytes("US-ASCII");
+                byte[] byte2 = String.valueOf(playDetails.dfsId).getBytes("US-ASCII");
+                int byte1_len = byte1.length;
+                for (int i = 0; i < byte2.length; i++) {
+                    byte2[i] = (byte) (byte2[i] ^ byte1[i % byte1_len]);
+                }
+                MessageDigest m = MessageDigest.getInstance("MD5");
+                m.update(byte2);
+                String result = Base64.encodeBase64String(m.digest());
+                result = result.replace('/', '_');
+                result = result.replace('+', '-');
+                return result;
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         private void fireDownloadStatusChanged() {
             if (downloadListener != null)
                 downloadListener.statusChanged(track);
@@ -299,19 +350,6 @@ public class DownloadService {
         private void fireDownloadBytesChanged() {
             if (downloadListener != null)
                 downloadListener.downloadedBytesChanged(track);
-        }
-
-        private void close(HttpEntity httpEntity) {
-            try {
-                httpEntity.consumeContent();
-            } catch (IOException ignore) {
-                // ignored
-            }
-            try {
-                ((BasicManagedEntity) httpEntity).abortConnection();
-            } catch (IOException ignore) {
-                // ignored
-            }
         }
 
 
