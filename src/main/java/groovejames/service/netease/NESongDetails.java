@@ -9,6 +9,6 @@ public class NESongDetails {
     public double popularity;
     public double score;
     public int fee;
-    public NEPlayDetails bMusic, lMusic, mMusic, hMusic;
+    public NEStreamInfo bMusic, lMusic, mMusic, hMusic;
 }
 

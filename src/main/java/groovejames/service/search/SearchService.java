@@ -63,7 +63,7 @@ public class SearchService {
             case General: {
                 // search for song names via string search
                 String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
-                List<NESong> songs = netEaseService.searchSongs(searchString);
+                List<NESong> songs = netEaseService.searchSongs(searchString, false);
                 result = new Song[songs.size()];
                 int i = 0;
                 for (NESong neSong : songs) {

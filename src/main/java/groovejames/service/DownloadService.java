@@ -5,8 +5,8 @@ import groovejames.model.MemoryStore;
 import groovejames.model.Song;
 import groovejames.model.Store;
 import groovejames.model.Track;
-import groovejames.service.netease.NEPlayDetails;
 import groovejames.service.netease.NESongDetails;
+import groovejames.service.netease.NEStreamInfo;
 import groovejames.service.netease.NetEaseException;
 import groovejames.util.Util;
 import org.apache.commons.codec.binary.Base64;
@@ -18,7 +18,6 @@ import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.HttpClientUtils;
 import org.apache.pivot.collections.ArrayList;
 
 import javax.swing.filechooser.FileSystemView;
@@ -28,10 +27,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -62,7 +59,7 @@ public class DownloadService {
     private final ExecutorService executorService;
     private final ExecutorService executorServiceForPlay;
     private final HttpClientService httpClientService;
-    private final ArrayList<DownloadTask> currentlyRunningDownloads = new ArrayList<DownloadTask>();
+    private final ArrayList<DownloadTask> currentlyRunningDownloads = new ArrayList<>();
     private final FilenameSchemeParser filenameSchemeParser;
 
     private File downloadDir;
@@ -153,7 +150,7 @@ public class DownloadService {
     public void shutdown() {
         executorService.shutdownNow();
         executorServiceForPlay.shutdownNow();
-        ArrayList<DownloadTask> downloadsCopy = new ArrayList<DownloadTask>(currentlyRunningDownloads);
+        ArrayList<DownloadTask> downloadsCopy = new ArrayList<>(currentlyRunningDownloads);
         for (DownloadTask downloadTask : downloadsCopy) {
             cancelDownload(downloadTask, true);
         }
@@ -297,34 +294,32 @@ public class DownloadService {
             }
         }
 
-        private Random random = new Random();
-
         private String createDownloadUrl(NESongDetails songDetails) {
             // TODO: move to NetEaseService
-            NEPlayDetails playDetails = findBestPlayDetails(songDetails);
-            if (playDetails == null) {
+            NEStreamInfo streamInfo = findBestStreamInfo(songDetails);
+            if (streamInfo == null) {
                 if (songDetails.mp3Url == null || songDetails.mp3Url.isEmpty())
                     throw new NetEaseException("no download location for song id " + songDetails.id);
                 return songDetails.mp3Url;
             }
-            String encryptedId = encryptId(playDetails);
+            String encryptedId = encryptId(streamInfo);
             String baseUrl = Util.stripPath(songDetails.mp3Url);
             if (baseUrl == null) baseUrl = "http://m1.music.126.net";
-            return String.format("%s/%s/%s.%s", baseUrl, encryptedId, playDetails.dfsId, playDetails.extension);
+            return String.format("%s/%s/%s.%s", baseUrl, encryptedId, streamInfo.dfsId, streamInfo.extension);
         }
 
-        private NEPlayDetails findBestPlayDetails(NESongDetails songDetails) {
+        private NEStreamInfo findBestStreamInfo(NESongDetails songDetails) {
             if (songDetails.hMusic != null) return songDetails.hMusic;
             if (songDetails.mMusic != null) return songDetails.mMusic;
             if (songDetails.lMusic != null) return songDetails.lMusic;
             return songDetails.bMusic;
         }
 
-        private String encryptId(NEPlayDetails playDetails) {
+        private String encryptId(NEStreamInfo streamInfo) {
             try {
                 // from https://github.com/yanunon/NeteaseCloudMusic
                 byte[] byte1 = "3go8&$8*3*3h0k(2)2".getBytes("US-ASCII");
-                byte[] byte2 = String.valueOf(playDetails.dfsId).getBytes("US-ASCII");
+                byte[] byte2 = String.valueOf(streamInfo.dfsId).getBytes("US-ASCII");
                 int byte1_len = byte1.length;
                 for (int i = 0; i < byte2.length; i++) {
                     byte2[i] = (byte) (byte2[i] ^ byte1[i % byte1_len]);
@@ -335,9 +330,7 @@ public class DownloadService {
                 result = result.replace('/', '_');
                 result = result.replace('+', '-');
                 return result;
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(e);
-            } catch (NoSuchAlgorithmException e) {
+            } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
                 throw new RuntimeException(e);
             }
         }

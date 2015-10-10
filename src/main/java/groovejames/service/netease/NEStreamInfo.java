@@ -1,6 +1,6 @@
 package groovejames.service.netease;
 
-public class NEPlayDetails {
+public class NEStreamInfo {
     public long dfsId;
     public String extension;
     public long size; // bytes
