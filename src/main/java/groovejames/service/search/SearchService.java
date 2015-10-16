@@ -1,20 +1,17 @@
 package groovejames.service.search;
 
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.Unirest;
 import groovejames.model.Album;
 import groovejames.model.Artist;
-import groovejames.model.ItemByPageNameResult;
 import groovejames.model.Playlist;
 import groovejames.model.Scoreable;
+import groovejames.model.SearchResult;
 import groovejames.model.Song;
-import groovejames.model.StreamKey;
+import groovejames.model.StreamInfo;
 import groovejames.model.User;
+import groovejames.service.netease.INetEaseService;
 import groovejames.service.netease.NESong;
 import groovejames.service.netease.NESongDetails;
-import groovejames.service.netease.NESongDetailsResultResponse;
-import groovejames.service.netease.NetEaseException;
-import groovejames.service.netease.NetEaseService;
+import groovejames.service.netease.NESongSearchResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -33,9 +30,9 @@ public class SearchService {
 
     private static final Log log = LogFactory.getLog(SearchService.class);
 
-    private final NetEaseService netEaseService;
+    private final INetEaseService netEaseService;
 
-    public SearchService(NetEaseService netEaseService) {
+    public SearchService(INetEaseService netEaseService) {
         this.netEaseService = netEaseService;
     }
 
@@ -43,30 +40,27 @@ public class SearchService {
         return Collections.emptyList();
     }
 
-    public NESongDetails getSongDetails(long songID) throws Exception {
+    public StreamInfo getStreamInfo(long songID) throws Exception {
         NESongDetails songDetails = netEaseService.getSongDetails(songID);
-
-        HttpResponse<NESongDetailsResultResponse> r = Unirest.post("http://music.163.com/api/song/detail")
-                .header("Referer", "http://music.163.com")
-                .field("ids", "[" + songID + "]")
-                .asObject(NESongDetailsResultResponse.class);
-        NESongDetailsResultResponse result = r.getBody();
-        if (result.code != 200) throw new NetEaseException("error getting song details: " + result.code);
-        if (result.songs == null || result.songs.length == 0) throw new NetEaseException("song id not found: " + songID);
-        return result.songs[0];
+        String downloadUrl = netEaseService.getDownloadUrl(songDetails);
+        return new StreamInfo(downloadUrl, songDetails.duration);
     }
 
-    public Song[] searchSongs(SearchParameter searchParameter) throws Exception {
+    public SearchResult<Song> searchSongs(SearchParameter searchParameter) throws Exception {
         SearchType searchType = searchParameter.getSearchType();
+        int offset = searchParameter.getOffset();
+        int limit = searchParameter.getLimit();
+        int total;
         Song[] result;
         switch (searchType) {
             case General: {
                 // search for song names via string search
                 String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
-                List<NESong> songs = netEaseService.searchSongs(searchString, false);
-                result = new Song[songs.size()];
+                NESongSearchResult songSearchResult = netEaseService.searchSongs(searchString, offset, limit);
+                total = songSearchResult.songCount;
+                result = new Song[songSearchResult.songs.length];
                 int i = 0;
-                for (NESong neSong : songs) {
+                for (NESong neSong : songSearchResult.songs) {
                     Song song = new Song();
                     song.setName(neSong.name);
                     song.setSongName(neSong.name);
@@ -83,6 +77,7 @@ public class SearchService {
                 // search for songs of the given album
                 Long albumID = ((AlbumSearch) searchParameter).getAlbumID();
                 Song[] songs = new Song[0];
+                total = 0;
                 result = songs;
                 break;
             }
@@ -90,6 +85,7 @@ public class SearchService {
                 // search for all songs of the given artist
                 Long artistID = getArtistID(searchParameter);
                 Song[] songs = new Song[0];
+                total = 0;
                 result = filterDuplicateSongs(songs);
                 break;
             }
@@ -97,18 +93,21 @@ public class SearchService {
                 // search for library songs of the given user
                 String userID = ((UserSearch) searchParameter).getUserID().toString();
                 Song[] songs = new Song[0];
+                total = 0;
                 result = filterDuplicateSongs(songs);
                 break;
             }
             case Playlist: {
                 Long playlistID = ((PlaylistSearch) searchParameter).getPlaylistID();
                 Song[] songs = new Song[0];
+                total = 0;
                 result = filterDuplicateSongs(songs);
                 break;
             }
             case Songs: {
                 Set<Long> songIDs = ((SongSearch) searchParameter).getSongIDs();
                 Song[] songs = new Song[0];
+                total = 0;
                 result = filterDuplicateSongs(songs);
                 break;
             }
@@ -117,11 +116,7 @@ public class SearchService {
             }
         }
         normalize(result);
-        return result;
-    }
-
-    public StreamKey getStreamKeyFromSongID(long songID) throws Exception {
-        return new StreamKey("dummy", "ip");
+        return new SearchResult<>(total, result);
     }
 
     public Song autoplayGetSong(Iterable<Song> songsAlreadySeen) throws Exception {
@@ -149,7 +144,7 @@ public class SearchService {
     }
 
 
-    public Artist[] searchArtists(SearchParameter searchParameter) throws Exception {
+    public SearchResult<Artist> searchArtists(SearchParameter searchParameter) throws Exception {
         SearchType searchType = searchParameter.getSearchType();
         Artist[] result;
         switch (searchType) {
@@ -161,10 +156,10 @@ public class SearchService {
                 throw new IllegalArgumentException("invalid search type: " + searchType);
         }
         normalize(result);
-        return result;
+        return new SearchResult<>(result.length, result);
     }
 
-    public Album[] searchAlbums(SearchParameter searchParameter) throws Exception {
+    public SearchResult<Album> searchAlbums(SearchParameter searchParameter) throws Exception {
         SearchType searchType = searchParameter.getSearchType();
         Album[] result;
         switch (searchType) {
@@ -187,10 +182,10 @@ public class SearchService {
                 throw new IllegalArgumentException("invalid search type: " + searchType);
         }
         normalize(result);
-        return result;
+        return new SearchResult<>(result.length, result);
     }
 
-    public User[] searchPeople(SearchParameter searchParameter) throws Exception {
+    public SearchResult<User> searchPeople(SearchParameter searchParameter) throws Exception {
         SearchType searchType = searchParameter.getSearchType();
         User[] result;
         switch (searchType) {
@@ -202,10 +197,10 @@ public class SearchService {
                 throw new IllegalArgumentException("invalid search type: " + searchType);
         }
         normalize(result);
-        return result;
+        return new SearchResult<>(result.length, result);
     }
 
-    public Playlist[] searchPlaylists(SearchParameter searchParameter) throws Exception {
+    public SearchResult<Playlist> searchPlaylists(SearchParameter searchParameter) throws Exception {
         SearchType searchType = searchParameter.getSearchType();
         Playlist[] result;
         switch (searchType) {
@@ -221,7 +216,7 @@ public class SearchService {
                 throw new IllegalArgumentException("invalid search type: " + searchType);
         }
         normalize(result);
-        return result;
+        return new SearchResult<>(result.length, result);
     }
 
     private Song[] filterDuplicateSongs(Song[] songs) {
@@ -295,17 +290,7 @@ public class SearchService {
     }
 
     private Long getArtistID(SearchParameter searchParameter) throws Exception {
-        if (searchParameter instanceof ArtistURLNameSearch) {
-            // if we only got an url page name then we have to search for the artist ID first, using getItemByPageName()
-            String artistURLName = ((ArtistURLNameSearch) searchParameter).getArtistURLName();
-            ItemByPageNameResult itemByPageName = null; //grooveshark.getItemByPageName(artistURLName);
-            Artist artist = itemByPageName.getArtist();
-            if (artist == null) {
-                log.error("no artist found for name=" + artistURLName);
-                return null;
-            }
-            return artist.getArtistID();
-        } else if (searchParameter instanceof ArtistSearch) {
+        if (searchParameter instanceof ArtistSearch) {
             // if we get an ArtistSearch instance we already have the artist ID
             return ((ArtistSearch) searchParameter).getArtistID();
         } else {
@@ -314,9 +299,7 @@ public class SearchService {
     }
 
     private String getArtistName(SearchParameter searchParameter) throws Exception {
-        if (searchParameter instanceof ArtistURLNameSearch) {
-            return ((ArtistURLNameSearch) searchParameter).getArtistName();
-        } else if (searchParameter instanceof ArtistSearch) {
+        if (searchParameter instanceof ArtistSearch) {
             return ((ArtistSearch) searchParameter).getArtistName();
         } else {
             throw new IllegalArgumentException("illegal searchParameter type: " + searchParameter.getClass());

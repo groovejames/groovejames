@@ -1,6 +1,6 @@
 package groovejames.service.search;
 
-public class ArtistSearch implements SearchParameter {
+public class ArtistSearch extends AbstractSearchParameter {
 
     private final Long artistID;
     private final String artistName;

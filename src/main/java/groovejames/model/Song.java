@@ -138,7 +138,6 @@ public class Song extends BaseModelObject {
         sb.append("Song");
         sb.append("{songID=").append(songID);
         sb.append(", songName='").append(songName).append('\'');
-        sb.append(", isVerified=").append(isVerified);
         sb.append(", coverArtFilename='").append(coverArtFilename).append('\'');
         sb.append(", estimateDuration=").append(estimateDuration);
         sb.append('}');

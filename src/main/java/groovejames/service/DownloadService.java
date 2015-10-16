@@ -5,11 +5,9 @@ import groovejames.model.MemoryStore;
 import groovejames.model.Song;
 import groovejames.model.Store;
 import groovejames.model.Track;
-import groovejames.service.netease.NESongDetails;
-import groovejames.service.netease.NEStreamInfo;
-import groovejames.service.netease.NetEaseException;
+import groovejames.service.search.SearchService;
+import groovejames.model.StreamInfo;
 import groovejames.util.Util;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
@@ -26,9 +24,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -59,13 +54,15 @@ public class DownloadService {
     private final ExecutorService executorService;
     private final ExecutorService executorServiceForPlay;
     private final HttpClientService httpClientService;
+    private final SearchService searchService;
     private final ArrayList<DownloadTask> currentlyRunningDownloads = new ArrayList<>();
     private final FilenameSchemeParser filenameSchemeParser;
 
     private File downloadDir;
 
-    public DownloadService(HttpClientService httpClientService) {
+    public DownloadService(HttpClientService httpClientService, SearchService searchService) {
         this.httpClientService = httpClientService;
+        this.searchService = searchService;
         this.downloadDir = defaultDownloadDir;
         this.executorService = Executors.newFixedThreadPool(numberOfParallelDownloads);
         this.executorServiceForPlay = Executors.newFixedThreadPool(1);
@@ -180,15 +177,15 @@ public class DownloadService {
                 log.info("start download track " + track);
                 track.setStatus(Track.Status.INITIALIZING);
                 fireDownloadStatusChanged();
-                NESongDetails songDetails = Services.getSearchService().getSongDetails(track.getSong().getSongID());
+                StreamInfo streamInfo = searchService.getStreamInfo(track.getSong().getSongID());
                 track.setStartDownloadTime(System.currentTimeMillis());
-                if (songDetails.duration > 0)
-                    track.getSong().setEstimateDuration(songDetails.duration / 1000.0);
+                if (streamInfo.getDuration() > 0)
+                    track.getSong().setEstimateDuration(streamInfo.getDuration() / 1000.0);
                 fireDownloadStatusChanged();
                 if (Boolean.getBoolean("mockNet"))
-                    fakedownload(songDetails);
+                    fakedownload(streamInfo);
                 else
-                    download(songDetails);
+                    download(streamInfo);
                 track.setStatus(Track.Status.FINISHED);
                 fireDownloadStatusChanged();
                 log.info("finished download track " + track);
@@ -224,8 +221,8 @@ public class DownloadService {
             return false;
         }
 
-        private void download(NESongDetails songDetails) throws IOException {
-            String url = createDownloadUrl(songDetails);
+        private void download(StreamInfo streamInfo) throws IOException {
+            String url = streamInfo.getDownloadUrl();
             httpGet = new HttpGet(url);
             HttpResponse httpResponse = httpClientService.getHttpClient().execute(httpGet);
             HttpEntity httpEntity = httpResponse.getEntity();
@@ -262,9 +259,8 @@ public class DownloadService {
             }
         }
 
-        private void fakedownload(NESongDetails songDetails) throws InterruptedException, IOException {
-            String url = createDownloadUrl(songDetails);
-            httpGet = new HttpGet(url);
+        private void fakedownload(StreamInfo streamInfo) throws InterruptedException, IOException {
+            httpGet = new HttpGet(streamInfo.getDownloadUrl());
             Thread.sleep(1000);
             String songName = track.getSongName();
             songName = songName.contains("track1") ? "track1" : songName.contains("track2") ? "track2" : songName;
@@ -291,47 +287,6 @@ public class DownloadService {
             } finally {
                 Util.closeQuietly(outputStream, store.getDescription());
                 Util.closeQuietly(instream, file.getAbsolutePath());
-            }
-        }
-
-        private String createDownloadUrl(NESongDetails songDetails) {
-            // TODO: move to NetEaseService
-            NEStreamInfo streamInfo = findBestStreamInfo(songDetails);
-            if (streamInfo == null) {
-                if (songDetails.mp3Url == null || songDetails.mp3Url.isEmpty())
-                    throw new NetEaseException("no download location for song id " + songDetails.id);
-                return songDetails.mp3Url;
-            }
-            String encryptedId = encryptId(streamInfo);
-            String baseUrl = Util.stripPath(songDetails.mp3Url);
-            if (baseUrl == null) baseUrl = "http://m1.music.126.net";
-            return String.format("%s/%s/%s.%s", baseUrl, encryptedId, streamInfo.dfsId, streamInfo.extension);
-        }
-
-        private NEStreamInfo findBestStreamInfo(NESongDetails songDetails) {
-            if (songDetails.hMusic != null) return songDetails.hMusic;
-            if (songDetails.mMusic != null) return songDetails.mMusic;
-            if (songDetails.lMusic != null) return songDetails.lMusic;
-            return songDetails.bMusic;
-        }
-
-        private String encryptId(NEStreamInfo streamInfo) {
-            try {
-                // from https://github.com/yanunon/NeteaseCloudMusic
-                byte[] byte1 = "3go8&$8*3*3h0k(2)2".getBytes("US-ASCII");
-                byte[] byte2 = String.valueOf(streamInfo.dfsId).getBytes("US-ASCII");
-                int byte1_len = byte1.length;
-                for (int i = 0; i < byte2.length; i++) {
-                    byte2[i] = (byte) (byte2[i] ^ byte1[i % byte1_len]);
-                }
-                MessageDigest m = MessageDigest.getInstance("MD5");
-                m.update(byte2);
-                String result = Base64.encodeBase64String(m.digest());
-                result = result.replace('/', '_');
-                result = result.replace('+', '-');
-                return result;
-            } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
-                throw new RuntimeException(e);
             }
         }
 

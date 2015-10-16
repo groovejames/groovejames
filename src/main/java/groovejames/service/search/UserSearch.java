@@ -4,7 +4,7 @@ import groovejames.util.Util;
 
 import static java.lang.String.format;
 
-public class UserSearch implements SearchParameter {
+public class UserSearch extends AbstractSearchParameter {
 
     private final Long userID;
     private final String username;

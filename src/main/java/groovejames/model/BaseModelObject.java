@@ -5,7 +5,7 @@ import org.apache.pivot.wtk.media.Image;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
-public abstract class BaseModelObject implements ImageObject, Scoreable, Verifiable {
+public abstract class BaseModelObject implements ImageObject, Scoreable {
 
     protected volatile Image image;
     protected volatile boolean loadingImage;
@@ -14,7 +14,6 @@ public abstract class BaseModelObject implements ImageObject, Scoreable, Verifia
     protected Double popularity;
     protected double popularityPercentage;
     protected Long popularityIndex;
-    protected boolean isVerified;
 
     @Override public abstract String getImageFilename();
 
@@ -76,11 +75,4 @@ public abstract class BaseModelObject implements ImageObject, Scoreable, Verifia
         this.popularityPercentage = max(min(popularityPercentage, 1.0), 0.0);
     }
 
-    @Override public boolean getIsVerified() {
-        return isVerified;
-    }
-
-    @Override public void setIsVerified(boolean isVerified) {
-        this.isVerified = isVerified;
-    }
 }

@@ -2,7 +2,7 @@ package groovejames.service.search;
 
 import java.util.Set;
 
-public class SongSearch implements SearchParameter {
+public class SongSearch extends AbstractSearchParameter {
 
     private final Set<Long> songIDs;
     private final Set<String> songNames;

@@ -476,14 +476,14 @@ public class Util {
 
     public static Map<String, List<String>> parseQueryParams(URI uri) {
         String query = uri.getRawQuery();
-        Map<String, List<String>> params = new HashMap<String, List<String>>();
+        Map<String, List<String>> params = new HashMap<>();
         Matcher m = QUERY_PARAM_PATTERN.matcher(query);
         while (m.find()) {
             String name = urldecode(m.group(1));
             String value = m.groupCount() > 1 ? urldecode(m.group(2)) : null;
             List<String> values = params.get(name);
             if (values == null) {
-                values = new LinkedList<String>();
+                values = new LinkedList<>();
                 params.put(name, values);
             }
             if (value != null) {
@@ -506,7 +506,7 @@ public class Util {
     }
 
     public static String[] filterSystemProperties(String[] args) {
-        ArrayList<String> result = new ArrayList<String>(args.length);
+        ArrayList<String> result = new ArrayList<>(args.length);
         for (String arg : args) {
             if (arg.startsWith("\"") && arg.endsWith("\"")) {
                 arg = arg.substring(1, arg.length() - 1);
@@ -552,6 +552,8 @@ public class Util {
             } catch (IOException ex) {
                 if (!isEmpty(streamDescription)) {
                     log.error("error closing stream " + streamDescription + ": " + ex);
+                } else {
+                    log.error("error closing stream: " + ex);
                 }
             }
         }

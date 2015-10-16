@@ -4,6 +4,7 @@ import groovejames.gui.Main;
 import groovejames.service.search.SongSearch;
 import groovejames.util.Util;
 import org.apache.log4j.Logger;
+import org.apache.pivot.wtk.ApplicationContext;
 
 import java.net.URISyntaxException;
 import java.util.LinkedHashSet;
@@ -35,9 +36,9 @@ public class GrooveJamesSongClipboardListener implements ClipboardListener {
 
     @Override
     public boolean clipboardContentsChanged(String newClipboardContent) {
-        Set<Long> songIds = new LinkedHashSet<Long>();
-        Set<Long> autoPlaySongIds = new LinkedHashSet<Long>();
-        Set<String> songNames = new LinkedHashSet<String>();
+        final Set<Long> songIds = new LinkedHashSet<>();
+        final Set<Long> autoPlaySongIds = new LinkedHashSet<>();
+        final Set<String> songNames = new LinkedHashSet<>();
         Matcher matcher = pattern.matcher(newClipboardContent);
         while (matcher.find()) {
             String uri = matcher.group();
@@ -68,7 +69,13 @@ public class GrooveJamesSongClipboardListener implements ClipboardListener {
             }
         }
         if (!songIds.isEmpty()) {
-            main.openSearchTab(new SongSearch(songIds, songNames, autoPlaySongIds));
+            ApplicationContext.queueCallback(new Runnable() {
+                @Override
+                public void run() {
+                    main.openSearchTab(new SongSearch(songIds, songNames, autoPlaySongIds));
+
+                }
+            });
             return true;
         } else {
             return false;

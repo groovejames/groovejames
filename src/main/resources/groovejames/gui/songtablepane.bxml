@@ -14,7 +14,7 @@
         <TablePane.Column width="-1"/>
         <TablePane.Column width="1*"/>
         <TablePane.Column width="-1"/>
-        <TablePane.Column width="-1"/>
+        <TablePane.Column width="1*"/>
         <TablePane.Column width="-1"/>
         <TablePane.Column width="-1"/>
     </columns>
@@ -41,14 +41,13 @@
                 </buttonData>
             </PushButton>
             <TablePane.Filler/>
+            <FlowPane styles="%searchresultpane.count.styles">
+                <Label bxml:id="countText" text="100 of 234"/>
+                <LinkButton bxml:id="moreLink" buttonData="(more...)" styles="%searchresultpane.moreLink.styles"/>
+            </FlowPane>
+            <TablePane.Filler/>
             <MenuButton buttonData="View" styles="{toolbar:true}">
                 <Menu>
-                    <Menu.Section>
-                        <Menu.Item bxml:id="showAll" buttonData="All songs" toggleButton="true"
-                                   buttonGroup="$showButtonGroup" selected="false"/>
-                        <Menu.Item bxml:id="showVerified" buttonData="Verified songs only" toggleButton="true"
-                                   buttonGroup="$showButtonGroup" selected="true"/>
-                    </Menu.Section>
                     <Menu.Section>
                         <Menu.Item bxml:id="groupByAlbum" buttonData="By Album" toggleButton="true" selected="true"/>
                     </Menu.Section>

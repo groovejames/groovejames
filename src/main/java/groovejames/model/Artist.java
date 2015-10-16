@@ -79,7 +79,6 @@ public class Artist extends BaseModelObject {
         sb.append("Artist");
         sb.append("{artistID='").append(artistID).append('\'');
         sb.append(", artistName='").append(artistName).append('\'');
-        sb.append(", isVerified=").append(isVerified);
         sb.append('}');
         return sb.toString();
     }

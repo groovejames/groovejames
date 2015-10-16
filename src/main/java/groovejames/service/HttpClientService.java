@@ -1,9 +1,11 @@
 package groovejames.service;
 
+import groovejames.util.Util;
 import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 
@@ -15,10 +17,9 @@ public class HttpClientService {
     private static final int SOCKET_TIMEOUT = Integer.getInteger("socketTimeout", 30);
 
     private ProxySettings proxySettings;
-    private HttpClient httpClient;
+    private CloseableHttpClient httpClient;
 
-    public ProxySettings getProxySettings() {
-        return proxySettings;
+    public HttpClientService() {
     }
 
     public void setProxySettings(ProxySettings proxySettings) {
@@ -38,12 +39,12 @@ public class HttpClientService {
 
     private void closeHttpClient() {
         if (httpClient != null) {
-            httpClient.getConnectionManager().shutdown();
+            Util.closeQuietly(httpClient);
             httpClient = null;
         }
     }
 
-    private static HttpClient createHttpClient(ProxySettings proxySettings) {
+    private static CloseableHttpClient createHttpClient(ProxySettings proxySettings) {
         HttpClientBuilder httpClientBuilder = HttpClientBuilder.create()
                 /* set user agent string */
                 .setUserAgent(USER_AGENT)
@@ -51,6 +52,10 @@ public class HttpClientService {
                 .disableContentCompression()
                 /* redirect on POSTs, too */
                 .setRedirectStrategy(new LaxRedirectStrategy())
+                /* increase max total connections from 20 to 200 */
+                .setMaxConnTotal(200)
+                /* increate max connections per route from 2 to 200 (we only have one route) */
+                .setMaxConnPerRoute(200)
                 .setDefaultRequestConfig(RequestConfig.custom()
                         /* timeout in milliseconds until a connection is established, in ms */
                         .setConnectTimeout(SOCKET_TIMEOUT * 1000)
@@ -65,11 +70,6 @@ public class HttpClientService {
             httpClientBuilder.setProxy(new HttpHost(proxySettings.getHost(), proxySettings.getPort()));
         }
         return httpClientBuilder.build();
-
-        // the factory for connection manager to use multi-thread connection manager
-//        httpClient.getParams().setParameter(
-//                ClientPNames.CONNECTION_MANAGER_FACTORY_CLASS_NAME,
-//                ThreadSafeClientConnManagerFactory.class.getName());
     }
 
 }

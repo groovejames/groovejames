@@ -2,6 +2,7 @@ package groovejames.gui.action;
 
 import groovejames.gui.components.AbstractApplication;
 import groovejames.model.Song;
+import groovejames.service.Services;
 import groovejames.service.search.AlbumSearch;
 import groovejames.util.Util;
 import org.apache.log4j.LogManager;
@@ -12,10 +13,15 @@ import org.apache.pivot.collections.Map;
 import org.apache.pivot.collections.Sequence;
 import org.apache.pivot.wtk.Action;
 import org.apache.pivot.wtk.Alert;
+import org.apache.pivot.wtk.Clipboard;
 import org.apache.pivot.wtk.Component;
 import org.apache.pivot.wtk.DesktopApplicationContext;
 import org.apache.pivot.wtk.Display;
+import org.apache.pivot.wtk.LocalManifest;
 import org.apache.pivot.wtk.MessageType;
+import org.apache.pivot.wtk.Prompt;
+import org.apache.pivot.wtk.Sheet;
+import org.apache.pivot.wtk.SheetCloseListener;
 import org.apache.pivot.wtk.TextArea;
 import org.apache.pivot.wtk.Window;
 
@@ -31,22 +37,22 @@ import java.util.Properties;
 import static groovejames.util.Util.isEmpty;
 import static groovejames.util.Util.urlencode;
 
-public class MailAction extends Action {
+public class ShareAction extends Action {
 
-    private static final Logger log = LogManager.getLogger(MailAction.class);
+    private static final Logger log = LogManager.getLogger(ShareAction.class);
     private static final String mailTemplateResourceName = "mail.template.txt";
 
     private final Window window;
     private final AlbumSearch album;
     private final Sequence<Song> songs;
 
-    public MailAction(Window window, Sequence<Song> songs) {
+    public ShareAction(Window window, Sequence<Song> songs) {
         this.window = window;
         this.songs = songs;
         this.album = null;
     }
 
-    public MailAction(Window window, AlbumSearch album) {
+    public ShareAction(Window window, AlbumSearch album) {
         this.window = window;
         this.album = album;
         this.songs = null;
@@ -54,10 +60,38 @@ public class MailAction extends Action {
 
     public void perform(Component source) {
         if (album != null || (songs != null && songs.getLength() > 0)) {
-            String mailSubject = createMailSubject();
-            String mailBody = createMailBody();
-            openMailClient(mailSubject, mailBody);
+            showDialog();
         }
+    }
+
+    private void showDialog() {
+        TextArea urlTextArea = new TextArea();
+        final String url = createUrl();
+        urlTextArea.setText(url);
+        urlTextArea.setEditable(false);
+        urlTextArea.setPreferredWidth(500);
+        ArrayList<String> options = new ArrayList<>("Cancel", "Copy to Clipboard", "Open Mail Client");
+        final Prompt prompt = new Prompt(MessageType.INFO, "Send the following URL to a friend:", options, urlTextArea);
+        prompt.setTitle("Share " + (album != null ? "album" : songs.getLength() == 1 ? "song" : "songs"));
+        prompt.setPreferredWidth(500);
+        prompt.open(window.getDisplay(), window, new SheetCloseListener() {
+            @Override
+            public void sheetClosed(Sheet sheet) {
+                int selectedOptionIndex = prompt.getSelectedOptionIndex();
+                if (selectedOptionIndex == 1) {
+                    // copy to clipboard
+                    Services.getWatchClipboardTask().dontCheck(url);
+                    LocalManifest clipboardContent = new LocalManifest();
+                    clipboardContent.putText(url);
+                    Clipboard.setContent(clipboardContent);
+                } else if (selectedOptionIndex == 2) {
+                    // open mail client
+                    String mailSubject = createMailSubject();
+                    String mailBody = createMailBody();
+                    openMailClient(mailSubject, mailBody);
+                }
+            }
+        });
     }
 
     private String createMailSubject() {
@@ -65,7 +99,7 @@ public class MailAction extends Action {
     }
 
     private String createMailBody() {
-        InputStream inputStream = MailAction.class.getResourceAsStream(mailTemplateResourceName);
+        InputStream inputStream = ShareAction.class.getResourceAsStream(mailTemplateResourceName);
         String mailTemplate = Util.readFully(inputStream, "UTF-8", mailTemplateResourceName);
         boolean singular = album != null || songs.getLength() == 1;
 
@@ -140,7 +174,6 @@ public class MailAction extends Action {
             sb.append("&albumName=").append(urlencode(albumSearch.getAlbumName()));
         }
         sb.append("&autoplay=").append(albumSearch.isAutoplay());
-        sb.append("&verifiedOnly=").append(albumSearch.isVerifiedOnly());
         return sb.toString();
     }
 
@@ -182,7 +215,7 @@ public class MailAction extends Action {
         StringBuilder sb = new StringBuilder(s.length() + 50);
         byte[] bytes = s.getBytes(Charset.forName("UTF-8"));
         for (byte b : bytes) {
-            if (b < 128 && b != '?' && b != '&' && Character.isLetterOrDigit(b))
+            if (b != '?' && b != '&' && Character.isLetterOrDigit(b))
                 sb.append((char) b);
             else
                 sb.append(String.format("%%%02X", b));
@@ -191,17 +224,17 @@ public class MailAction extends Action {
     }
 
     public static void main(String[] args) {
-        DesktopApplicationContext.main(MailActionTestApp.class, args);
+        DesktopApplicationContext.main(ShareActionTestApp.class, args);
     }
 
-    public static class MailActionTestApp extends AbstractApplication {
+    public static class ShareActionTestApp extends AbstractApplication {
         @Override
         public void startup(Display display, Map<String, String> properties) throws Exception {
             Window window = new Window();
             window.open(display);
             /*
             AlbumSearch albumSearch = new AlbumSearch(1L, "Hell\u00f6 W\u00f6rld", "The? Cool & Groovy \u00c4rtist", false, false);
-            new MailAction(window, albumSearch).perform(null);
+            new ShareAction(window, albumSearch).perform(null);
             */
             Song song1 = new Song();
             song1.setSongID(1000L);
@@ -211,8 +244,8 @@ public class MailAction extends Action {
             song2.setSongID(1004L);
             song2.setSongName("Caravan? Of L\u00f6ve");
             song2.setArtistName("The Housem\u00e4rtins");
-            List<Song> songs = new ArrayList<Song>(song1, song2);
-            new MailAction(window, songs).perform(null);
+            List<Song> songs = new ArrayList<>(song1, song2);
+            new ShareAction(window, songs).perform(null);
         }
     }
 

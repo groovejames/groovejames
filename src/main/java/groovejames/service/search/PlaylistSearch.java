@@ -2,7 +2,7 @@ package groovejames.service.search;
 
 import static java.lang.String.format;
 
-public class PlaylistSearch implements SearchParameter {
+public class PlaylistSearch extends AbstractSearchParameter {
 
     private final Long playlistID;
     private final String name;

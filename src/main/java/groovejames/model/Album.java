@@ -1,6 +1,5 @@
 package groovejames.model;
 
-// {"AlbumID":"5247723","ArtistID":"402081","Name":"Could You Believe","Year":"2010","GenreID":"80","CoverArtFilename":"5247723.jpg","IsVerified":"1","ReleaseStatus":"1","ReleaseType":"2","Popularity":"0","Flags":"0"},
 public class Album extends BaseModelObject {
 
     private Long artistID;
@@ -103,7 +102,6 @@ public class Album extends BaseModelObject {
         sb.append("Album");
         sb.append("{albumID=").append(albumID);
         sb.append(", albumName='").append(albumName).append('\'');
-        sb.append(", isVerified=").append(isVerified);
         sb.append(", releaseType='").append(releaseType).append('\'');
         sb.append(", coverArtFilename='").append(coverArtFilename).append('\'');
         sb.append('}');

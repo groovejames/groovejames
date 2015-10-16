@@ -2,6 +2,8 @@ package groovejames.service.search;
 
 public interface SearchParameter {
 
+    int DEFAULT_SEARCH_LIMIT = 100;
+
     /**
      * the search type.
      */
@@ -21,6 +23,10 @@ public interface SearchParameter {
      * used for error messages, in case an error occured during this search
      */
     String getDescription();
+
+    int getOffset();
+
+    int getLimit();
 
     /**
      * used for comparision of tab contents: two search tabs are considered equal

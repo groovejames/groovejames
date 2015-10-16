@@ -76,6 +76,10 @@ public class WatchClipboardTask {
         }
     }
 
+    public void dontCheck(String text) {
+        watcherThread.oldText = text;
+    }
+
     public static void main(String[] args) {
         new WatchClipboardTask().startWatching();
     }

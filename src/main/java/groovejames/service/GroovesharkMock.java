@@ -13,7 +13,6 @@ import groovejames.model.SearchSongsResultType;
 import groovejames.model.SearchUsersResultType;
 import groovejames.model.Song;
 import groovejames.model.Songs;
-import groovejames.model.StreamKey;
 import groovejames.model.User;
 
 import java.io.IOException;
@@ -97,7 +96,6 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         song1.setEstimateDuration(278.0);
         song1.setScore(10000.0);
         song1.setPopularity(43049344.0);
-        song1.setIsVerified(true);
         song1.setCoverArtFilename("111102.jpg");
 
         Song song2 = new Song();
@@ -111,7 +109,6 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         song2.setEstimateDuration(328.0);
         song2.setScore(8500.0);
         song2.setPopularity(42042352.0);
-        song2.setIsVerified(true);
         song2.setCoverArtFilename("111102.jpg");
 
         Song song3 = new Song();
@@ -125,7 +122,6 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         song3.setEstimateDuration(60.0);
         song3.setScore(5000.0);
         song3.setPopularity(41320393.0);
-        song3.setIsVerified(true);
         song3.setCoverArtFilename("163137.jpg");
 
         Song song4 = new Song();
@@ -139,7 +135,6 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         song4.setEstimateDuration(2032.0);
         song4.setScore(0.0);
         song4.setPopularity(40584948.0);
-        song4.setIsVerified(true);
         song4.setCoverArtFilename("1744206.jpg");
 
         Song song5 = new Song();
@@ -152,7 +147,6 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         song5.setTrackNum(3L);
         song5.setEstimateDuration(30.0);
         song5.setScore(0.0);
-        song5.setIsVerified(true);
         song5.setCoverArtFilename("1744206.jpg");
 
         Song song6 = new Song();
@@ -164,7 +158,6 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         song6.setTrackNum(1L);
         song6.setEstimateDuration(37.0);
         song6.setScore(0.0);
-        song6.setIsVerified(false);
         song6.setCoverArtFilename("571642.jpg");
 
         Song song7 = new Song();
@@ -197,7 +190,6 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         album1.setAlbumID(1L);
         album1.setAlbumName("Odelay");
         album1.setPopularity(43049344.0);
-        album1.setIsVerified(true);
         album1.setReleaseType("1");
 
         Album album2 = new Album();
@@ -206,7 +198,6 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
         album2.setAlbumID(2L);
         album2.setAlbumName("Black Celebration");
         album2.setPopularity(43040000.0);
-        album2.setIsVerified(true);
         album2.setReleaseType("2");
 
         Album album3 = new Album();
@@ -303,11 +294,6 @@ public class GroovesharkMock implements InvocationHandler, Grooveshark {
             return new Playlist[]{arr[1]}; // Mad Hatters Playlist
         else
             return new Playlist[]{};
-    }
-
-    @Override
-    public StreamKey getStreamKeyFromSongIDEx(long songID, long type, boolean mobile, boolean prefetch, Country country) {
-        return new StreamKey("dummystreamkey-" + songID, "dummystreamserver.com");
     }
 
     private int lastAutoplaySong = -1;

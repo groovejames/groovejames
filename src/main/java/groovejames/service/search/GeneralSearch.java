@@ -1,6 +1,6 @@
 package groovejames.service.search;
 
-public class GeneralSearch implements SearchParameter {
+public class GeneralSearch extends AbstractSearchParameter implements SearchParameter {
 
     private final String generalSearchString;
 

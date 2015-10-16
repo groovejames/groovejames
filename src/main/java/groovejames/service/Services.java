@@ -2,7 +2,9 @@ package groovejames.service;
 
 import groovejames.gui.clipboard.WatchClipboardTask;
 import groovejames.model.Settings;
+import groovejames.service.netease.INetEaseService;
 import groovejames.service.netease.NetEaseService;
+import groovejames.service.netease.NetEaseServiceMock;
 import groovejames.service.search.SearchService;
 
 import java.io.File;
@@ -16,11 +18,11 @@ import static groovejames.util.Util.isEmpty;
 public class Services {
 
     private static final HttpClientService httpClientService = new HttpClientService();
-    private static final NetEaseService neteaseService = new NetEaseService(httpClientService);
-    private static final DownloadService downloadService = new DownloadService(httpClientService);
+    private static final INetEaseService neteaseService = Boolean.getBoolean("mockNet") ? new NetEaseServiceMock() : new NetEaseService(httpClientService);
+    private static final SearchService searchService = new SearchService(neteaseService);
+    private static final DownloadService downloadService = new DownloadService(httpClientService, searchService);
     private static final PlayService playService = new PlayService(downloadService);
     private static final WatchClipboardTask watchClipboardTask = new WatchClipboardTask();
-    private static Grooveshark grooveshark = null; // lazy initialized
 
     /**
      * scope: singleton, init:eager.
@@ -28,11 +30,6 @@ public class Services {
     public static HttpClientService getHttpClientService() {
         return httpClientService;
     }
-
-    /**
-     * scope: singleton, init:eager.
-     */
-    public static NetEaseService getNeteaseService() { return neteaseService; }
 
     /**
      * scope: singleton, init:eager.
@@ -49,28 +46,10 @@ public class Services {
     }
 
     /**
-     * scope: prototype.
+     * scope: singleton, init:eager.
      */
     public static SearchService getSearchService() throws IOException {
-        return new SearchService(neteaseService);
-    }
-
-    /**
-     * scope: singleton, init: lazy.
-     */
-    private static synchronized Grooveshark getGrooveshark() throws IOException {
-        if (grooveshark == null) {
-            try {
-                grooveshark = GroovesharkService.connect(httpClientService);
-            } catch (IOException ex) {
-                throw new IOException("could not connect to Grooveshark", ex);
-            }
-        }
-        return grooveshark;
-    }
-
-    public static synchronized void resetGrooveshark() {
-        grooveshark = null;
+        return searchService;
     }
 
     public static WatchClipboardTask getWatchClipboardTask() {
@@ -92,7 +71,6 @@ public class Services {
         downloadService.setDownloadDir(new File(settings.getDownloadLocation()));
         downloadService.getFilenameSchemeParser().setFilenameScheme(settings.getFilenameScheme());
         setWatchClipboardTaskEnabled(settings.isWatchClipboard());
-        resetGrooveshark();
     }
 
 }

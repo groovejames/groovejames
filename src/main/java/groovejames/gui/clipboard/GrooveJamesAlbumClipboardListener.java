@@ -4,6 +4,7 @@ import groovejames.gui.Main;
 import groovejames.service.search.AlbumSearch;
 import groovejames.util.Util;
 import org.apache.log4j.Logger;
+import org.apache.pivot.wtk.ApplicationContext;
 
 import java.net.URISyntaxException;
 import java.util.List;
@@ -40,17 +41,21 @@ public class GrooveJamesAlbumClipboardListener implements ClipboardListener {
             log.debug("found match: " + uri);
             try {
                 Map<String, List<String>> queryParams = Util.parseQueryParams(uri);
-                boolean verifiedOnly = getBoolean("verifiedOnly", queryParams);
-                boolean autoplay = !usedAutoplayOnce && getBoolean("autoplay", queryParams);
+                final boolean autoplay = !usedAutoplayOnce && getBoolean("autoplay", queryParams);
                 List<String> albumIdList = queryParams.get("id");
                 List<String> albumNameList = queryParams.get("albumName");
                 if (albumIdList != null) {
                     for (int i = 0, len = albumIdList.size(); i < len; i++) {
                         String albumIdString = albumIdList.get(i);
-                        long albumID = Long.parseLong(albumIdString);
-                        String albumName = albumNameList != null && albumNameList.size() > i ? albumNameList.get(i) : null;
+                        final long albumID = Long.parseLong(albumIdString);
+                        final String albumName = albumNameList != null && albumNameList.size() > i ? albumNameList.get(i) : null;
                         log.debug("found album id=" + albumID + "; autoplay=" + autoplay + "; albumName=" + albumName);
-                        main.openSearchTab(new AlbumSearch(albumID, albumName, null, autoplay, verifiedOnly));
+                        ApplicationContext.queueCallback(new Runnable() {
+                            @Override
+                            public void run() {
+                                main.openSearchTab(new AlbumSearch(albumID, albumName, null, autoplay));
+                            }
+                        });
                         foundMatch = true;
                         if (autoplay) {
                             usedAutoplayOnce = true;

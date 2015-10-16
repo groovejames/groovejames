@@ -18,7 +18,7 @@ import org.apache.pivot.wtk.Component;
 import java.io.IOException;
 import java.net.URL;
 
-public class LazyLoadingCardPane extends CardPane implements Bindable {
+public class LazyLoadingCardPane extends CardPane implements Bindable, CardPaneWrapper {
 
     private boolean loaded = false;
     private String contentResource;
@@ -34,7 +34,8 @@ public class LazyLoadingCardPane extends CardPane implements Bindable {
         this.contentResource = contentResource;
     }
 
-    @Override public void initialize(Map<String, Object> namespace, URL location, Resources resources) {
+    @Override
+    public void initialize(Map<String, Object> namespace, URL location, Resources resources) {
         this.main = (Main) namespace.get("main");
         this.resources = resources;
     }
@@ -53,31 +54,33 @@ public class LazyLoadingCardPane extends CardPane implements Bindable {
             add(component);
 
             CardPaneContent content = (CardPaneContent) component;
-            content.afterLoad(searchParameter);
+            content.setSearchParameter(searchParameter);
+            content.setCardPane(this);
+            content.afterLoad();
 
-            // execute task
-            GuiAsyncTask<?> searchTask = content.getSearchTask(searchParameter);
-            GuiAsyncTaskListener asyncTaskListener = executeTask(searchTask);
-            getCardPaneListeners().add(asyncTaskListener);
+            search(content);
         }
     }
 
-    @SuppressWarnings({"unchecked"})
-    private GuiAsyncTaskListener executeTask(GuiAsyncTask<?> searchTask) {
+    @Override
+    public void search(CardPaneContent content) {
+        GuiAsyncTask<?> searchTask = content.createSearchTask();
         GuiAsyncTaskListener asyncTaskListener = new GuiAsyncTaskListener();
+        getCardPaneListeners().add(asyncTaskListener);
         searchTask.execute(asyncTaskListener);
-        return asyncTaskListener;
     }
 
     private class GuiAsyncTaskListener<V> implements TaskListener<V>, CardPaneListener {
         private volatile boolean taskExecuted;
 
-        @Override public void taskExecuted(Task<V> task) {
+        @Override
+        public void taskExecuted(Task<V> task) {
             taskExecuted = true;
             hideActivityPane();
         }
 
-        @Override public void executeFailed(Task<V> task) {
+        @Override
+        public void executeFailed(Task<V> task) {
             taskExecuted = true;
             Throwable ex = task.getFault();
             hideActivityPane();
@@ -90,14 +93,17 @@ public class LazyLoadingCardPane extends CardPane implements Bindable {
             getCardPaneListeners().remove(this);
         }
 
-        @Override public Vote previewSelectedIndexChange(CardPane cardPane, int selectedIndex) {
+        @Override
+        public Vote previewSelectedIndexChange(CardPane cardPane, int selectedIndex) {
             return Vote.APPROVE;
         }
 
-        @Override public void selectedIndexChangeVetoed(CardPane cardPane, Vote reason) {
+        @Override
+        public void selectedIndexChangeVetoed(CardPane cardPane, Vote reason) {
         }
 
-        @Override public void selectedIndexChanged(CardPane cardPane, int previousSelectedIndex) {
+        @Override
+        public void selectedIndexChanged(CardPane cardPane, int previousSelectedIndex) {
             if (cardPane.getSelectedIndex() == 0 && taskExecuted) {
                 hideActivityPane();
             }

@@ -1,7 +1,7 @@
 package groovejames.gui;
 
-import groovejames.gui.action.MailAction;
 import groovejames.gui.action.RemoveDownloadsAction;
+import groovejames.gui.action.ShareAction;
 import groovejames.gui.action.ShowSettingsAction;
 import groovejames.gui.action.SongClearPlaylistAction;
 import groovejames.gui.action.SongKeepAction;
@@ -12,10 +12,6 @@ import groovejames.gui.action.SongShareAction;
 import groovejames.gui.action.ToggleRadioAction;
 import groovejames.gui.clipboard.GrooveJamesAlbumClipboardListener;
 import groovejames.gui.clipboard.GrooveJamesSongClipboardListener;
-import groovejames.gui.clipboard.GroovesharkAlbumClipboardListener;
-import groovejames.gui.clipboard.GroovesharkArtistClipboardListener;
-import groovejames.gui.clipboard.GroovesharkPlaylistClipboardListener;
-import groovejames.gui.clipboard.GroovesharkUserClipboardListener;
 import groovejames.gui.components.AbstractApplication;
 import groovejames.gui.components.ClickableTableListener;
 import groovejames.gui.components.ClickableTableView;
@@ -121,7 +117,7 @@ public class Main extends AbstractApplication {
     private Resources resources;
     private Display display;
     private ImageLoader imageLoader;
-    private final ArrayList<Track> downloadTracks = new ArrayList<Track>();
+    private final ArrayList<Track> downloadTracks = new ArrayList<>();
 
     @BXML private Window window;
     @BXML private SplitPane mainSplitPane;
@@ -153,7 +149,8 @@ public class Main extends AbstractApplication {
         DesktopApplicationContext.main(Main.class, args);
     }
 
-    @Override public void startup(Display display, Map<String, String> properties) throws Exception {
+    @Override
+    public void startup(Display display, Map<String, String> properties) throws Exception {
         // fix a bug in Pivot: replace the Tooltip skin class to set the background color of tooltips properly
         Theme.getTheme().set(Tooltip.class, FixedTerraTooltipSkin.class);
 
@@ -181,7 +178,8 @@ public class Main extends AbstractApplication {
         log.info("GUI initialized");
     }
 
-    @Override public boolean shutdown(boolean optional) throws Exception {
+    @Override
+    public boolean shutdown(boolean optional) throws Exception {
         Services.getDownloadService().shutdown();
         this.display = null;
         return false;
@@ -207,11 +205,13 @@ public class Main extends AbstractApplication {
         return downloadTracks;
     }
 
-    @SuppressWarnings("unchecked") public Sequence<Track> getSelectedDownloadTracks() {
+    @SuppressWarnings("unchecked")
+    public Sequence<Track> getSelectedDownloadTracks() {
         return (Sequence<Track>) downloadsTable.getSelectedRows();
     }
 
-    @SuppressWarnings("unchecked") public Sequence<Song> getSelectedPlayerSongs() {
+    @SuppressWarnings("unchecked")
+    public Sequence<Song> getSelectedPlayerSongs() {
         return (Sequence<Song>) playerTable.getSelectedRows();
     }
 
@@ -237,12 +237,12 @@ public class Main extends AbstractApplication {
         Services.getPlayService().add(songs, addMode);
     }
 
-    public void mailSongs(Sequence<Song> songs) {
-        new MailAction(window, songs).perform(window);
+    public void shareSongs(Sequence<Song> songs) {
+        new ShareAction(window, songs).perform(window);
     }
 
-    public void mailAlbum(AlbumSearch album) {
-        new MailAction(window, album).perform(window);
+    public void shareAlbum(AlbumSearch album) {
+        new ShareAction(window, album).perform(window);
     }
 
     public void showError(String message, Throwable ex) {
@@ -282,7 +282,8 @@ public class Main extends AbstractApplication {
                     // paint the activity indicator only after 600ms, otherwise a strange redraw
                     // error will occur
                     ApplicationContext.scheduleCallback(new Runnable() {
-                        @Override public void run() {
+                        @Override
+                        public void run() {
                             searchResultPane.startSearch();
                         }
                     }, 600);
@@ -317,10 +318,6 @@ public class Main extends AbstractApplication {
     private void addClipboardListeners() {
         Services.getWatchClipboardTask().addClipboardListener(new GrooveJamesSongClipboardListener(this));
         Services.getWatchClipboardTask().addClipboardListener(new GrooveJamesAlbumClipboardListener(this));
-        Services.getWatchClipboardTask().addClipboardListener(new GroovesharkArtistClipboardListener(this));
-        Services.getWatchClipboardTask().addClipboardListener(new GroovesharkAlbumClipboardListener(this));
-        Services.getWatchClipboardTask().addClipboardListener(new GroovesharkPlaylistClipboardListener(this));
-        Services.getWatchClipboardTask().addClipboardListener(new GroovesharkUserClipboardListener(this));
     }
 
     private void updatePlayPauseButton(boolean isPlaying) {
@@ -354,16 +351,16 @@ public class Main extends AbstractApplication {
     private void initShortcuts() {
         // Global shortcut: Reload GUI with Ctrl-R
         window.getActionMappings().add(new Window.ActionMapping(
-            new Keyboard.KeyStroke(Keyboard.KeyCode.R, Platform.getCommandModifier().getMask()),
-            "reloadGUI"));
+                new Keyboard.KeyStroke(Keyboard.KeyCode.R, Platform.getCommandModifier().getMask()),
+                "reloadGUI"));
         // Global shortcut: Close currently active tab with Ctrl-W
         window.getActionMappings().add(new Window.ActionMapping(
-            new Keyboard.KeyStroke(Keyboard.KeyCode.W, Platform.getCommandModifier().getMask()),
-            "closeCurrentTab"));
+                new Keyboard.KeyStroke(Keyboard.KeyCode.W, Platform.getCommandModifier().getMask()),
+                "closeCurrentTab"));
         // Global shortcut: Close all tabs with Ctrl-Shift-W
         window.getActionMappings().add(new Window.ActionMapping(
-            new Keyboard.KeyStroke(Keyboard.KeyCode.W, Platform.getCommandModifier().getMask() + Keyboard.Modifier.SHIFT.getMask()),
-            "closeAllTabs"));
+                new Keyboard.KeyStroke(Keyboard.KeyCode.W, Platform.getCommandModifier().getMask() + Keyboard.Modifier.SHIFT.getMask()),
+                "closeAllTabs"));
     }
 
     private Window createWindow() throws IOException, SerializationException {
@@ -386,7 +383,8 @@ public class Main extends AbstractApplication {
         downloadsTable.getTableViewSortListeners().add(new DefaultTableViewSortListener());
         downloadsTable.getComponentKeyListeners().add(new TableSelectAllKeyListener());
         downloadsTable.getComponentMouseButtonListeners().add(new ComponentMouseButtonListener.Adapter() {
-            @Override public boolean mouseClick(Component component, Mouse.Button button, int x, int y, int count) {
+            @Override
+            public boolean mouseClick(Component component, Mouse.Button button, int x, int y, int count) {
                 int col = downloadsTable.getColumnAt(x);
                 int row = downloadsTable.getRowAt(y);
                 if (col == 4 && row >= 0) {
@@ -407,7 +405,7 @@ public class Main extends AbstractApplication {
                 if ("artistName".equals(column.getName())) {
                     openSearchTab(new ArtistSearch(song.getArtistID(), song.getArtistName()));
                 } else if ("albumName".equals(column.getName())) {
-                    openSearchTab(new AlbumSearch(song.getAlbumID(), song.getAlbumName(), song.getArtistName(), false, false));
+                    openSearchTab(new AlbumSearch(song.getAlbumID(), song.getAlbumName(), song.getArtistName(), false));
                 }
                 return false;
             }
@@ -419,7 +417,8 @@ public class Main extends AbstractApplication {
         playerTable.setTableData(Services.getPlayService().getPlaylist());
         playerTable.getComponentKeyListeners().add(new TableSelectAllKeyListener());
         playerTable.getComponentMouseButtonListeners().add(new ComponentMouseButtonListener.Adapter() {
-            @Override public boolean mouseClick(Component component, Mouse.Button button, int x, int y, int count) {
+            @Override
+            public boolean mouseClick(Component component, Mouse.Button button, int x, int y, int count) {
                 if (count > 1) {
                     int row = playerTable.getRowAt(y);
                     if (row >= 0) {
@@ -437,7 +436,7 @@ public class Main extends AbstractApplication {
                 if ("artistName".equals(column.getName())) {
                     openSearchTab(new ArtistSearch(song.getArtistID(), song.getArtistName()));
                 } else if ("albumName".equals(column.getName())) {
-                    openSearchTab(new AlbumSearch(song.getAlbumID(), song.getAlbumName(), song.getArtistName(), false, false));
+                    openSearchTab(new AlbumSearch(song.getAlbumID(), song.getAlbumName(), song.getArtistName(), false));
                 }
                 return false;
             }
@@ -446,26 +445,30 @@ public class Main extends AbstractApplication {
         WtkUtil.setupColumnWidthSaver(playerTable, "playerTable");
 
         final SuggestionPopupTextInputContentListener suggestionPopupTextInputContentListener = new SuggestionPopupTextInputContentListener(
-            new SuggestionsProvider<String>() {
-                @Override public List<String> getSuggestions(String query) throws Exception {
-                    if (query.length() > 3) {
-                        return new ListAdapter<String>(Services.getSearchService().getAutocomplete(query));
-                    } else {
-                        return null;
+                new SuggestionsProvider<String>() {
+                    @Override
+                    public List<String> getSuggestions(String query) throws Exception {
+                        if (query.length() > 3) {
+                            return new ListAdapter<>(Services.getSearchService().getAutocomplete(query));
+                        } else {
+                            return null;
+                        }
                     }
-                }
 
-                @Override public void accepted(String text) {
-                    doSearch();
-                }
+                    @Override
+                    public void accepted(String text) {
+                        doSearch();
+                    }
 
-                @Override public void executeGetSuggestionsFailed(String query, Throwable exception) {
-                    log.error(format("could not autocomplete '%s': %s", query, toErrorString(exception, "; reason: ")));
-                }
-            });
+                    @Override
+                    public void executeGetSuggestionsFailed(String query, Throwable exception) {
+                        log.error(format("could not autocomplete '%s': %s", query, toErrorString(exception, "; reason: ")));
+                    }
+                });
         searchField.getTextInputContentListeners().add(suggestionPopupTextInputContentListener);
         searchField.getComponentKeyListeners().add(new ComponentKeyListener.Adapter() {
-            @Override public boolean keyTyped(Component searchField, char character) {
+            @Override
+            public boolean keyTyped(Component searchField, char character) {
                 if (character == Keyboard.KeyCode.ENTER) {
                     suggestionPopupTextInputContentListener.closeSuggestionPopup();
                     doSearch();
@@ -474,7 +477,8 @@ public class Main extends AbstractApplication {
             }
         });
         searchButton.getButtonPressListeners().add(new ButtonPressListener() {
-            @Override public void buttonPressed(Button button) {
+            @Override
+            public void buttonPressed(Button button) {
                 doSearch();
             }
         });
@@ -487,7 +491,8 @@ public class Main extends AbstractApplication {
         closeAllTabsAction.setEnabled(false);
 
         tabPane.setMenuHandler(new MenuHandler.Adapter() {
-            @Override public boolean configureContextMenu(Component component, Menu menu, int x, int y) {
+            @Override
+            public boolean configureContextMenu(Component component, Menu menu, int x, int y) {
                 if (tabPane.getTabs().getLength() > 0) {
                     Menu.Item closeCurrentTab = new Menu.Item(new MenuItemData(null, "Close Tab", new Keyboard.KeyStroke(Keyboard.KeyCode.W, Platform.getCommandModifier().getMask())));
                     closeCurrentTab.setAction(closeCurrentTabAction);
@@ -505,14 +510,16 @@ public class Main extends AbstractApplication {
             }
         });
         tabPane.getTabPaneListeners().add(new TabPaneListener.Adapter() {
-            @Override public void tabInserted(TabPane tabPane, int index) {
+            @Override
+            public void tabInserted(TabPane tabPane, int index) {
                 int numTabs = tabPane.getTabs().getLength();
                 closeCurrentTabAction.setEnabled(numTabs > 0);
                 closeOtherTabsAction.setEnabled(numTabs > 0);
                 closeAllTabsAction.setEnabled(numTabs > 0);
             }
 
-            @Override public void tabsRemoved(TabPane tabPane, int index, Sequence<Component> tabs) {
+            @Override
+            public void tabsRemoved(TabPane tabPane, int index, Sequence<Component> tabs) {
                 int numTabs = tabPane.getTabs().getLength();
                 tabPane.setSelectedIndex(min(max(0, index), numTabs - 1));
                 closeCurrentTabAction.setEnabled(numTabs > 0);
@@ -522,7 +529,8 @@ public class Main extends AbstractApplication {
         });
 
         mainSplitPane.getSplitPaneListeners().add(new SplitPaneListener.Adapter() {
-            @Override public void splitRatioChanged(SplitPane splitPane, float previousSplitRatio) {
+            @Override
+            public void splitRatioChanged(SplitPane splitPane, float previousSplitRatio) {
                 if (!SplitRatioTransition.isTransitionRunning(splitPane)) {
                     Preferences splitPanePrefs = Preferences.userNodeForPackage(Main.class).node("mainSplitPane");
                     splitPanePrefs.putFloat("splitRatio", splitPane.getSplitRatio());
@@ -553,18 +561,16 @@ public class Main extends AbstractApplication {
             }
         });
         nowPlayingStackPane.getComponentMouseButtonListeners().add(new ComponentMouseButtonListener.Adapter() {
-            @Override public boolean mouseClick(Component component, Mouse.Button button, int x, int y, int count) {
+            @Override
+            public boolean mouseClick(Component component, Mouse.Button button, int x, int y, int count) {
                 Image image = nowPlayingImage.getImage();
                 if (image != null && image instanceof Picture) {
                     Picture picture = (Picture) image;
                     try {
                         BufferedImage bufferedImage = picture.getBufferedImage();
                         File tempFile = File.createTempFile("groovejames", ".png");
-                        FileOutputStream fos = new FileOutputStream(tempFile);
-                        try {
+                        try (FileOutputStream fos = new FileOutputStream(tempFile)) {
                             new BufferedImageSerializer(BufferedImageSerializer.Format.PNG).writeObject(bufferedImage, fos);
-                        } finally {
-                            fos.close();
                         }
                         Desktop.getDesktop().open(tempFile);
                         return true;
@@ -735,17 +741,20 @@ public class Main extends AbstractApplication {
     private class DownloadTracksListListener extends ListListener.Adapter<Track> {
         private Timer timer;
 
-        @Override public void itemInserted(List<Track> trackList, int index) {
+        @Override
+        public void itemInserted(List<Track> trackList, int index) {
             startTimer();
         }
 
-        @Override public void itemsRemoved(List<Track> trackList, int index, Sequence<Track> items) {
+        @Override
+        public void itemsRemoved(List<Track> trackList, int index, Sequence<Track> items) {
             if (trackList.getLength() == 0) {
                 stopTimer();
             }
         }
 
-        @Override public void listCleared(List<Track> trackList) {
+        @Override
+        public void listCleared(List<Track> trackList) {
             stopTimer();
         }
 
@@ -760,10 +769,12 @@ public class Main extends AbstractApplication {
             if (timer == null) {
                 timer = new Timer("downloadTable repainter", true);
                 timer.scheduleAtFixedRate(new TimerTask() {
-                    @Override public void run() {
+                    @Override
+                    public void run() {
                         if (downloadsTable != null) {
                             ApplicationContext.queueCallback(new Runnable() {
-                                @Override public void run() {
+                                @Override
+                                public void run() {
                                     downloadsTable.repaint();
                                 }
                             });
@@ -776,15 +787,18 @@ public class Main extends AbstractApplication {
 
 
     private class PlaylistListListener extends ListListener.Adapter<Song> {
-        @Override public void itemInserted(List<Song> list, int index) {
+        @Override
+        public void itemInserted(List<Song> list, int index) {
             updateToggleRadioAction(list);
         }
 
-        @Override public void itemsRemoved(List<Song> list, int index, Sequence<Song> items) {
+        @Override
+        public void itemsRemoved(List<Song> list, int index, Sequence<Song> items) {
             updateToggleRadioAction(list);
         }
 
-        @Override public void listCleared(List<Song> list) {
+        @Override
+        public void listCleared(List<Song> list) {
             updateToggleRadioAction(list);
         }
 
@@ -795,7 +809,8 @@ public class Main extends AbstractApplication {
 
 
     private class PlaylistListener implements PlayServiceListener {
-        @Override public void playbackStarted(final Track track) {
+        @Override
+        public void playbackStarted(final Track track) {
             ApplicationContext.queueCallback(new Runnable() {
                 public void run() {
                     updatePlayInfo(track, "Now playing");
@@ -805,7 +820,8 @@ public class Main extends AbstractApplication {
             });
         }
 
-        @Override public void playbackPaused(final Track track, final int audioPosition) {
+        @Override
+        public void playbackPaused(final Track track, final int audioPosition) {
             ApplicationContext.queueCallback(new Runnable() {
                 public void run() {
                     updatePlayInfo(track, "Paused");
@@ -815,7 +831,8 @@ public class Main extends AbstractApplication {
             });
         }
 
-        @Override public void playbackFinished(final Track track, final int audioPosition) {
+        @Override
+        public void playbackFinished(final Track track, final int audioPosition) {
             ApplicationContext.queueCallback(new Runnable() {
                 public void run() {
                     if (track.getStatus() == Track.Status.ERROR) {
@@ -830,7 +847,8 @@ public class Main extends AbstractApplication {
             });
         }
 
-        @Override public void positionChanged(final Track track, final int audioPosition) {
+        @Override
+        public void positionChanged(final Track track, final int audioPosition) {
             ApplicationContext.queueCallback(new Runnable() {
                 public void run() {
                     updatePlayProgress(track, audioPosition);
@@ -838,7 +856,8 @@ public class Main extends AbstractApplication {
             });
         }
 
-        @Override public void statusChanged(final Track track) {
+        @Override
+        public void statusChanged(final Track track) {
             ApplicationContext.queueCallback(new Runnable() {
                 public void run() {
                     if (track.getStatus() == Track.Status.ERROR) {
@@ -852,7 +871,8 @@ public class Main extends AbstractApplication {
             });
         }
 
-        @Override public void downloadedBytesChanged(final Track track) {
+        @Override
+        public void downloadedBytesChanged(final Track track) {
             ApplicationContext.queueCallback(new Runnable() {
                 public void run() {
                     playDownloadProgress.setPercentage(track.getProgress());
@@ -860,7 +880,8 @@ public class Main extends AbstractApplication {
             });
         }
 
-        @Override public void exception(final Track track, final Exception ex) {
+        @Override
+        public void exception(final Track track, final Exception ex) {
             ApplicationContext.queueCallback(new Runnable() {
                 public void run() {
                     showError("Error playing track " + track, ex);

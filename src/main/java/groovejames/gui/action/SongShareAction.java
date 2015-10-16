@@ -16,7 +16,7 @@ public class SongShareAction extends Action {
 
     @Override public void perform(Component source) {
         Sequence<Song> selectedRows = main.getSelectedPlayerSongs();
-        main.mailSongs(selectedRows);
+        main.shareSongs(selectedRows);
     }
 
 }

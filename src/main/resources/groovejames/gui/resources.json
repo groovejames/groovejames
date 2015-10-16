@@ -98,6 +98,18 @@
                     size: '130%'
                 }
             }
+        },
+        count: {
+            styles: {
+                padding: {
+                    top: 5
+                }
+            }
+        },
+        moreLink: {
+            styles: {
+                color: '#FFFFFF'
+            }
         }
     }
 }

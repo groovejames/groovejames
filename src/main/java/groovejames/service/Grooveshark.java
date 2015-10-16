@@ -13,7 +13,6 @@ import groovejames.model.SearchSongsResultType;
 import groovejames.model.SearchUsersResultType;
 import groovejames.model.Song;
 import groovejames.model.Songs;
-import groovejames.model.StreamKey;
 import groovejames.model.User;
 
 import java.util.Collection;
@@ -64,15 +63,6 @@ public interface Grooveshark {
 
     @ResultPath("Playlists")
     Playlist[] userGetPlaylists(@Param("userID") long userID) throws Exception;
-
-    @Header(clientName = "jsqueue")
-    StreamKey getStreamKeyFromSongIDEx(
-        @Param("songID") long songID,
-        @Param("type") long type,
-        @Param("mobile") boolean mobile,
-        @Param("prefetch") boolean prefetch,
-        @Param("country") Country country)
-        throws Exception;
 
     @Header(clientName = "jsqueue")
     Song autoplayGetSong(
