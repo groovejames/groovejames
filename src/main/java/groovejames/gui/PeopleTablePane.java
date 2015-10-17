@@ -15,7 +15,6 @@ import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.collections.Map;
 import org.apache.pivot.util.Filter;
 import org.apache.pivot.util.Resources;
-import org.apache.pivot.util.concurrent.TaskExecutionException;
 import org.apache.pivot.wtk.Component;
 import org.apache.pivot.wtk.ComponentKeyListener;
 import org.apache.pivot.wtk.Mouse;
@@ -77,32 +76,24 @@ public class PeopleTablePane extends AbstractSearchTablePane<User> {
     }
 
     @Override
-    public GuiAsyncTask<SearchResult<User>> createSearchTask() {
-        return new GuiAsyncTask<SearchResult<User>>(
-                "searching for people named \"" + searchParameter.getDescription() + "\"") {
+    public String getSearchDescription() {
+        return "searching for people named \"" + searchParameter.getDescription() + "\"";
+    }
 
-            @Override
-            protected void beforeExecute() {
-                peopleList.setSource(new ArrayList<User>());
-            }
+    @Override
+    public void beforeSearch() {
+        peopleList.setSource(new ArrayList<User>());
+    }
 
-            @Override
-            public SearchResult<User> execute() throws TaskExecutionException {
-                try {
-                    return Services.getSearchService().searchPeople(searchParameter);
-                } catch (Exception ex) {
-                    throw new TaskExecutionException(ex);
-                }
-            }
+    @Override
+    public SearchResult<User> search() throws Exception {
+        return Services.getSearchService().searchPeople(searchParameter);
+    }
 
-            @Override
-            protected void taskExecuted() {
-                SearchResult<User> result = getResult();
-                updateCountTextAndMoreLink(result);
-                User[] people = result.getResult();
-                peopleList.setSource(new ArrayList<>(people));
-            }
-
-        };
+    @Override
+    public void afterSearch(SearchResult<User> searchResult) {
+        updateCountTextAndMoreLink(searchResult);
+        User[] people = searchResult.getResult();
+        peopleList.setSource(new ArrayList<>(people));
     }
 }

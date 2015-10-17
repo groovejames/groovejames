@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class NetEaseServiceMock implements INetEaseService {
 
     private static final int total = 234;
+    private static final int delay = 1000;
 
     @Override
     public NESongSearchResult searchSongs(String searchString, int offset, int limit) throws Exception {
@@ -21,6 +22,7 @@ public class NetEaseServiceMock implements INetEaseService {
         NESongSearchResult result = new NESongSearchResult();
         result.songCount = total;
         result.songs = songs.toArray(new NESong[songs.size()]);
+        delay();
         return result;
     }
 
@@ -29,12 +31,13 @@ public class NetEaseServiceMock implements INetEaseService {
         NESongDetails songDetails = new NESongDetails();
         songDetails.id = songID;
         songDetails.duration = 3 * 60 * 1000;
+        delay();
         return songDetails;
     }
 
     @Override
     public String getDownloadUrl(NESongDetails songDetails) {
-        return null;
+        return new NetEaseService(null).getDownloadUrl(songDetails);
     }
 
     private NEAlbum createAlbum(String name) {
@@ -49,5 +52,9 @@ public class NetEaseServiceMock implements INetEaseService {
         artist.name = "Artist " + name;
         artist.id = artist.name.hashCode();
         return artist;
+    }
+
+    private void delay() throws InterruptedException {
+        Thread.sleep(delay);
     }
 }

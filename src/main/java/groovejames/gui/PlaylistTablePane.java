@@ -15,7 +15,6 @@ import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.collections.Map;
 import org.apache.pivot.util.Filter;
 import org.apache.pivot.util.Resources;
-import org.apache.pivot.util.concurrent.TaskExecutionException;
 import org.apache.pivot.wtk.Component;
 import org.apache.pivot.wtk.ComponentKeyListener;
 import org.apache.pivot.wtk.Mouse;
@@ -76,32 +75,24 @@ public class PlaylistTablePane extends AbstractSearchTablePane<Playlist> {
     }
 
     @Override
-    public GuiAsyncTask<SearchResult<Playlist>> createSearchTask() {
-        return new GuiAsyncTask<SearchResult<Playlist>>(
-                "searching for playlists named \"" + searchParameter.getDescription() + "\"") {
+    public String getSearchDescription() {
+        return "searching for playlists named \"" + searchParameter.getDescription() + "\"";
+    }
 
-            @Override
-            protected void beforeExecute() {
-                playlistList.setSource(new ArrayList<Playlist>());
-            }
+    @Override
+    public void beforeSearch() {
+        playlistList.setSource(new ArrayList<Playlist>());
+    }
 
-            @Override
-            public SearchResult<Playlist> execute() throws TaskExecutionException {
-                try {
-                    return Services.getSearchService().searchPlaylists(searchParameter);
-                } catch (Exception ex) {
-                    throw new TaskExecutionException(ex);
-                }
-            }
+    @Override
+    public SearchResult<Playlist> search() throws Exception {
+        return Services.getSearchService().searchPlaylists(searchParameter);
+    }
 
-            @Override
-            protected void taskExecuted() {
-                SearchResult<Playlist> result = getResult();
-                updateCountTextAndMoreLink(result);
-                Playlist[] playlists = result.getResult();
-                playlistList.setSource(new ArrayList<>(playlists));
-            }
-
-        };
+    @Override
+    public void afterSearch(SearchResult<Playlist> searchResult) {
+        updateCountTextAndMoreLink(searchResult);
+        Playlist[] playlists = searchResult.getResult();
+        playlistList.setSource(new ArrayList<>(playlists));
     }
 }

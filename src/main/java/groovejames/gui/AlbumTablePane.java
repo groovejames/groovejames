@@ -17,7 +17,6 @@ import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.collections.Map;
 import org.apache.pivot.util.Filter;
 import org.apache.pivot.util.Resources;
-import org.apache.pivot.util.concurrent.TaskExecutionException;
 import org.apache.pivot.wtk.Component;
 import org.apache.pivot.wtk.ComponentKeyListener;
 import org.apache.pivot.wtk.Mouse;
@@ -97,31 +96,24 @@ public class AlbumTablePane extends AbstractSearchTablePane<Album> {
     }
 
     @Override
-    public GuiAsyncTask<SearchResult<Album>> createSearchTask() {
-        return new GuiAsyncTask<SearchResult<Album>>(
-                "searching for albums which contain the string or belong to artist \"" + searchParameter.getDescription() + "\"") {
+    public String getSearchDescription() {
+        return "searching for albums which contain the string or belong to artist \"" + searchParameter.getDescription() + "\"";
+    }
 
-            @Override
-            protected void beforeExecute() {
-                albumList.setSource(new ArrayList<Album>());
-            }
+    @Override
+    public void beforeSearch() {
+        albumList.setSource(new ArrayList<Album>());
+    }
 
-            @Override
-            public SearchResult<Album> execute() throws TaskExecutionException {
-                try {
-                    return Services.getSearchService().searchAlbums(searchParameter);
-                } catch (Exception ex) {
-                    throw new TaskExecutionException(ex);
-                }
-            }
+    @Override
+    public SearchResult<Album> search() throws Exception {
+        return Services.getSearchService().searchAlbums(searchParameter);
+    }
 
-            @Override
-            protected void taskExecuted() {
-                SearchResult<Album> result = getResult();
-                updateCountTextAndMoreLink(result);
-                Album[] albums = result.getResult();
-                albumList.setSource(new ArrayList<>(albums));
-            }
-        };
+    @Override
+    public void afterSearch(SearchResult<Album> searchResult) {
+        updateCountTextAndMoreLink(searchResult);
+        Album[] albums = searchResult.getResult();
+        albumList.setSource(new ArrayList<>(albums));
     }
 }

@@ -15,7 +15,6 @@ import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.collections.Map;
 import org.apache.pivot.util.Filter;
 import org.apache.pivot.util.Resources;
-import org.apache.pivot.util.concurrent.TaskExecutionException;
 import org.apache.pivot.wtk.Component;
 import org.apache.pivot.wtk.ComponentKeyListener;
 import org.apache.pivot.wtk.Mouse;
@@ -29,7 +28,7 @@ import static groovejames.util.Util.containsIgnoringCase;
 public class ArtistTablePane extends AbstractSearchTablePane<Artist> {
 
     private Main main;
-    private FilteredList<Artist> artistList = new FilteredList<Artist>();
+    private FilteredList<Artist> artistList = new FilteredList<>();
 
     @BXML private ClickableTableView artistTable;
     @BXML private TextInput artistSearchInPage;
@@ -76,31 +75,24 @@ public class ArtistTablePane extends AbstractSearchTablePane<Artist> {
     }
 
     @Override
-    public GuiAsyncTask<SearchResult<Artist>> createSearchTask() {
-        return new GuiAsyncTask<SearchResult<Artist>>(
-                "searching for artists named \"" + searchParameter.getDescription() + "\"") {
+    public String getSearchDescription() {
+        return "searching for artists named \"" + searchParameter.getDescription() + "\"";
+    }
 
-            @Override
-            protected void beforeExecute() {
-                artistList.setSource(new ArrayList<Artist>());
-            }
+    @Override
+    public void beforeSearch() {
+        artistList.setSource(new ArrayList<Artist>());
+    }
 
-            @Override
-            public SearchResult<Artist> execute() throws TaskExecutionException {
-                try {
-                    return Services.getSearchService().searchArtists(searchParameter);
-                } catch (Exception ex) {
-                    throw new TaskExecutionException(ex);
-                }
-            }
+    @Override
+    public SearchResult<Artist> search() throws Exception {
+        return Services.getSearchService().searchArtists(searchParameter);
+    }
 
-            @Override
-            protected void taskExecuted() {
-                SearchResult<Artist> result = getResult();
-                updateCountTextAndMoreLink(result);
-                Artist[] artists = result.getResult();
-                artistList.setSource(new ArrayList<>(artists));
-            }
-        };
+    @Override
+    public void afterSearch(SearchResult<Artist> searchResult) {
+        updateCountTextAndMoreLink(searchResult);
+        Artist[] artists = searchResult.getResult();
+        artistList.setSource(new ArrayList<>(artists));
     }
 }

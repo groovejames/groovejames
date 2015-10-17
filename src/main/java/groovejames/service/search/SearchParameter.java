@@ -26,7 +26,11 @@ public interface SearchParameter {
 
     int getOffset();
 
+    void setOffset(int offset);
+
     int getLimit();
+
+    void setLimit(int limit);
 
     /**
      * used for comparision of tab contents: two search tabs are considered equal

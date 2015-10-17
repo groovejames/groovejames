@@ -23,7 +23,6 @@ import org.apache.pivot.collections.Sequence;
 import org.apache.pivot.collections.immutable.ImmutableList;
 import org.apache.pivot.util.Filter;
 import org.apache.pivot.util.Resources;
-import org.apache.pivot.util.concurrent.TaskExecutionException;
 import org.apache.pivot.wtk.Action;
 import org.apache.pivot.wtk.Button;
 import org.apache.pivot.wtk.ButtonStateListener;
@@ -62,8 +61,8 @@ public class SongTablePane extends AbstractSearchTablePane<Song> {
     @BXML private Menu.Item groupByAlbum;
 
     private Main main;
-    private FilteredList<Song> songList = new FilteredList<>();
-    private FilteredList<Song> songAlbumList = new FilteredList<>();
+    private FilteredList<Song> songList = new FilteredList<>(new ArrayList<Song>());
+    private FilteredList<Song> songAlbumList = new FilteredList<>(new ArrayList<Song>());
     private Long songListSelectedAlbumID;
     private Preferences prefs = Preferences.userNodeForPackage(SearchResultPane.class);
 
@@ -291,6 +290,8 @@ public class SongTablePane extends AbstractSearchTablePane<Song> {
     public void afterLoad() {
         super.afterLoad();
 
+        //songList.setSource(new ArrayList<Song>());
+
         updateToolbarButtons();
 
         WtkUtil.setupColumnWidthSaver(songTable, "songTable", searchParameter.getSearchType().name());
@@ -330,95 +331,91 @@ public class SongTablePane extends AbstractSearchTablePane<Song> {
     }
 
     @Override
-    public GuiAsyncTask<SearchResult<Song>> createSearchTask() {
-        return new GuiAsyncTask<SearchResult<Song>>("searching for songs named \"" + searchParameter.getDescription() + "\"") {
-            @Override
-            protected void beforeExecute() {
-                SearchType searchType = searchParameter.getSearchType();
-                if (searchType == SearchType.Album) {
-                    groupByAlbum.setEnabled(false);
-                }
-                if (searchType == SearchType.Album || searchType == SearchType.Songs) {
-                    songTable.getUserData().put("dontRedistributeColumnWidths", Boolean.TRUE);
-                    groupByAlbum.setSelected(false);
-                    songTable.getUserData().put("dontRedistributeColumnWidths", Boolean.FALSE);
-                }
-                setSongs(new Song[]{});
-            }
+    public String getSearchDescription() {
+        return "searching for songs named \"" + searchParameter.getDescription() + "\"";
+    }
 
-            @Override
-            public SearchResult<Song> execute() throws TaskExecutionException {
-                try {
-                    return Services.getSearchService().searchSongs(searchParameter);
-                } catch (Exception ex) {
-                    throw new TaskExecutionException(ex);
-                }
-            }
+    @Override
+    public void beforeSearch() {
+        SearchType searchType = searchParameter.getSearchType();
+        if (searchType == SearchType.Album) {
+            groupByAlbum.setEnabled(false);
+        }
+        if (searchType == SearchType.Album || searchType == SearchType.Songs) {
+            songTable.getUserData().put("dontRedistributeColumnWidths", Boolean.TRUE);
+            groupByAlbum.setSelected(false);
+            songTable.getUserData().put("dontRedistributeColumnWidths", Boolean.FALSE);
+        }
+        //setSongs(new Song[]{});
+    }
 
-            @Override
-            protected void taskExecuted() {
-                SearchResult<Song> result = getResult();
-                updateCountTextAndMoreLink(result);
-                Song[] songs = result.getResult();
-                setSongs(songs);
-                updateCountTextAndMoreLink(result);
-                Set<Long> autoPlaySongIds = new java.util.HashSet<>();
-                if (searchParameter.getSearchType() == SearchType.Album) {
-                    if (((AlbumSearch) searchParameter).isAutoplay()) {
-                        for (Song song : songs) {
-                            autoPlaySongIds.add(song.getSongID());
-                        }
-                    }
-                } else if (searchParameter.getSearchType() == SearchType.Songs) {
-                    autoPlaySongIds = ((SongSearch) searchParameter).getAutoPlaySongIds();
-                } else {
-                    boolean pGroupByAlbum = prefs.node("songTable").node(searchParameter.getSearchType().name()).getBoolean("groupByAlbum", true);
-                    songTable.getUserData().put("dontRedistributeColumnWidths", Boolean.TRUE);
-                    groupByAlbum.setSelected(pGroupByAlbum);
-                    songTable.getUserData().put("dontRedistributeColumnWidths", Boolean.FALSE);
-                }
-                if (!autoPlaySongIds.isEmpty()) {
-                    List<Song> autoPlaySongs = new ArrayList<>();
-                    List<?> tableData = songTable.getTableData();
-                    for (Object o : tableData) {
-                        Song song = (Song) o;
-                        if (autoPlaySongIds.contains(song.getSongID())) {
-                            autoPlaySongs.add(song);
-                        }
-                    }
-                    main.play(autoPlaySongs, PlayService.AddMode.NOW);
-                }
-            }
+    @Override
+    public SearchResult<Song> search() throws Exception {
+        return Services.getSearchService().searchSongs(searchParameter);
+    }
 
-            private void setSongs(Song[] songs) {
-                ArrayList<Song> songLst = new ArrayList<>(songs);
-                ArrayList<Song> albumList = filterAlbums(songLst);
-                Song allAlbumsEntry = new Song();
-                allAlbumsEntry.setAlbumName("All Albums");
-                albumList.insert(allAlbumsEntry, 0);
-                songList.setSource(songLst);
-                songAlbumList.setSource(albumList);
-                songAlbumTable.setSelectedIndex(0);
-            }
-
-            private ArrayList<Song> filterAlbums(ArrayList<Song> songs) {
-                HashSet<Long> albumIDs = new HashSet<>();
-                ArrayList<Song> result = new ArrayList<>(songs.getLength());
+    @Override
+    public void afterSearch(SearchResult<Song> result) {
+        updateCountTextAndMoreLink(result);
+        Song[] songs = result.getResult();
+        boolean isFirstAdd = songList.isEmpty();
+        addSongs(songs);
+        Set<Long> autoPlaySongIds = new java.util.HashSet<>();
+        if (searchParameter.getSearchType() == SearchType.Album) {
+            if (((AlbumSearch) searchParameter).isAutoplay()) {
                 for (Song song : songs) {
-                    if (!albumIDs.contains(song.getAlbumID())) {
-                        result.add(song);
-                        albumIDs.add(song.getAlbumID());
-                    }
+                    autoPlaySongIds.add(song.getSongID());
                 }
-                ArrayList.sort(result, new Comparator<Song>() {
-                    @Override
-                    public int compare(Song song1, Song song2) {
-                        return compareNullSafe(song1.getAlbumName(), song2.getAlbumName());
-                    }
-                });
-                return result;
             }
-        };
+        } else if (searchParameter.getSearchType() == SearchType.Songs) {
+            autoPlaySongIds = ((SongSearch) searchParameter).getAutoPlaySongIds();
+        } else {
+            boolean pGroupByAlbum = prefs.node("songTable").node(searchParameter.getSearchType().name()).getBoolean("groupByAlbum", true);
+            songTable.getUserData().put("dontRedistributeColumnWidths", Boolean.TRUE);
+            groupByAlbum.setSelected(pGroupByAlbum);
+            songTable.getUserData().put("dontRedistributeColumnWidths", Boolean.FALSE);
+        }
+        if (isFirstAdd && !autoPlaySongIds.isEmpty()) {
+            List<Song> autoPlaySongs = new ArrayList<>();
+            List<?> tableData = songTable.getTableData();
+            for (Object o : tableData) {
+                Song song = (Song) o;
+                if (autoPlaySongIds.contains(song.getSongID())) {
+                    autoPlaySongs.add(song);
+                }
+            }
+            main.play(autoPlaySongs, PlayService.AddMode.NOW);
+        }
+    }
+
+    private void addSongs(Song[] songs) {
+        for (Song song : songs) {
+            songList.add(song);
+        }
+        ArrayList<Song> albumList = filterAlbums();
+        Song allAlbumsEntry = new Song();
+        allAlbumsEntry.setAlbumName("All Albums");
+        albumList.insert(allAlbumsEntry, 0);
+        songAlbumList.setSource(albumList);
+        songAlbumTable.setSelectedIndex(0);
+    }
+
+    private ArrayList<Song> filterAlbums() {
+        HashSet<Long> albumIDs = new HashSet<>();
+        ArrayList<Song> result = new ArrayList<>(songList.getLength());
+        for (Song song : songList) {
+            if (!albumIDs.contains(song.getAlbumID())) {
+                result.add(song);
+                albumIDs.add(song.getAlbumID());
+            }
+        }
+        ArrayList.sort(result, new Comparator<Song>() {
+            @Override
+            public int compare(Song song1, Song song2) {
+                return compareNullSafe(song1.getAlbumName(), song2.getAlbumName());
+            }
+        });
+        return result;
     }
 
     private class SongListFilter implements Filter<Song> {

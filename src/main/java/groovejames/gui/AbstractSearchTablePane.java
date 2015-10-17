@@ -55,13 +55,14 @@ abstract class AbstractSearchTablePane<V extends BaseModelObject> extends TableP
             countText.setText("" + currentCount + " of " + total);
             moreLink.setVisible(true);
             moreLink.setAction(new MoreAction());
+            searchParameter.setOffset(currentCount);
         }
     }
 
     private class MoreAction extends Action {
         @Override
         public void perform(Component source) {
-            cardPane.search(AbstractSearchTablePane.this);
+            cardPane.search();
         }
     }
 }

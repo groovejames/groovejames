@@ -15,6 +15,7 @@ abstract class AbstractSearchParameter implements SearchParameter {
         return offset;
     }
 
+    @Override
     public void setOffset(int offset) {
         this.offset = offset;
     }
@@ -24,7 +25,9 @@ abstract class AbstractSearchParameter implements SearchParameter {
         return limit;
     }
 
+    @Override
     public void setLimit(int limit) {
         this.limit = limit;
     }
+
 }
