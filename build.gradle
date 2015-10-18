@@ -118,8 +118,4 @@ build.mustRunAfter clean
 
 task wrapper(type: Wrapper) {
     gradleVersion = '1.10'
-    copy {
-        from 'etc/intellij/'
-        into '.idea/'
-    }
 }
