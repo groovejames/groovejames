@@ -13,6 +13,6 @@ public class NEAlbum {
     /** publishing time of album, in milliseconds since 1970 */
     public long publishTime;
     public int size;
-    public NESong[] songs;
+    public NESongDetails[] songs;
     public int status;
 }

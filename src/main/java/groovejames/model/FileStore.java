@@ -72,9 +72,9 @@ public class FileStore implements Store {
                 id3V2Tag.setTitle(songName);
             }
 
-            Long trackNum = track.getSong().getTrackNum();
+            Integer trackNum = track.getSong().getTrackNum();
             if (trackNum != null) {
-                id3V2Tag.setTrackNumber(trackNum.intValue());
+                id3V2Tag.setTrackNumber(trackNum);
             }
 
             MP3File mp3File = new MP3File(file);

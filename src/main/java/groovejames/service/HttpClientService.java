@@ -63,7 +63,7 @@ public class HttpClientService {
                         .setSocketTimeout(SOCKET_TIMEOUT * 1000)
                         /* don't use "Expect: 100-continue" because some proxies don't understand */
                         .setExpectContinueEnabled(false)
-                        /* need to relax default cookie policy because grooveshark.com sends cookies with invalid expiry dates */
+                        /* need to relax default cookie policy to avoid problem with cookies with invalid expiry dates */
                         .setCookieSpec(CookieSpecs.BROWSER_COMPATIBILITY)
                         .build());
         if (proxySettings != null) {

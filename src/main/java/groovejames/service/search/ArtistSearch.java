@@ -2,10 +2,10 @@ package groovejames.service.search;
 
 public class ArtistSearch extends AbstractSearchParameter {
 
-    private final Long artistID;
+    private final long artistID;
     private final String artistName;
 
-    public ArtistSearch(Long artistID, String artistName) {
+    public ArtistSearch(long artistID, String artistName) {
         this.artistName = artistName;
         this.artistID = artistID;
     }
@@ -30,7 +30,7 @@ public class ArtistSearch extends AbstractSearchParameter {
         return artistName;
     }
 
-    public Long getArtistID() {
+    public long getArtistID() {
         return artistID;
     }
 
@@ -43,11 +43,11 @@ public class ArtistSearch extends AbstractSearchParameter {
         if (this == o) return true;
         if (!(o instanceof ArtistSearch)) return false;
         ArtistSearch that = (ArtistSearch) o;
-        return artistID.equals(that.artistID);
+        return artistID == that.artistID;
     }
 
     @Override
     public int hashCode() {
-        return artistID.hashCode();
+        return (int) artistID;
     }
 }

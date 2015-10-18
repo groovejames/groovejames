@@ -10,7 +10,7 @@ public class Song extends BaseModelObject {
     private long albumID;
     private String albumName;
     private String imageURL;
-    private Long trackNum;
+    private Integer trackNum;
     private Double estimateDuration; // in seconds, alas not reliable; often 0.00
 
     public long getArtistID() {
@@ -55,11 +55,11 @@ public class Song extends BaseModelObject {
         this.songID = songID;
     }
 
-    public Long getTrackNum() {
+    public Integer getTrackNum() {
         return trackNum;
     }
 
-    public void setTrackNum(Long trackNum) {
+    public void setTrackNum(Integer trackNum) {
         this.trackNum = trackNum;
     }
 

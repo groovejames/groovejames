@@ -27,7 +27,7 @@ public class FilenameSchemaParserTest /* extends TestCase */ {
         assertEquals("Devil's Haircut".toLowerCase(), parser.parse(song, "<title>"));
         assertEquals("Devil's Haircut".toUpperCase(), parser.parse(song, "<TITLE>"));
 
-        song.setTrackNum(20L);
+        song.setTrackNum(20);
         assertEquals("20", parser.parse(song, "<#>"));
         assertEquals("0020", parser.parse(song, "<####>"));
         assertEquals("", parser.parse(song, "<#?>"));
@@ -54,7 +54,7 @@ public class FilenameSchemaParserTest /* extends TestCase */ {
         assertEquals("Beck/Odelay/Devil's Haircut.mp3", parser.parse(song, "<Artist>/<Album>/<Title>.mp3"));
 
         song.setAlbumName(null);
-        song.setTrackNum(20L);
+        song.setTrackNum(20);
         assertEquals("Beck//Devil's Haircut.mp3", parser.parse(song, "<Artist>/<Album>/<Title>.mp3"));
         assertEquals("Beck/Devil's Haircut.mp3", parser.parse(song, "<Artist><Album?/<Album>>/<Title>.mp3"));
         assertEquals("foo\\bar\\baz\\Beck/Devil's Haircut.mp3", parser.parse(song, "foo\\bar\\baz\\<Artist><Album?/<Album>>/<Title>.mp3"));
@@ -83,12 +83,12 @@ public class FilenameSchemaParserTest /* extends TestCase */ {
         song.setArtistName("Beck");
         song.setAlbumName("Odelay");
         song.setName("Devil's Haircut");
-        song.setTrackNum(1L);
+        song.setTrackNum(1);
         assertEquals("Beck/Odelay/01 - Devil's Haircut.mp3", parser.parse(song, FilenameSchemeParser.DEFAULT_FILENAME_SCHEME));
 
         song.setArtistName(null);
         song.setAlbumName("");
-        song.setTrackNum(1L);
+        song.setTrackNum(1);
         assertEquals("01 - Devil's Haircut.mp3", parser.parse(song, FilenameSchemeParser.DEFAULT_FILENAME_SCHEME));
     }
 

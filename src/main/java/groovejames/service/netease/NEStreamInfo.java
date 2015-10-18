@@ -7,6 +7,6 @@ public class NEStreamInfo {
     public long size;
     /** in milliseconds */
     public int playTime;
-    /** in bytes/s, e.g 384000 is 384kB/s */
+    /** in bytes/s, e.g 320000 is 320kB/s */
     public int bitrate;
 }

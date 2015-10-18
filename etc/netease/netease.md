@@ -38,6 +38,13 @@ Returns: ArtistAlbumsSearchResult
 
 GET http://music.163.com/api/album/[albumId]
 
+Params:
+
+- limit: (int)
+- offset: (int)
+
+Returns: AlbumDetailSearchResult
+
 ### song details
 
 POST http://music.163.com/api/song/detail
@@ -108,10 +115,15 @@ TBD
 - picId: (long) ID in picUrl
 - publishTime: (long) release date, in milliseconds since 1970
 - size: (int) number of songs
-- songs: (array) empty
+- songs: (array of SongDetail) only set in AlbumDetailSearchResult, when using "album info" request
 - status: (int) ??? 0, 1, 2
 - tags: (string) empty
 - type: (string) e.g. "EP/Single" or chinese string
+
+### AlbumDetailSearchResult
+
+- code: (int) 200: ok
+- album: (Album)
 
 ### Song
 

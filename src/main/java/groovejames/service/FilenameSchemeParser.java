@@ -123,7 +123,7 @@ public class FilenameSchemeParser {
             parsedConditionalText = parse0(song, conditionalText);
         if (conditionalText != null)
             return parsedConditionalText;
-        Long trackNum = song.getTrackNum();
+        Integer trackNum = song.getTrackNum();
         if (trackNum != null) {
             String formatMask = tag.replace('#', '0');
             return new DecimalFormat(formatMask).format(trackNum);

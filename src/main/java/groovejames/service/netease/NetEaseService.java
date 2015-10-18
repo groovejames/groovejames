@@ -60,27 +60,37 @@ public class NetEaseService implements INetEaseService {
     }
 
     @Override
-    public NEArtistAlbumsSearchResultResponse searchAlbums(long artistID, int offset, int limit) throws Exception {
-        HttpResponse<NEArtistAlbumsSearchResultResponse> r1 = Unirest.get(MUSIC163_API + "/artist/albums/{artistID}")
+    public NEArtistAlbumsSearchResultResponse getAlbums(long artistID, int offset, int limit) throws Exception {
+        HttpResponse<NEArtistAlbumsSearchResultResponse> httpResponse = Unirest.get(MUSIC163_API + "/artist/albums/{artistID}")
                 .header("Referer", REFERER)
+                .routeParam("artistID", Long.toString(artistID))
                 .queryString("offset", offset)
                 .queryString("limit", limit)
-                .routeParam("artistID", Long.toString(artistID))
                 .asObject(NEArtistAlbumsSearchResultResponse.class);
-        NEArtistAlbumsSearchResultResponse response = r1.getBody();
+        NEArtistAlbumsSearchResultResponse response = httpResponse.getBody();
         if (response.code != 200) throw new NetEaseException("error getting artists albums: " + response.code);
         return response;
+    }
 
+    @Override
+    public NEAlbum getAlbum(long albumID) throws Exception {
+        HttpResponse<NEAlbumDetailsResultResponse> httpResponse = Unirest.get(MUSIC163_API + "/album/{albumID}")
+                .header("Referer", REFERER)
+                .routeParam("albumID", Long.toString(albumID))
+                .asObject(NEAlbumDetailsResultResponse.class);
+        NEAlbumDetailsResultResponse response = httpResponse.getBody();
+        if (response.code != 200) throw new NetEaseException("error getting album details: " + response.code);
+        return response.album;
     }
 
     @Override
     public Map<Long, NESongDetails> getSongDetails(long[] songIDs) throws Exception {
         String songIDList = "[" + Util.join(songIDs, ',') + "]";
-        HttpResponse<NESongDetailsResultResponse> r = Unirest.post(MUSIC163_API + "/song/detail")
+        HttpResponse<NESongDetailsResultResponse> httpResponse = Unirest.post(MUSIC163_API + "/song/detail")
                 .header("Referer", "http://music.163.com")
                 .field("ids", songIDList)
                 .asObject(NESongDetailsResultResponse.class);
-        NESongDetailsResultResponse result = r.getBody();
+        NESongDetailsResultResponse result = httpResponse.getBody();
         if (result.code != 200) throw new NetEaseException("error getting song details: " + result.code);
         if (result.songs == null || result.songs.length == 0) throw new NetEaseException("song details not found for song ids: " + songIDList);
         Map<Long, NESongDetails> map = new HashMap<>();
