@@ -15,7 +15,8 @@ public abstract class BaseModelObject implements ImageObject, Scoreable {
     protected double popularityPercentage;
     protected Long popularityIndex;
 
-    @Override public abstract String getImageFilename();
+    @Override
+    public abstract String getImageURL();
 
     @Override public Image getImage() {
         return image;

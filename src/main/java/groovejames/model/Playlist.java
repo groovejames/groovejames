@@ -57,7 +57,8 @@ public class Playlist extends BaseModelObject {
         this.picture = picture;
     }
 
-    @Override public String getImageFilename() {
+    @Override
+    public String getImageURL() {
         return picture;
     }
 }

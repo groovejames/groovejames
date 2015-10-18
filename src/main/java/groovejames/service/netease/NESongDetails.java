@@ -10,5 +10,6 @@ public class NESongDetails {
     public double score;
     public int fee;
     public NEStreamInfo bMusic, lMusic, mMusic, hMusic;
+    public NEAlbum album;
 }
 

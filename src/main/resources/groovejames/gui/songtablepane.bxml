@@ -74,7 +74,6 @@
                                                     <guicomponents:ImageObjectCellRenderer
                                                             bxml:id="songAlbumImageRenderer"
                                                             preferredHeight="40"
-                                                            urlPrefix="http://images.grooveshark.com/static/albums/"
                                                             defaultImage="@images/unknownSong.png"/>
                                                 </cellRenderer>
                                             </TableView.Column>

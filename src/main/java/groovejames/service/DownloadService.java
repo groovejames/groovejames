@@ -4,9 +4,9 @@ import groovejames.model.FileStore;
 import groovejames.model.MemoryStore;
 import groovejames.model.Song;
 import groovejames.model.Store;
+import groovejames.model.StreamInfo;
 import groovejames.model.Track;
 import groovejames.service.search.SearchService;
-import groovejames.model.StreamInfo;
 import groovejames.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -178,6 +178,7 @@ public class DownloadService {
                 track.setStatus(Track.Status.INITIALIZING);
                 fireDownloadStatusChanged();
                 StreamInfo streamInfo = searchService.getStreamInfo(track.getSong().getSongID());
+                track.getSong().setImageURL(streamInfo.getImageURL());
                 track.setStartDownloadTime(System.currentTimeMillis());
                 if (streamInfo.getDuration() > 0)
                     track.getSong().setEstimateDuration(streamInfo.getDuration() / 1000.0);

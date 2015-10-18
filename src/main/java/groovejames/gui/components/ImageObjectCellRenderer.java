@@ -7,6 +7,7 @@ import org.apache.pivot.wtk.media.Image;
 
 import java.net.URL;
 
+@SuppressWarnings("unused")
 public class ImageObjectCellRenderer extends TableViewImageCellRenderer {
 
     private final ImageLoader imageLoader;
@@ -30,14 +31,6 @@ public class ImageObjectCellRenderer extends TableViewImageCellRenderer {
 
     public void setDefaultImage(String defaultImageName) {
         imageLoader.setDefaultImage(defaultImageName);
-    }
-
-    public String getUrlPrefix() {
-        return imageLoader.getUrlPrefix();
-    }
-
-    public void setUrlPrefix(String urlPrefix) {
-        imageLoader.setUrlPrefix(urlPrefix);
     }
 
     @Override

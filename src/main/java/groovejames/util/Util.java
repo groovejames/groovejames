@@ -4,12 +4,6 @@ import org.apache.log4j.Logger;
 import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.util.concurrent.TaskExecutionException;
 
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.DESKeySpec;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -25,20 +19,13 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.GZIPInputStream;
 
 import static java.util.Arrays.asList;
 
@@ -47,129 +34,6 @@ public class Util {
     private static final Logger log = Logger.getLogger(Util.class);
 
     private static final Pattern QUERY_PARAM_PATTERN = Pattern.compile("([^&=]+)=?([^&=]+)?");
-
-    private static final String desKey = "7b0a2751683f601b";
-    private static final Cipher desCipher;
-    private static final Key desSecretKey;
-    private static final MessageDigest md5digest;
-    private static final MessageDigest sha1digest;
-
-    static {
-        try {
-            desCipher = Cipher.getInstance("DES");
-        } catch (NoSuchAlgorithmException ex) {
-            throw new RuntimeException("no DES", ex);
-        } catch (NoSuchPaddingException ex) {
-            throw new RuntimeException("DES error", ex);
-        }
-        try {
-            DESKeySpec passwdKeySpec = new DESKeySpec(hexStringToBytes(desKey));
-            desSecretKey = SecretKeyFactory.getInstance("DES").generateSecret(passwdKeySpec);
-        } catch (NoSuchAlgorithmException ex) {
-            throw new RuntimeException("no DES", ex);
-        } catch (InvalidKeyException ex) {
-            throw new RuntimeException("invalid key", ex);
-        } catch (InvalidKeySpecException ex) {
-            throw new RuntimeException("invalid key spec", ex);
-        }
-        try {
-            md5digest = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException ex) {
-            throw new RuntimeException("no MD5 digester", ex);
-        }
-        try {
-            sha1digest = MessageDigest.getInstance("SHA1");
-        } catch (NoSuchAlgorithmException ex) {
-            throw new RuntimeException("no SHA1 digester", ex);
-        }
-    }
-
-    public static String md5(String s) {
-        try {
-            return bytesToHexString(md5digest.digest(s.getBytes("UTF-8")));
-        } catch (UnsupportedEncodingException ex) {
-            // utf-8 always available
-            throw new RuntimeException("no UTF-8 decoder available", ex);
-        }
-    }
-
-    public static String sha1(String s) {
-        try {
-            return bytesToHexString(sha1digest.digest(s.getBytes("UTF-8")));
-        } catch (UnsupportedEncodingException ex) {
-            // utf-8 always available
-            throw new RuntimeException("no UTF-8 decoder available", ex);
-        }
-    }
-
-
-    public static String encryptDES(String plainValue) {
-        try {
-            desCipher.init(Cipher.ENCRYPT_MODE, desSecretKey);
-            byte[] desEncryptedData = desCipher.doFinal(plainValue.getBytes());
-            return bytesToHexString(desEncryptedData);
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-    public static String decryptDES(String encryptedValue) {
-        try {
-            Cipher desCipher = Cipher.getInstance("DES");
-            desCipher.init(Cipher.DECRYPT_MODE, desSecretKey);
-            return new String(desCipher.doFinal(hexStringToBytes(encryptedValue)));
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-    public static String bytesToHexString(byte[] bytes) {
-        StringBuilder result = new StringBuilder(bytes.length * 2);
-        for (byte b : bytes) {
-            String hex = Integer.toHexString((int) b & 0xFF);
-            if (hex.length() == 1)
-                result.append('0');
-            result.append(hex);
-        }
-        return result.toString();
-    }
-
-    public static byte[] hexStringToBytes(String hexStr) {
-        ByteArrayOutputStream outBytes = new ByteArrayOutputStream((hexStr.length() + 1) / 2 + 1);
-        for (int i = 0; i < hexStr.length(); i += 2) {
-            String str = hexStr.substring(i, i + 2);
-            byte byt = Integer.valueOf(Integer.parseInt(str, 16)).byteValue();
-            outBytes.write(byt);
-        }
-        return outBytes.toByteArray();
-    }
-
-    public static byte[] gunzip(byte[] zippedBytes) throws IOException {
-        return gunzip(new ByteArrayInputStream(zippedBytes));
-    }
-
-    public static byte[] gunzip(InputStream is) throws IOException {
-        GZIPInputStream gzis = new GZIPInputStream(is);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        byte[] buf = new byte[4096];
-        int r;
-        while ((r = gzis.read(buf)) != -1) {
-            baos.write(buf, 0, r);
-        }
-        gzis.close();
-        baos.close();
-        return baos.toByteArray();
-    }
-
-    public static String createRandomHexNumber(int length) {
-        Random random = new Random(System.currentTimeMillis());
-        char[] result = new char[length];
-        for (int i = 0; i < length; i++) {
-            int r = random.nextInt(16);
-            result[i] = Integer.toHexString(r).charAt(0);
-        }
-        return new String(result);
-    }
 
     public static boolean isEmpty(String s) {
         return s == null || s.isEmpty();
@@ -184,84 +48,15 @@ public class Util {
         return s1 == null ? s2 == null ? 0 : Integer.MIN_VALUE : s2 == null ? Integer.MAX_VALUE : s1.compareTo(s2);
     }
 
-    public static String capitalize(String name) {
-        if (name == null || name.length() == 0) {
-            return name;
-        }
-        StringBuilder sb = new StringBuilder(name);
-        sb.setCharAt(0, Character.toUpperCase(name.charAt(0)));
-        return sb.toString();
-    }
-
-    public static String decapitalize(String name) {
-        if (name == null || name.length() == 0) {
-            return name;
-        }
-        StringBuilder sb = new StringBuilder(name);
-        sb.setCharAt(0, Character.toLowerCase(name.charAt(0)));
-        return sb.toString();
-    }
-
-    /**
-     * Coerces a string value to a primitive type.
-     *
-     * @param value string value, may not be null
-     * @param type  result type
-     * @return The coerced value
-     */
-    public static Object coerce(String value, Class<?> type) {
-        Object coercedValue;
-        if (type == Boolean.class || type == Boolean.TYPE) {
-            coercedValue = "1".equals(value) || Boolean.parseBoolean(value);
-        } else if (type == Character.class || type == Character.TYPE) {
-            if (value.length() == 1) {
-                coercedValue = value.charAt(0);
-            } else {
-                throw new IllegalArgumentException("\"" + value + "\" is not a valid character");
+    public static String join(long[] ids, char separator) {
+        StringBuilder sb = new StringBuilder();
+        for (long id : ids) {
+            if (sb.length() > 0) {
+                sb.append(separator);
             }
-        } else if (type == Byte.class || type == Byte.TYPE) {
-            coercedValue = Byte.parseByte(value);
-        } else if (type == Short.class || type == Short.TYPE) {
-            coercedValue = Short.parseShort(value);
-        } else if (type == Integer.class || type == Integer.TYPE) {
-            coercedValue = Integer.parseInt(value);
-        } else if (type == Long.class || type == Long.TYPE) {
-            coercedValue = Long.parseLong(value);
-        } else if (type == Float.class || type == Float.TYPE) {
-            coercedValue = Float.parseFloat(value);
-        } else if (type == Double.class || type == Double.TYPE) {
-            coercedValue = Double.parseDouble(value);
-        } else {
-            coercedValue = value;
+            sb.append(Long.toString(id));
         }
-        return coercedValue;
-    }
-
-    /**
-     * Coerces a long value to a primitive type.
-     *
-     * @param value long value
-     * @param type  result type
-     * @return The coerced value
-     */
-    public static Object coerce(long value, Class<?> type) {
-        Object coercedValue;
-        if (type == Boolean.class || type == Boolean.TYPE) {
-            coercedValue = value == 0 ? Boolean.FALSE : Boolean.TRUE;
-        } else if (type == Byte.class || type == Byte.TYPE) {
-            coercedValue = new Long(value).byteValue();
-        } else if (type == Short.class || type == Short.TYPE) {
-            coercedValue = new Long(value).shortValue();
-        } else if (type == Integer.class || type == Integer.TYPE) {
-            coercedValue = new Long(value).intValue();
-        } else if (type == Float.class || type == Float.TYPE) {
-            coercedValue = new Long(value).floatValue();
-        } else if (type == Double.class || type == Double.TYPE) {
-            coercedValue = new Long(value).doubleValue();
-        } else {
-            coercedValue = value;
-        }
-        return coercedValue;
+        return sb.toString();
     }
 
     public static String toErrorString(Throwable t, String separator) {

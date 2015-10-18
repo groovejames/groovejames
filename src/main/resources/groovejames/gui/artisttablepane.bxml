@@ -27,7 +27,6 @@
                                             <guicomponents:ImageObjectCellRenderer
                                                     bxml:id="artistImageRenderer"
                                                     preferredHeight="40"
-                                                    urlPrefix="http://images.grooveshark.com/static/artists/40_"
                                                     defaultImage="@images/unknownSong.png"/>
                                         </cellRenderer>
                                     </TableView.Column>

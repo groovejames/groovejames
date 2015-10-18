@@ -27,6 +27,9 @@
         <ADDITIONAL_INDENT_OPTIONS fileType="yml">
           <option name="INDENT_SIZE" value="2" />
         </ADDITIONAL_INDENT_OPTIONS>
+        <codeStyleSettings language="JAVA">
+          <option name="SPACE_BEFORE_ARRAY_INITIALIZER_LBRACE" value="true" />
+        </codeStyleSettings>
         <codeStyleSettings language="JavaScript">
           <option name="PARENT_SETTINGS_INSTALLED" value="true" />
         </codeStyleSettings>

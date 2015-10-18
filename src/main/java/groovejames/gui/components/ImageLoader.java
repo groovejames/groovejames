@@ -9,6 +9,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.util.EntityUtils;
 import org.apache.pivot.util.concurrent.TaskExecutionException;
 import org.apache.pivot.wtk.ApplicationContext;
 import org.apache.pivot.wtk.Component;
@@ -32,19 +33,10 @@ public class ImageLoader {
 
     private static final Log log = LogFactory.getLog(ImageLoader.class);
 
-    private static final WeakHashMap<String, WeakReference<Image>> images = new WeakHashMap<String, WeakReference<Image>>();
+    private static final WeakHashMap<String, WeakReference<Image>> images = new WeakHashMap<>();
     private static final ExecutorService executorService = Executors.newFixedThreadPool(5);
 
-    private String urlPrefix;
     private Image defaultImage;
-
-    public String getUrlPrefix() {
-        return urlPrefix;
-    }
-
-    public void setUrlPrefix(String urlPrefix) {
-        this.urlPrefix = urlPrefix;
-    }
 
     public Image getDefaultImage() {
         return defaultImage;
@@ -81,16 +73,16 @@ public class ImageLoader {
     public Image getImage(ImageObject imageObject, Component target) {
         Image image = imageObject.getImage();
         if (image == null) {
-            String filename = imageObject.getImageFilename();
-            if (!isEmpty(filename)) {
-                WeakReference<Image> ref = images.get(filename);
+            String imageURL = imageObject.getImageURL();
+            if (!isEmpty(imageURL)) {
+                WeakReference<Image> ref = images.get(imageURL);
                 if (ref != null) {
                     image = ref.get();
                     if (image == null) {
-                        startLoadingImage(filename, imageObject, target);
+                        startLoadingImage(imageURL, imageObject, target);
                     }
                 } else {
-                    startLoadingImage(filename, imageObject, target);
+                    startLoadingImage(imageURL, imageObject, target);
                 }
             } else {
                 image = defaultImage;
@@ -100,18 +92,17 @@ public class ImageLoader {
     }
 
     public Image getImageIgnoringCache(ImageObject imageObject, Component target) {
-        String filename = imageObject.getImageFilename();
-        startLoadingImage(filename, imageObject, target);
+        String imageURL = imageObject.getImageURL();
+        startLoadingImage(imageURL, imageObject, target);
         return imageObject.getImage();
     }
 
-    private void startLoadingImage(final String filename, final ImageObject imageObject, final Component target) {
+    private void startLoadingImage(final String url, final ImageObject imageObject, final Component target) {
         if (!imageObject.isLoadingImage()) {
             imageObject.setLoadingImage(true);
             executorService.submit(new Runnable() {
                 @Override
                 public void run() {
-                    String url = getUrl(filename);
                     Image image;
                     try {
                         image = httpGetImage(url);
@@ -122,11 +113,12 @@ public class ImageLoader {
                         log.error("error downloading image for imageObject " + imageObject + " from url " + url, ex);
                         image = defaultImage;
                     }
-                    images.put(filename, new WeakReference<Image>(image));
+                    images.put(url, new WeakReference<>(image));
                     imageObject.setImage(image);
                     imageObject.setLoadingImage(false);
                     ApplicationContext.queueCallback(new Runnable() {
-                        @Override public void run() {
+                        @Override
+                        public void run() {
                             target.repaint();
                         }
                     });
@@ -143,30 +135,16 @@ public class ImageLoader {
             StatusLine statusLine = httpResponse.getStatusLine();
             int statusCode = statusLine.getStatusCode();
             if (statusCode == HttpStatus.SC_OK) {
-                InputStream inputStream = httpEntity.getContent();
-                try {
+                try (InputStream inputStream = httpEntity.getContent()) {
                     BufferedImage image = ImageIO.read(inputStream);
                     return new Picture(image);
-                } finally {
-                    inputStream.close();
                 }
             } else {
                 throw new IOException(format("error loading image: uri=%s, status=%s%n", uri, statusLine));
             }
         } finally {
-            httpEntity.consumeContent();
+            EntityUtils.consume(httpEntity);
         }
     }
 
-    private String getUrl(String filename) {
-        if (!filename.startsWith("http:") && !filename.startsWith("https:")) {
-            if (urlPrefix != null) {
-                return urlPrefix + filename;
-            } else {
-                return filename;
-            }
-        } else {
-            return filename;
-        }
-    }
 }

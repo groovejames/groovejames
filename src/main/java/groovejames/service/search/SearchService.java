@@ -41,9 +41,10 @@ public class SearchService {
     }
 
     public StreamInfo getStreamInfo(long songID) throws Exception {
-        NESongDetails songDetails = netEaseService.getSongDetails(songID);
+        NESongDetails songDetails = netEaseService.getSongDetails(new long[] {songID}).get(songID);
         String downloadUrl = netEaseService.getDownloadUrl(songDetails);
-        return new StreamInfo(downloadUrl, songDetails.duration);
+        String imageURL = songDetails.album.picUrl;
+        return new StreamInfo(downloadUrl, songDetails.duration, imageURL);
     }
 
     public SearchResult<Song> searchSongs(SearchParameter searchParameter) throws Exception {
@@ -59,6 +60,7 @@ public class SearchService {
                 NESongSearchResult songSearchResult = netEaseService.searchSongs(searchString, offset, limit);
                 total = songSearchResult.songCount;
                 result = new Song[songSearchResult.songs.length];
+                long[] songIDs = new long[songSearchResult.songs.length];
                 int i = 0;
                 for (NESong neSong : songSearchResult.songs) {
                     Song song = new Song();
@@ -69,7 +71,18 @@ public class SearchService {
                     song.setAlbumID(neSong.album.id);
                     song.setArtistName(neSong.artists[0].name);
                     song.setArtistID(neSong.artists[0].id);
-                    result[i++] = song;
+                    song.setImageURL(neSong.artists[0].img1v1Url);
+                    result[i] = song;
+                    songIDs[i] = neSong.id;
+                    i++;
+                }
+                Map<Long, NESongDetails> songDetailsMap = netEaseService.getSongDetails(songIDs);
+                for (Song song : result) {
+                    NESongDetails songDetails = songDetailsMap.get(song.getSongID());
+                    song.setImageURL(songDetails.album.picUrl);
+                    song.setScore(songDetails.score);
+                    song.setPopularity(songDetails.popularity);
+                    song.setEstimateDuration((double) songDetails.duration);
                 }
                 break;
             }
@@ -123,13 +136,13 @@ public class SearchService {
         /*
        {"header":{"privacy":0,"country":{"DMA":807,"CC1":0,"ID":223,"CC2":0,"IPR":0,"CC4":1073741824,"CC3":0},"session":"d9c5aaa75a9a11ea52adf8e242938b72","token":"727e15ab9ccf8f098ba6a5047987d451796bf3255dedea","uuid":"2FBE082B-BF60-4E23-9EBC-7CC77CEB5AE0","client":"jsqueue","clientRevision":"20120830"},"parameters":{"songIDsAlreadySeen":[35501],"recentArtists":[822],"minDuration":60,"seedArtistWeightRange":[70,100],"country":{"DMA":807,"CC1":0,"ID":223,"CC2":0,"IPR":0,"CC4":1073741824,"CC3":0},"secondaryArtistWeightModifier":0.9,"weightModifierRange":[-9,9],"seedArtists":{"822":"p"},"songQueueID":"1346948642359","frowns":[],"maxDuration":1500},"method":"autoplayGetSong"}
         */
-        ArrayList<Long> songIDsAlreadySeen = new ArrayList<Long>();
-        TreeSet<Long> recentArtistIDs = new TreeSet<Long>();
+        ArrayList<Long> songIDsAlreadySeen = new ArrayList<>();
+        TreeSet<Long> recentArtistIDs = new TreeSet<>();
         for (Song song : songsAlreadySeen) {
             songIDsAlreadySeen.add(song.getSongID());
             recentArtistIDs.add(song.getArtistID());
         }
-        Map<String, String> seedArtists = new HashMap<String, String>();
+        Map<String, String> seedArtists = new HashMap<>();
         seedArtists.put(recentArtistIDs.iterator().next().toString(), "p");
 //        return grooveshark.autoplayGetSong(
 //            songIDsAlreadySeen,
@@ -220,8 +233,8 @@ public class SearchService {
     }
 
     private Song[] filterDuplicateSongs(Song[] songs) {
-        HashSet<Long> allSongsIds = new HashSet<Long>();
-        ArrayList<Song> resultList = new ArrayList<Song>(songs.length);
+        HashSet<Long> allSongsIds = new HashSet<>();
+        ArrayList<Song> resultList = new ArrayList<>(songs.length);
         for (Song song : songs) {
             Long songID = song.getSongID();
             if (!allSongsIds.contains(songID)) {

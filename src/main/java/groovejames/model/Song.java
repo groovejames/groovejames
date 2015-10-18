@@ -9,7 +9,7 @@ public class Song extends BaseModelObject {
     private Long songID;
     private Long albumID;
     private String albumName;
-    private String coverArtFilename;
+    private String imageURL;
     private String year;
     private Long trackNum;
     private Double estimateDuration; // in seconds, alas not reliable; often 0.00
@@ -80,17 +80,13 @@ public class Song extends BaseModelObject {
         this.albumName = albumName;
     }
 
-    public String getCoverArtFilename() {
-        return coverArtFilename;
-    }
-
-    public void setCoverArtFilename(String coverArtFilename) {
-        this.coverArtFilename = coverArtFilename;
-    }
-
     @Override
-    public String getImageFilename() {
-        return coverArtFilename;
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
     }
 
     public String getYear() {
@@ -138,7 +134,7 @@ public class Song extends BaseModelObject {
         sb.append("Song");
         sb.append("{songID=").append(songID);
         sb.append(", songName='").append(songName).append('\'');
-        sb.append(", coverArtFilename='").append(coverArtFilename).append('\'');
+        sb.append(", imageURL='").append(imageURL).append('\'');
         sb.append(", estimateDuration=").append(estimateDuration);
         sb.append('}');
         return sb.toString();

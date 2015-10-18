@@ -9,6 +9,8 @@ import org.apache.commons.codec.binary.Base64;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class NetEaseService implements INetEaseService {
 
@@ -40,15 +42,20 @@ public class NetEaseService implements INetEaseService {
     }
 
     @Override
-    public NESongDetails getSongDetails(long songID) throws Exception {
+    public Map<Long, NESongDetails> getSongDetails(long[] songIDs) throws Exception {
+        String songIDList = "[" + Util.join(songIDs, ',') + "]";
         HttpResponse<NESongDetailsResultResponse> r = Unirest.post(MUSIC163_API + "/song/detail")
                 .header("Referer", "http://music.163.com")
-                .field("ids", "[" + songID + "]")
+                .field("ids", songIDList)
                 .asObject(NESongDetailsResultResponse.class);
         NESongDetailsResultResponse result = r.getBody();
         if (result.code != 200) throw new NetEaseException("error getting song details: " + result.code);
-        if (result.songs == null || result.songs.length == 0) throw new NetEaseException("song details not found for song id: " + songID);
-        return result.songs[0];
+        if (result.songs == null || result.songs.length == 0) throw new NetEaseException("song details not found for song ids: " + songIDList);
+        Map<Long, NESongDetails> map = new HashMap<>();
+        for (NESongDetails song : result.songs) {
+            map.put(song.id, song);
+        }
+        return map;
     }
 
     @Override

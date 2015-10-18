@@ -159,7 +159,6 @@ public class Main extends AbstractApplication {
         this.settings = Settings.load();
         this.downloadTracks.getListListeners().add(new DownloadTracksListListener());
         this.imageLoader = new ImageLoader();
-        this.imageLoader.setUrlPrefix("http://images.grooveshark.com/static/albums/500_");
 
         Services.getPlayService().setListener(new PlaylistListener());
         Services.getPlayService().getPlaylist().getListListeners().add(new PlaylistListListener());

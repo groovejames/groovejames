@@ -32,7 +32,9 @@ class JacksonObjectMapper implements ObjectMapper {
 
     public String writeValue(Object value) {
         try {
-            return jacksonObjectMapper.writeValueAsString(value);
+            String string = jacksonObjectMapper.writeValueAsString(value);
+            log.debug("write: " + string);
+            return string;
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

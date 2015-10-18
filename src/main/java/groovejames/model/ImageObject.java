@@ -4,7 +4,7 @@ import org.apache.pivot.wtk.media.Image;
 
 public interface ImageObject {
 
-    String getImageFilename();
+    String getImageURL();
 
     Image getImage();
 

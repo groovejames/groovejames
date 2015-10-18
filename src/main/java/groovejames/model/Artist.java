@@ -56,7 +56,8 @@ public class Artist extends BaseModelObject {
         this.artistCoverArtFilename = artistCoverArtFilename;
     }
 
-    @Override public String getImageFilename() {
+    @Override
+    public String getImageURL() {
         return artistCoverArtFilename != null ? artistCoverArtFilename : coverArtFilename;
     }
 

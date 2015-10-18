@@ -63,7 +63,8 @@ public class Album extends BaseModelObject {
         this.coverArtFilename = coverArtFilename;
     }
 
-    @Override public String getImageFilename() {
+    @Override
+    public String getImageURL() {
         return coverArtFilename;
     }
 

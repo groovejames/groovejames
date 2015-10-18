@@ -40,7 +40,7 @@ public class User extends BaseModelObject {
     }
 
     @Override
-    public String getImageFilename() {
+    public String getImageURL() {
         return picture;
     }
 

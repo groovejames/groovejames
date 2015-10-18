@@ -14,9 +14,10 @@ public class NetEaseServiceTest {
         System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.impl.conn", "DEBUG");
         System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.impl.client", "DEBUG");
 
+        long songID = 28240577L;
         HttpClientService httpClientService = new HttpClientService();
         NetEaseService netEaseService = new NetEaseService(httpClientService);
-        NESongDetails songDetails = netEaseService.getSongDetails(28240577L);
+        NESongDetails songDetails = netEaseService.getSongDetails(new long[] {songID}).get(songID);
         String downloadUrl = netEaseService.getDownloadUrl(songDetails);
         System.out.println(downloadUrl);
     }
