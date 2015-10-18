@@ -4,9 +4,7 @@ public class Artist extends BaseModelObject {
 
     private long artistID;
     private String artistName;
-    private String sortName;
-    private String coverArtFilename;
-    private String artistCoverArtFilename;
+    private String imageURL;
 
     public long getArtistID() {
         return artistID;
@@ -32,33 +30,13 @@ public class Artist extends BaseModelObject {
         this.artistName = name;
     }
 
-    public String getSortName() {
-        return sortName;
-    }
-
-    public void setSortName(String sortName) {
-        this.sortName = sortName;
-    }
-
-    public String getCoverArtFilename() {
-        return coverArtFilename;
-    }
-
-    public void setCoverArtFilename(String coverArtFilename) {
-        this.coverArtFilename = coverArtFilename;
-    }
-
-    public String getArtistCoverArtFilename() {
-        return artistCoverArtFilename;
-    }
-
-    public void setArtistCoverArtFilename(String artistCoverArtFilename) {
-        this.artistCoverArtFilename = artistCoverArtFilename;
-    }
-
     @Override
     public String getImageURL() {
-        return artistCoverArtFilename != null ? artistCoverArtFilename : coverArtFilename;
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
     }
 
     @Override

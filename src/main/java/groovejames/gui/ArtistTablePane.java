@@ -28,7 +28,7 @@ import static groovejames.util.Util.containsIgnoringCase;
 public class ArtistTablePane extends AbstractSearchTablePane<Artist> {
 
     private Main main;
-    private FilteredList<Artist> artistList = new FilteredList<>();
+    private FilteredList<Artist> artistList = new FilteredList<>(new ArrayList<Artist>());
 
     @BXML private ClickableTableView artistTable;
     @BXML private TextInput artistSearchInPage;
@@ -56,16 +56,22 @@ public class ArtistTablePane extends AbstractSearchTablePane<Artist> {
         artistSearchInPage.getComponentKeyListeners().add(new ComponentKeyListener.Adapter() {
             @Override
             public boolean keyTyped(Component searchField, char character) {
-                final String searchString = ((TextInput) searchField).getText().trim();
-                artistList.setFilter(new Filter<Artist>() {
-                    @Override
-                    public boolean include(Artist artist) {
-                        return containsIgnoringCase(artist.getArtistName(), searchString);
-                    }
-                });
-                return false;
+                return updateFilter();
             }
         });
+
+        updateFilter();
+    }
+
+    private boolean updateFilter() {
+        final String searchString = artistSearchInPage.getText().trim();
+        artistList.setFilter(new Filter<Artist>() {
+            @Override
+            public boolean include(Artist artist) {
+                return containsIgnoringCase(artist.getArtistName(), searchString);
+            }
+        });
+        return false;
     }
 
     @Override
@@ -81,7 +87,7 @@ public class ArtistTablePane extends AbstractSearchTablePane<Artist> {
 
     @Override
     public void beforeSearch() {
-        artistList.setSource(new ArrayList<Artist>());
+        // nothing to be done
     }
 
     @Override
@@ -93,6 +99,8 @@ public class ArtistTablePane extends AbstractSearchTablePane<Artist> {
     public void afterSearch(SearchResult<Artist> searchResult) {
         updateCountTextAndMoreLink(searchResult);
         Artist[] artists = searchResult.getResult();
-        artistList.setSource(new ArrayList<>(artists));
+        for (Artist artist : artists) {
+            artistList.add(artist);
+        }
     }
 }

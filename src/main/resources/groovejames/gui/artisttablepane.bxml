@@ -9,6 +9,10 @@
     <rows>
         <TablePane.Row>
             <BoxPane styles="{fill:true, horizontalAlignment:'right'}">
+                <FlowPane styles="%searchresultpane.count.styles">
+                    <Label bxml:id="countText" text="100 of 234"/>
+                    <LinkButton bxml:id="moreLink" buttonData="(more...)" styles="%searchresultpane.moreLink.styles"/>
+                </FlowPane>
                 <TextInput bxml:id="artistSearchInPage" prompt="Search in page..."/>
             </BoxPane>
         </TablePane.Row>

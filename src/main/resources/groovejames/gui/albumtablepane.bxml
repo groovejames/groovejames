@@ -17,7 +17,6 @@
                     <Label bxml:id="countText" text="100 of 234"/>
                     <LinkButton bxml:id="moreLink" buttonData="(more...)" styles="%searchresultpane.moreLink.styles"/>
                 </FlowPane>
-                <!--<TablePane.Filler/>-->
                 <TextInput bxml:id="albumSearchInPage" prompt="Search in page..."/>
             </BoxPane>
         </TablePane.Row>

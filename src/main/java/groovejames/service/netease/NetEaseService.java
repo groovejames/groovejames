@@ -17,10 +17,16 @@ public class NetEaseService implements INetEaseService {
     private static final String MUSIC163_API = "http://music.163.com/api";
     private static final String SECRET = System.getProperty("netease.secret", "3go8&$8*3*3h0k(2)2");
     private static final String REFERER = "http://music.163.com";
-    private static final int SEARCH_TYPE_SONGS = 1;
-    private static final int SEARCH_TYPE_ALBUMS = 10;
-    private static final int SEARCH_TYPE_ARTISTS = 100;
-    private static final int SEARCH_TYPE_PLAYLISTS = 1000;
+
+    enum SearchType {
+        songs(1), albums(10), artists(100), playlists(1000);
+
+        private final int type;
+
+        SearchType(int type) {
+            this.type = type;
+        }
+    }
 
     public NetEaseService(HttpClientService httpClientService) {
         Unirest.setObjectMapper(new JacksonObjectMapper());
@@ -29,17 +35,28 @@ public class NetEaseService implements INetEaseService {
 
     @Override
     public NESongSearchResult searchSongs(String searchString, int offset, int limit) throws Exception {
-        HttpResponse<NESongSearchResultResponse> r1 = Unirest.post(MUSIC163_API + "/search/get")
+        NESongSearchResultResponse response = search(searchString, offset, limit, SearchType.songs, NESongSearchResultResponse.class);
+        return response.result;
+    }
+
+    @Override
+    public NEArtistSearchResult searchArtists(String searchString, int offset, int limit) throws Exception {
+        NEArtistSearchResultResponse response = search(searchString, offset, limit, SearchType.artists, NEArtistSearchResultResponse.class);
+        return response.result;
+    }
+
+    private <T extends NEResponse> T search(String searchString, int offset, int limit, SearchType searchType, Class<T> responseClass) throws com.mashape.unirest.http.exceptions.UnirestException {
+        HttpResponse<T> httpResponse = Unirest.post(MUSIC163_API + "/search/get")
                 .header("Referer", "http://music.163.com")
                 .field("s", searchString)
-                .field("type", SEARCH_TYPE_SONGS)
+                .field("type", searchType.type)
                 .field("offset", offset)
                 .field("limit", limit)
                 .field("sub", false)
-                .asObject(NESongSearchResultResponse.class);
-        NESongSearchResultResponse response = r1.getBody();
-        if (response.code != 200) throw new NetEaseException("error getting songs: " + response.code);
-        return response.result;
+                .asObject(responseClass);
+        T response = httpResponse.getBody();
+        if (response.code != 200) throw new NetEaseException("error getting " + searchType + ": " + response.code);
+        return response;
     }
 
     @Override

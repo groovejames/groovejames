@@ -10,7 +10,9 @@ import groovejames.model.StreamInfo;
 import groovejames.model.User;
 import groovejames.service.netease.INetEaseService;
 import groovejames.service.netease.NEAlbum;
+import groovejames.service.netease.NEArtist;
 import groovejames.service.netease.NEArtistAlbumsSearchResultResponse;
+import groovejames.service.netease.NEArtistSearchResult;
 import groovejames.service.netease.NESong;
 import groovejames.service.netease.NESongDetails;
 import groovejames.service.netease.NESongSearchResult;
@@ -161,16 +163,28 @@ public class SearchService {
     public SearchResult<Artist> searchArtists(SearchParameter searchParameter) throws Exception {
         SearchType searchType = searchParameter.getSearchType();
         Artist[] result;
+        int total;
         switch (searchType) {
             case General:
+                // search for artists via string search
                 String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
-                result = new Artist[0];
+                NEArtistSearchResult artistSearchResult = netEaseService.searchArtists(searchString, searchParameter.getOffset(), searchParameter.getLimit());
+                result = new Artist[artistSearchResult.artists.length];
+                total = artistSearchResult.artistCount;
+                int i = 0;
+                for (NEArtist neArtist : artistSearchResult.artists) {
+                    Artist artist = new Artist();
+                    artist.setArtistID(neArtist.id);
+                    artist.setArtistName(neArtist.name);
+                    artist.setImageURL(neArtist.img1v1Url);
+                    result[i++] = artist;
+                }
                 break;
             default:
                 throw new IllegalArgumentException("invalid search type: " + searchType);
         }
-        normalize(result);
-        return new SearchResult<>(result, result.length);
+        //normalize(result);
+        return new SearchResult<>(result, total);
     }
 
     public SearchResult<Album> searchAlbums(SearchParameter searchParameter) throws Exception {
@@ -182,6 +196,7 @@ public class SearchService {
                 result = new Album[0];
                 break;
             case Artist:
+                // search for albums of a certain artist
                 Long artistID = ((ArtistSearch) searchParameter).getArtistID();
                 NEArtistAlbumsSearchResultResponse response = netEaseService.searchAlbums(artistID, searchParameter.getOffset(), searchParameter.getLimit());
                 result = new Album[response.hotAlbums.length];

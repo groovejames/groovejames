@@ -14,7 +14,8 @@
         <option name="CLASS_ANNOTATION_WRAP" value="1" />
         <option name="FIELD_ANNOTATION_WRAP" value="1" />
         <JSON>
-          <option name="OBJECT_WRAPPING" value="1" />
+          <option name="OBJECT_WRAPPING" value="5" />
+          <option name="ARRAY_WRAPPING" value="5" />
         </JSON>
         <JavaCodeStyleSettings>
           <option name="DO_NOT_WRAP_AFTER_SINGLE_ANNOTATION" value="true" />
@@ -39,6 +40,7 @@
         </codeStyleSettings>
         <codeStyleSettings language="JSON">
           <option name="KEEP_BLANK_LINES_IN_CODE" value="1" />
+          <option name="WRAP_LONG_LINES" value="true" />
           <indentOptions>
             <option name="INDENT_SIZE" value="4" />
           </indentOptions>

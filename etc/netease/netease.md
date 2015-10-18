@@ -82,7 +82,7 @@ TBD
 
 - id: (long)
 - name: (string)
-- albumsize: (int) number of tracks
+- albumSize: (int) number of tracks
 - followed: (boolean) ???
 - mvSize: (int) ???
 - alias: (array of ???) empty
@@ -106,7 +106,7 @@ TBD
 - description: (string) mostly empty
 - picUrl: (string) album picture
 - picId: (long) ID in picUrl
-- publishtime: (long)
+- publishTime: (long) release date, in milliseconds since 1970
 - size: (int) number of songs
 - songs: (array) empty
 - status: (int) ??? 0, 1, 2
