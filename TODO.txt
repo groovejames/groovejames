@@ -1,3 +1,5 @@
+- cleanup dependencies (remove httpclient?!? json-simple?!?)
+- remove remnants of grooveshark
 - mp3 player: add seek forward/backward
 - persist current downloads list so that it survives restarts
 - use Retrofit (http://square.github.io/retrofit/) instead of Unirest?!?
