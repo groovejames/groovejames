@@ -30,6 +30,8 @@ public class NetEaseService implements INetEaseService {
 
     public NetEaseService(HttpClientService httpClientService) {
         Unirest.setObjectMapper(new JacksonObjectMapper());
+        Unirest.setDefaultHeader("Referer", REFERER);
+        Unirest.setDefaultHeader("User-Agent", HttpClientService.USER_AGENT);
         Unirest.setHttpClient(httpClientService.getHttpClient());
     }
 
@@ -47,7 +49,6 @@ public class NetEaseService implements INetEaseService {
 
     private <T extends NEResponse> T search(String searchString, int offset, int limit, SearchType searchType, Class<T> responseClass) throws com.mashape.unirest.http.exceptions.UnirestException {
         HttpResponse<T> httpResponse = Unirest.post(MUSIC163_API + "/search/get")
-                .header("Referer", "http://music.163.com")
                 .field("s", searchString)
                 .field("type", searchType.type)
                 .field("offset", offset)
@@ -62,7 +63,6 @@ public class NetEaseService implements INetEaseService {
     @Override
     public NEArtistAlbumsSearchResultResponse getAlbums(long artistID, int offset, int limit) throws Exception {
         HttpResponse<NEArtistAlbumsSearchResultResponse> httpResponse = Unirest.get(MUSIC163_API + "/artist/albums/{artistID}")
-                .header("Referer", REFERER)
                 .routeParam("artistID", Long.toString(artistID))
                 .queryString("offset", offset)
                 .queryString("limit", limit)
@@ -75,7 +75,6 @@ public class NetEaseService implements INetEaseService {
     @Override
     public NEAlbum getAlbum(long albumID) throws Exception {
         HttpResponse<NEAlbumDetailsResultResponse> httpResponse = Unirest.get(MUSIC163_API + "/album/{albumID}")
-                .header("Referer", REFERER)
                 .routeParam("albumID", Long.toString(albumID))
                 .asObject(NEAlbumDetailsResultResponse.class);
         NEAlbumDetailsResultResponse response = httpResponse.getBody();
@@ -87,7 +86,6 @@ public class NetEaseService implements INetEaseService {
     public Map<Long, NESongDetails> getSongDetails(long[] songIDs) throws Exception {
         String songIDList = "[" + Util.join(songIDs, ',') + "]";
         HttpResponse<NESongDetailsResultResponse> httpResponse = Unirest.post(MUSIC163_API + "/song/detail")
-                .header("Referer", "http://music.163.com")
                 .field("ids", songIDList)
                 .asObject(NESongDetailsResultResponse.class);
         NESongDetailsResultResponse result = httpResponse.getBody();

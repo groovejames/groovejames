@@ -11,7 +11,7 @@ import org.apache.http.impl.client.LaxRedirectStrategy;
 
 public class HttpClientService {
 
-    private static final String USER_AGENT = System.getProperty("userAgent",
+    public static final String USER_AGENT = System.getProperty("userAgent",
             "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.1.3) Gecko/20090824 Firefox/3.5.3 (.NET CLR 3.5.30729)");
 
     private static final int SOCKET_TIMEOUT = Integer.getInteger("socketTimeout", 30);
@@ -48,8 +48,6 @@ public class HttpClientService {
         HttpClientBuilder httpClientBuilder = HttpClientBuilder.create()
                 /* set user agent string */
                 .setUserAgent(USER_AGENT)
-                /* disable gzip compression */
-                .disableContentCompression()
                 /* redirect on POSTs, too */
                 .setRedirectStrategy(new LaxRedirectStrategy())
                 /* increase max total connections from 20 to 200 */
