@@ -16,14 +16,15 @@ public class NetEaseService implements INetEaseService {
 
     private static final String MUSIC163_API = "http://music.163.com/api";
     private static final String SECRET = System.getProperty("netease.secret", "3go8&$8*3*3h0k(2)2");
+    private static final String REFERER = "http://music.163.com";
     private static final int SEARCH_TYPE_SONGS = 1;
     private static final int SEARCH_TYPE_ALBUMS = 10;
     private static final int SEARCH_TYPE_ARTISTS = 100;
     private static final int SEARCH_TYPE_PLAYLISTS = 1000;
 
     public NetEaseService(HttpClientService httpClientService) {
-        Unirest.setHttpClient(httpClientService.getHttpClient());
         Unirest.setObjectMapper(new JacksonObjectMapper());
+        Unirest.setHttpClient(httpClientService.getHttpClient());
     }
 
     @Override
@@ -39,6 +40,20 @@ public class NetEaseService implements INetEaseService {
         NESongSearchResultResponse response = r1.getBody();
         if (response.code != 200) throw new NetEaseException("error getting songs: " + response.code);
         return response.result;
+    }
+
+    @Override
+    public NEArtistAlbumsSearchResultResponse searchAlbums(long artistID, int offset, int limit) throws Exception {
+        HttpResponse<NEArtistAlbumsSearchResultResponse> r1 = Unirest.get(MUSIC163_API + "/artist/albums/{artistID}")
+                .header("Referer", REFERER)
+                .queryString("offset", offset)
+                .queryString("limit", limit)
+                .routeParam("artistID", Long.toString(artistID))
+                .asObject(NEArtistAlbumsSearchResultResponse.class);
+        NEArtistAlbumsSearchResultResponse response = r1.getBody();
+        if (response.code != 200) throw new NetEaseException("error getting artists albums: " + response.code);
+        return response;
+
     }
 
     @Override

@@ -31,7 +31,7 @@ import static groovejames.util.Util.containsIgnoringCase;
 public class AlbumTablePane extends AbstractSearchTablePane<Album> {
 
     private Main main;
-    private FilteredList<Album> albumList = new FilteredList<>();
+    private FilteredList<Album> albumList = new FilteredList<>(new ArrayList<Album>());
 
     @BXML private ClickableTableView albumTable;
     @BXML private TextInput albumSearchInPage;
@@ -102,7 +102,7 @@ public class AlbumTablePane extends AbstractSearchTablePane<Album> {
 
     @Override
     public void beforeSearch() {
-        albumList.setSource(new ArrayList<Album>());
+        // nothing to be done
     }
 
     @Override
@@ -114,6 +114,8 @@ public class AlbumTablePane extends AbstractSearchTablePane<Album> {
     public void afterSearch(SearchResult<Album> searchResult) {
         updateCountTextAndMoreLink(searchResult);
         Album[] albums = searchResult.getResult();
-        albumList.setSource(new ArrayList<>(albums));
+        for (Album album : albums) {
+            albumList.add(album);
+        }
     }
 }

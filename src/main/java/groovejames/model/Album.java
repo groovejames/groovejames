@@ -1,25 +1,21 @@
 package groovejames.model;
 
+import java.util.Date;
+
 public class Album extends BaseModelObject {
 
-    private Long artistID;
+    private long artistID;
     private String artistName;
-    private Long albumID;
+    private long albumID;
     private String albumName;
-    private String coverArtFilename;
-    private String year;
+    private String imageURL;
+    private Date publishingTime;
 
-    /**
-     * "1": song is actually an album name, "2": song is released on a Single or EP,
-     * "0" or null: plain song
-     */
-    private String releaseType;
-
-    public Long getArtistID() {
+    public long getArtistID() {
         return artistID;
     }
 
-    public void setArtistID(Long artistID) {
+    public void setArtistID(long artistID) {
         this.artistID = artistID;
     }
 
@@ -31,11 +27,11 @@ public class Album extends BaseModelObject {
         this.artistName = artistName;
     }
 
-    public Long getAlbumID() {
+    public long getAlbumID() {
         return albumID;
     }
 
-    public void setAlbumID(Long albumID) {
+    public void setAlbumID(long albumID) {
         this.albumID = albumID;
     }
 
@@ -55,33 +51,21 @@ public class Album extends BaseModelObject {
         setAlbumName(name);
     }
 
-    public String getCoverArtFilename() {
-        return coverArtFilename;
-    }
-
-    public void setCoverArtFilename(String coverArtFilename) {
-        this.coverArtFilename = coverArtFilename;
-    }
-
     @Override
     public String getImageURL() {
-        return coverArtFilename;
+        return imageURL;
     }
 
-    public String getYear() {
-        return year;
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
     }
 
-    public void setYear(String year) {
-        this.year = year;
+    public Date getPublishingTime() {
+        return publishingTime;
     }
 
-    public String getReleaseType() {
-        return releaseType;
-    }
-
-    public void setReleaseType(String releaseType) {
-        this.releaseType = releaseType;
+    public void setPublishingTime(Date publishingTime) {
+        this.publishingTime = publishingTime;
     }
 
     @Override
@@ -89,12 +73,12 @@ public class Album extends BaseModelObject {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Album album = (Album) o;
-        return albumID.equals(album.albumID);
+        return albumID == album.albumID;
     }
 
     @Override
     public int hashCode() {
-        return albumID.hashCode();
+        return (int) albumID;
     }
 
     @Override
@@ -103,8 +87,7 @@ public class Album extends BaseModelObject {
         sb.append("Album");
         sb.append("{albumID=").append(albumID);
         sb.append(", albumName='").append(albumName).append('\'');
-        sb.append(", releaseType='").append(releaseType).append('\'');
-        sb.append(", coverArtFilename='").append(coverArtFilename).append('\'');
+        sb.append(", imageURL='").append(imageURL).append('\'');
         sb.append('}');
         return sb.toString();
     }

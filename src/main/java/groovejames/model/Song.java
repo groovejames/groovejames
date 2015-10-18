@@ -2,23 +2,22 @@ package groovejames.model;
 
 public class Song extends BaseModelObject {
 
-    private Long artistID;
+    private long artistID;
     private String artistName;
     private String name;
     private String songName;
-    private Long songID;
-    private Long albumID;
+    private long songID;
+    private long albumID;
     private String albumName;
     private String imageURL;
-    private String year;
     private Long trackNum;
     private Double estimateDuration; // in seconds, alas not reliable; often 0.00
 
-    public Long getArtistID() {
+    public long getArtistID() {
         return artistID;
     }
 
-    public void setArtistID(Long artistID) {
+    public void setArtistID(long artistID) {
         this.artistID = artistID;
     }
 
@@ -48,11 +47,11 @@ public class Song extends BaseModelObject {
         this.songName = songName;
     }
 
-    public Long getSongID() {
+    public long getSongID() {
         return songID;
     }
 
-    public void setSongID(Long songID) {
+    public void setSongID(long songID) {
         this.songID = songID;
     }
 
@@ -64,11 +63,11 @@ public class Song extends BaseModelObject {
         this.trackNum = trackNum;
     }
 
-    public Long getAlbumID() {
+    public long getAlbumID() {
         return albumID;
     }
 
-    public void setAlbumID(Long albumID) {
+    public void setAlbumID(long albumID) {
         this.albumID = albumID;
     }
 
@@ -87,14 +86,6 @@ public class Song extends BaseModelObject {
 
     public void setImageURL(String imageURL) {
         this.imageURL = imageURL;
-    }
-
-    public String getYear() {
-        return year;
-    }
-
-    public void setYear(String year) {
-        this.year = year;
     }
 
     /**
@@ -120,12 +111,12 @@ public class Song extends BaseModelObject {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Song song = (Song) o;
-        return songID.equals(song.songID);
+        return songID == song.songID;
     }
 
     @Override
     public int hashCode() {
-        return songID.hashCode();
+        return (int) songID;
     }
 
     @Override

@@ -72,16 +72,6 @@ public class FileStore implements Store {
                 id3V2Tag.setTitle(songName);
             }
 
-            String year = track.getSong().getYear();
-            if (year != null) {
-                id3V1Tag.setYear(year);
-                try {
-                    id3V2Tag.setYear(Integer.parseInt(year));
-                } catch (NumberFormatException ignore) {
-                    // ignored
-                }
-            }
-
             Long trackNum = track.getSong().getTrackNum();
             if (trackNum != null) {
                 id3V2Tag.setTrackNumber(trackNum.intValue());

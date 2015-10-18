@@ -1,10 +1,8 @@
 <gui:LazyLoadingCardPane xmlns="org.apache.pivot.wtk"
                          xmlns:gui="groovejames.gui"
-                         xmlns:content="org.apache.pivot.wtk.content"
                          xmlns:bxml="http://pivot.apache.org/bxml"
                          styles="{selectionChangeEffect: 'crossfade'}">
     <BoxPane styles="{horizontalAlignment:'center', verticalAlignment:'center'}">
-        <ActivityIndicator bxml:id="activityIndicator" active="false" styles="%main.activityIndicator.styles"
-                           preferredWidth="120" preferredHeight="120"/>
+        <ActivityIndicator bxml:id="activityIndicator" active="false" preferredWidth="120" preferredHeight="120"/>
     </BoxPane>
 </gui:LazyLoadingCardPane>

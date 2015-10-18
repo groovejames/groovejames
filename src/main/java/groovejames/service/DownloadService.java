@@ -69,10 +69,6 @@ public class DownloadService {
         this.filenameSchemeParser = new FilenameSchemeParser();
     }
 
-    public File getDownloadDir() {
-        return downloadDir;
-    }
-
     public void setDownloadDir(File downloadDir) {
         this.downloadDir = downloadDir;
     }
@@ -89,10 +85,6 @@ public class DownloadService {
         File file = new File(downloadDir, filenameSchemeParser.parse(song));
         Store store = new FileStore(file, downloadDir);
         return download(song, store, downloadListener, false);
-    }
-
-    public synchronized Track downloadToMemory(Song song) {
-        return downloadToMemory(song, null);
     }
 
     public synchronized Track downloadToMemory(Song song, DownloadListener downloadListener) {
@@ -178,7 +170,6 @@ public class DownloadService {
                 track.setStatus(Track.Status.INITIALIZING);
                 fireDownloadStatusChanged();
                 StreamInfo streamInfo = searchService.getStreamInfo(track.getSong().getSongID());
-                track.getSong().setImageURL(streamInfo.getImageURL());
                 track.setStartDownloadTime(System.currentTimeMillis());
                 if (streamInfo.getDuration() > 0)
                     track.getSong().setEstimateDuration(streamInfo.getDuration() / 1000.0);

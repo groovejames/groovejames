@@ -1,114 +1,113 @@
 {
-    commandButton: {
-        font: {bold:true},
-        color: 4,
-        backgroundColor: 16,
-        borderColor: 13,
-        disabledBackgroundColor: 10,
-        disabledBorderColor: 7,
-        padding: {top:3, left:4, bottom:3, right:4},
-        minimumAspectRatio: 3
+    "commandButton": {
+        "font": {"bold": true},
+        "color": 4,
+        "backgroundColor": 16,
+        "borderColor": 13,
+        "disabledBackgroundColor": 10,
+        "disabledBorderColor": 7,
+        "padding": {"top": 3, "left": 4, "bottom": 3, "right": 4},
+        "minimumAspectRatio": 3
     },
 
-    main: {
-        window: {
-            title: "GrooveJames",
-            styles: {
-                backgroundPaint: {
-                    paintType: 'linear_gradient',
-                    startX: 0,
-                    startY: 0,
-                    endX: 150,
-                    endY: 1200,
-                    stops: [
+    "main": {
+        "window": {
+            "title": "GrooveJames",
+            "styles": {
+                "backgroundPaint": {
+                    "paintType": "linear_gradient",
+                    "startX": 0,
+                    "startY": 0,
+                    "endX": 150,
+                    "endY": 1200,
+                    "stops": [
                         {
-                            offset: 0.0,
-                            color: '#000000'
+                            "offset": 0.0,
+                            "color": "#000000"
                         },
                         {
-                            offset: 0.7,
-                            color: '#505050'
+                            "offset": 0.7,
+                            "color": "#505050"
                         },
                         {
-                            offset: 1.0,
-                            color: '#2a2a2a'
+                            "offset": 1.0,
+                            "color": "#2a2a2a"
                         }
                     ]
                 }
             }
         },
 
-        tablePane: {
-            styles: {
-                padding: {
-                    top: 3,
-                    left: 12,
-                    bottom: 12,
-                    right: 12
+        "tablePane": {
+            "styles": {
+                "padding": {
+                    "top": 3,
+                    "left": 12,
+                    "bottom": 12,
+                    "right": 12
                 },
-                verticalSpacing: 12
+                "verticalSpacing": 12
             }
         },
 
-        settingsButton: {
-            styles: {
-                color: '#FFFFFF'
+        "settingsButton": {
+            "styles": {
+                "color": "#FFFFFF"
             }
         },
 
-        searchField: {
-            styles: {
-                font: {
-                    bold: true,
-                    size: '220%'
+        "searchField": {
+            "styles": {
+                "font": {
+                    "bold": true,
+                    "size": "220%"
                 },
-                backgroundColor: '0x00000000',
-                borderColor: '0x00000000'
+                "backgroundColor": "0x00000000",
+                "borderColor": "0x00000000"
             },
-            prompt: "Search for music."
+            "prompt": "Search for music."
         },
 
-        searchButton: {
-            styles: {
-                toolbar: true,
-                padding: {
-                    top: 0,
-                    left: 0,
-                    bottom: 0,
-                    right: 0
+        "searchButton": {
+            "styles": {
+                "toolbar": true,
+                "padding": {
+                    "top": 0,
+                    "left": 0,
+                    "bottom": 0,
+                    "right": 0
                 },
-                backgroundColor: '0x00000000',
-                borderColor: '#907817'
-            }
-        },
-
-        activityIndicator: {
-            styles: {
-                /*color: '#FFFFFF'*/
+                "backgroundColor": "0x00000000",
+                "borderColor": "#907817"
             }
         }
     },
 
-    searchresultpane: {
-        searchLabel: {
-            text: "Search:",
-            styles: {
-                font: {
-                    bold: true,
-                    size: '130%'
+    "searchresultpane": {
+        "searchLabel": {
+            "text": "Search:",
+            "styles": {
+                "font": {
+                    "bold": true,
+                    "size": "130%"
                 }
             }
         },
-        count: {
-            styles: {
-                padding: {
-                    top: 5
-                }
+        "count": {
+            "styles": {
+                "padding": {"top": 3, "left": 10, "right": 10}
             }
         },
-        moreLink: {
-            styles: {
-                color: '#FFFFFF'
+        "moreLink": {
+            "styles": {
+                "color": "#FFFFFF"
+            }
+        }
+    },
+    "songstablepane": {
+        "count": {
+            "styles": {
+                "padding": {"top": 5}
             }
         }
     }

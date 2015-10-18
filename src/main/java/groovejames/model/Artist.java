@@ -2,17 +2,17 @@ package groovejames.model;
 
 public class Artist extends BaseModelObject {
 
-    private Long artistID;
+    private long artistID;
     private String artistName;
     private String sortName;
     private String coverArtFilename;
     private String artistCoverArtFilename;
 
-    public Long getArtistID() {
+    public long getArtistID() {
         return artistID;
     }
 
-    public void setArtistID(Long artistID) {
+    public void setArtistID(long artistID) {
         this.artistID = artistID;
     }
 
@@ -66,12 +66,12 @@ public class Artist extends BaseModelObject {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Artist artist = (Artist) o;
-        return artistID.equals(artist.artistID);
+        return artistID == artist.artistID;
     }
 
     @Override
     public int hashCode() {
-        return artistID.hashCode();
+        return (int) artistID;
     }
 
     @Override

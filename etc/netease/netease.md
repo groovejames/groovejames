@@ -4,6 +4,7 @@
 
 - https://github.com/yanunon/NeteaseCloudMusic/wiki/NetEase-cloud-music-analysis-API-%5BEN%5D
 - https://gist.github.com/scturtle/5972996
+- http://www.rubydoc.info/gems/mplug163/0.1.1/NetEase
 
 
 ## Netease API
@@ -15,12 +16,12 @@ POST http://music.163.com/api/search/get
 Params:
 
 - s: (string) search string
-- type: (int) 100: artists, 10: albums, 1: songs
+- type: (int) 1000: playlists, 100: artists, 10: albums, 1: songs
 - limit: (int)
 - offset: (int)
 - sub: (boolean) ??? set to false
 
-Returns: SearchResult
+Returns: SearchResult containing one of (PlaylistSearchResult | ArtistSearchResult | AlbumSearchResult | SongSearchResult)
 
 ### albums of an artist
 
@@ -30,6 +31,8 @@ Params:
 
 - limit: (int)
 - offset: (int)
+
+Returns: ArtistAlbumsSearchResult
 
 ### album info
 
@@ -47,7 +50,11 @@ Returns: SongDetailSearchResult
 ### SearchResult
 
 - code: (int) 200: ok, otherwise: error
-- result: (ArtistSearchResult | AlbumSearchResult | SongSearchResult)
+- result: (PlaylistSearchResult | ArtistSearchResult | AlbumSearchResult | SongSearchResult )
+
+### PlaylistSearchResult
+
+TBD
 
 ### ArtistSearchResult
 
@@ -63,6 +70,13 @@ Returns: SongDetailSearchResult
 
 - songCount: (int)
 - songs: (array of Song)
+
+### ArtistAlbumsSearchResult
+
+- code: (int) 200: ok, otherwise: error
+- artist: (Artist)
+- hotAlbums: (array of Album)
+- more: boolean
 
 ### Artist
 

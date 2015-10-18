@@ -2,6 +2,7 @@
                     xmlns:bxml="http://pivot.apache.org/bxml"
                     xmlns:gui="groovejames.gui"
                     xmlns:guicomponents="groovejames.gui.components"
+                    xmlns:wtkcontent="org.apache.pivot.wtk.content"
                     styles="{verticalSpacing:6}">
     <bxml:define>
         <ButtonGroup bxml:id="showButtonGroup"/>
@@ -12,6 +13,11 @@
     <rows>
         <TablePane.Row>
             <BoxPane styles="{fill:true, horizontalAlignment:'right'}">
+                <FlowPane styles="%searchresultpane.count.styles">
+                    <Label bxml:id="countText" text="100 of 234"/>
+                    <LinkButton bxml:id="moreLink" buttonData="(more...)" styles="%searchresultpane.moreLink.styles"/>
+                </FlowPane>
+                <!--<TablePane.Filler/>-->
                 <TextInput bxml:id="albumSearchInPage" prompt="Search in page..."/>
             </BoxPane>
         </TablePane.Row>
@@ -35,6 +41,11 @@
                                     </TableView.Column>
                                     <TableView.Column name="albumName" headerData="Album" width="1*"/>
                                     <TableView.Column name="artistName" headerData="Artist" width="300"/>
+                                    <TableView.Column name="publishingTime" headerData="Year" width="80">
+                                        <cellRenderer>
+                                            <wtkcontent:TableViewDateCellRenderer dateFormat="YYYY"/>
+                                        </cellRenderer>
+                                    </TableView.Column>
                                     <TableView.Column name="popularityPercentage" headerData="Popularity" width="80">
                                         <cellRenderer>
                                             <guicomponents:MeterTableCellRenderer/>

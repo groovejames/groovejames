@@ -41,7 +41,7 @@
                 </buttonData>
             </PushButton>
             <TablePane.Filler/>
-            <FlowPane styles="%searchresultpane.count.styles">
+            <FlowPane styles="%songstablepane.count.styles">
                 <Label bxml:id="countText" text="100 of 234"/>
                 <LinkButton bxml:id="moreLink" buttonData="(more...)" styles="%searchresultpane.moreLink.styles"/>
             </FlowPane>

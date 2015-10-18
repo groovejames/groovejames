@@ -10,7 +10,8 @@ public class NEAlbum {
     public String picUrl;
     public long picId;
     public String blurPicUrl;
-    public long publishtime;
+    /** publishing time of album, in milliseconds since 1970 */
+    public long publishTime;
     public int size;
     public NESong[] songs;
     public int status;

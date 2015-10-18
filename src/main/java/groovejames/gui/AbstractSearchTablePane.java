@@ -41,21 +41,34 @@ abstract class AbstractSearchTablePane<V extends BaseModelObject> extends TableP
             moreLink.setVisible(false);
             return;
         }
-        int total = searchResult.getTotal();
-        if (total == 0) {
-            countText.setText("No results.");
-            moreLink.setVisible(false);
-            return;
-        }
         int currentCount = searchParameter.getOffset() + searchResult.getResult().length;
-        if (currentCount >= total) {
-            countText.setText("Total: " + currentCount);
-            moreLink.setVisible(false);
+        if (searchResult.isTotalUnknown()) {
+            if (searchResult.hasMore()) {
+                countText.setText("" + currentCount);
+                moreLink.setVisible(true);
+                moreLink.setAction(new MoreAction());
+                searchParameter.setOffset(currentCount);
+            } else if (currentCount == 0) {
+                countText.setText("No results.");
+                moreLink.setVisible(false);
+            } else {
+                countText.setText("Total: " + currentCount);
+                moreLink.setVisible(false);
+            }
         } else {
-            countText.setText("" + currentCount + " of " + total);
-            moreLink.setVisible(true);
-            moreLink.setAction(new MoreAction());
-            searchParameter.setOffset(currentCount);
+            int total = searchResult.getTotal();
+            if (total == 0) {
+                countText.setText("No results.");
+                moreLink.setVisible(false);
+            } else if (currentCount >= total) {
+                countText.setText("Total: " + currentCount);
+                moreLink.setVisible(false);
+            } else {
+                countText.setText("" + currentCount + " of " + total);
+                moreLink.setVisible(true);
+                moreLink.setAction(new MoreAction());
+                searchParameter.setOffset(currentCount);
+            }
         }
     }
 

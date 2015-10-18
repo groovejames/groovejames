@@ -29,6 +29,11 @@ public class NetEaseServiceMock implements INetEaseService {
     }
 
     @Override
+    public NEArtistAlbumsSearchResultResponse searchAlbums(long artistID, int offset, int limit) throws Exception {
+        return null; // TODO
+    }
+
+    @Override
     public Map<Long, NESongDetails> getSongDetails(long[] songIDs) throws Exception {
         Map<Long, NESongDetails> result = new HashMap<>(songIDs.length + 10);
         for (long songID : songIDs) {

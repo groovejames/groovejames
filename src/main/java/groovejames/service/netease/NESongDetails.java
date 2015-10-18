@@ -5,7 +5,8 @@ public class NESongDetails {
     public long id;
     public String mp3Url;
     public int position;
-    public int duration; // ms
+    /** in milliseconds */
+    public int duration;
     public double popularity;
     public double score;
     public int fee;

@@ -346,7 +346,6 @@ public class SongTablePane extends AbstractSearchTablePane<Song> {
             groupByAlbum.setSelected(false);
             songTable.getUserData().put("dontRedistributeColumnWidths", Boolean.FALSE);
         }
-        //setSongs(new Song[]{});
     }
 
     @Override
@@ -394,6 +393,7 @@ public class SongTablePane extends AbstractSearchTablePane<Song> {
         }
         ArrayList<Song> albumList = filterAlbums();
         Song allAlbumsEntry = new Song();
+        allAlbumsEntry.setAlbumID(-1);
         allAlbumsEntry.setAlbumName("All Albums");
         albumList.insert(allAlbumsEntry, 0);
         songAlbumList.setSource(albumList);
@@ -421,9 +421,12 @@ public class SongTablePane extends AbstractSearchTablePane<Song> {
     private class SongListFilter implements Filter<Song> {
         @Override
         public boolean include(Song song) {
-            if (songListSelectedAlbumID != null)
+            if (songListSelectedAlbumID != null) {
+                if (songListSelectedAlbumID == -1)
+                    return true;
                 if (!songListSelectedAlbumID.equals(song.getAlbumID()))
                     return false;
+            }
             String searchString = songSearchInPage.getText().trim();
             if (containsIgnoringCase(song.getSongName(), searchString))
                 return true;
