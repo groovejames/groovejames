@@ -19,6 +19,7 @@ import groovejames.service.netease.NEPlaylistSearchResult;
 import groovejames.service.netease.NESong;
 import groovejames.service.netease.NESongDetails;
 import groovejames.service.netease.NESongSearchResult;
+import groovejames.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -26,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -123,21 +123,29 @@ public class SearchService {
                 String userID = ((UserSearch) searchParameter).getUserID().toString();
                 Song[] songs = new Song[0];
                 total = 0;
-                result = filterDuplicateSongs(songs);
+                result = songs;
                 break;
             }
             case Playlist: {
                 Long playlistID = ((PlaylistSearch) searchParameter).getPlaylistID();
                 Song[] songs = new Song[0];
                 total = 0;
-                result = filterDuplicateSongs(songs);
+                result = songs;
                 break;
             }
             case Songs: {
                 Set<Long> songIDs = ((SongSearch) searchParameter).getSongIDs();
-                Song[] songs = new Song[0];
-                total = 0;
-                result = filterDuplicateSongs(songs);
+                long[] songIDArray = Util.convert(songIDs);
+                Map<Long, NESongDetails> songDetails = netEaseService.getSongDetails(songIDArray);
+                Song[] songs = new Song[songDetails.size()];
+                int i = 0;
+                for (NESongDetails neSongDetails : songDetails.values()) {
+                    Song song = new Song();
+                    setSongAttributes(song, neSongDetails);
+                    songs[i++] = song;
+                }
+                total = songs.length;
+                result = songs;
                 break;
             }
             default: {
@@ -306,19 +314,6 @@ public class SearchService {
                 throw new IllegalArgumentException("invalid search type: " + searchType);
         }
         return new SearchResult<>(result, total);
-    }
-
-    private Song[] filterDuplicateSongs(Song[] songs) {
-        HashSet<Long> allSongsIds = new HashSet<>();
-        ArrayList<Song> resultList = new ArrayList<>(songs.length);
-        for (Song song : songs) {
-            Long songID = song.getSongID();
-            if (!allSongsIds.contains(songID)) {
-                resultList.add(song);
-                allSongsIds.add(songID);
-            }
-        }
-        return resultList.toArray(new Song[resultList.size()]);
     }
 
 }

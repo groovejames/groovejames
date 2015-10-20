@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -378,4 +379,12 @@ public class Util {
         new ProcessStreamReader(process.getInputStream(), args[0]).start();
     }
 
+    public static long[] convert(Set<Long> longs) {
+        long[] result = new long[longs.size()];
+        int i = 0;
+        for (Long l : longs) {
+            result[i++] = l;
+        }
+        return result;
+    }
 }
