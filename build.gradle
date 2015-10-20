@@ -22,15 +22,11 @@ dependencies {
         exclude group: 'com.sun.jmx', module: 'jmxri'
     }
     compile 'org.apache.httpcomponents:httpclient:4.0.1'
-    compile('com.googlecode.json-simple:json-simple:1.1.1') {
-        exclude group: 'junit', module: 'junit'
-    }
     compile 'org.blinkenlights.jid3:JID3:0.46'
     compile 'org.apache.pivot:pivot-core:2.0.4'
     compile 'org.apache.pivot:pivot-wtk:2.0.4'
     compile 'org.apache.pivot:pivot-wtk-terra:2.0.4'
     compile 'com.mashape.unirest:unirest-java:1.4.7'
-    //compile 'com.fasterxml.jackson.core:jackson-core:2.6.2'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.6.2'
 }
 

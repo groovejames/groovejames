@@ -1,6 +1,5 @@
 package groovejames.service.netease;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mashape.unirest.http.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,7 +34,7 @@ class JacksonObjectMapper implements ObjectMapper {
             String string = jacksonObjectMapper.writeValueAsString(value);
             log.debug("write: " + string);
             return string;
-        } catch (JsonProcessingException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
