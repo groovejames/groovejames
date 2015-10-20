@@ -2,7 +2,7 @@ package groovejames.service.search;
 
 public interface SearchParameter extends Cloneable {
 
-    int DEFAULT_SEARCH_LIMIT = 20;
+    int DEFAULT_SEARCH_LIMIT = 50;
 
     /**
      * the search type.

@@ -4,7 +4,6 @@ public class Song extends BaseModelObject {
 
     private long artistID;
     private String artistName;
-    private String name;
     private String songName;
     private long songID;
     private long albumID;
@@ -31,18 +30,8 @@ public class Song extends BaseModelObject {
         this.artistName = artistName;
     }
 
-    public String getName() {
-        return name != null ? name : songName;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-        if (this.songName == null)
-            this.songName = name;
-    }
-
     public String getSongName() {
-        return songName != null ? songName : name;
+        return songName;
     }
 
     public void setSongName(String songName) {

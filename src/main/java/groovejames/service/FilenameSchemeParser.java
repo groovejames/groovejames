@@ -108,7 +108,7 @@ public class FilenameSchemeParser {
         if (result == null)
             result = matchTag(TAG_ALBUM, tag, song.getAlbumName(), conditionalText, song);
         if (result == null)
-            result = matchTag(TAG_TITLE, tag, song.getName(), conditionalText, song);
+            result = matchTag(TAG_TITLE, tag, song.getSongName(), conditionalText, song);
         if (result == null)
             throw new IllegalArgumentException("unknown tag: " + tag);
 

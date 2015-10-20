@@ -13,7 +13,7 @@ public class FilenameSchemeTextValidator implements Validator {
     testSong.setTrackNum(2);
     testSong.setArtistName("King Tubby");
     testSong.setAlbumName("Declaration of Dub");
-    testSong.setName("African Roots");
+    testSong.setSongName("African Roots");
   }
 
   @Override

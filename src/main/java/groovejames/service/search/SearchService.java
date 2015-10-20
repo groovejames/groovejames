@@ -71,14 +71,7 @@ public class SearchService {
                     int i = 0;
                     for (NESong neSong : songSearchResult.songs) {
                         Song song = new Song();
-                        song.setName(neSong.name);
-                        song.setSongName(neSong.name);
                         song.setSongID(neSong.id);
-                        song.setAlbumName(neSong.album.name);
-                        song.setAlbumID(neSong.album.id);
-                        song.setArtistName(neSong.artists[0].name);
-                        song.setArtistID(neSong.artists[0].id);
-                        song.setImageURL(neSong.artists[0].img1v1Url);
                         song.setRelevance(1.0 - (((double) (searchParameter.getOffset() + i)) / (double) total));
                         result[i] = song;
                         songIDs[i] = neSong.id;
@@ -87,6 +80,12 @@ public class SearchService {
                     Map<Long, NESongDetails> songDetailsMap = netEaseService.getSongDetails(songIDs);
                     for (Song song : result) {
                         NESongDetails neSongDetails = songDetailsMap.get(song.getSongID());
+                        song.setSongName(neSongDetails.name);
+                        song.setAlbumName(neSongDetails.album.name);
+                        song.setAlbumID(neSongDetails.album.id);
+                        song.setArtistName(neSongDetails.artists[0].name);
+                        song.setArtistID(neSongDetails.artists[0].id);
+                        //song.setImageURL(neSongDetails.artists[0].img1v1Url);
                         song.setImageURL(neSongDetails.album.picUrl);
                         song.setPopularity(neSongDetails.popularity / 100.0);
                         song.setEstimateDuration((double) neSongDetails.duration);
@@ -102,7 +101,6 @@ public class SearchService {
                 int i = 0;
                 for (NESongDetails neSongDetails : neAlbum.songs) {
                     Song song = new Song();
-                    song.setName(neSongDetails.name);
                     song.setSongName(neSongDetails.name);
                     song.setSongID(neSongDetails.id);
                     song.setAlbumName(neSongDetails.album.name);

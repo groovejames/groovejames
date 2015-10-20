@@ -9,6 +9,8 @@ public class NetEaseServiceMock implements INetEaseService {
     private static final int total = 234;
     private static final int delay = 1000;
 
+    private String latestSearch;
+
     @Override
     public NESongSearchResult searchSongs(String searchString, int offset, int limit) throws Exception {
         int cnt = 0;
@@ -16,14 +18,12 @@ public class NetEaseServiceMock implements INetEaseService {
         for (int i = offset; i < total && cnt < limit; i++, cnt++) {
             NESong song = new NESong();
             song.id = searchString.hashCode() + i;
-            song.name = searchString + i;
-            song.album = createAlbum(searchString);
-            song.artists = new NEArtist[]{createArtist(searchString)};
             songs.add(song);
         }
         NESongSearchResult result = new NESongSearchResult();
         result.songCount = total;
         result.songs = songs.toArray(new NESong[songs.size()]);
+        this.latestSearch = searchString; // for getSongDetails()
         delay();
         return result;
     }
@@ -51,9 +51,13 @@ public class NetEaseServiceMock implements INetEaseService {
     @Override
     public Map<Long, NESongDetails> getSongDetails(long[] songIDs) throws Exception {
         Map<Long, NESongDetails> result = new HashMap<>(songIDs.length + 10);
+        int i = 0;
         for (long songID : songIDs) {
             NESongDetails songDetails = new NESongDetails();
             songDetails.id = songID;
+            songDetails.name = latestSearch + i;
+            songDetails.album = createAlbum(latestSearch);
+            songDetails.artists = new NEArtist[] {createArtist(latestSearch)};
             songDetails.duration = 3 * 60 * 1000;
             result.put(songID, songDetails);
         }

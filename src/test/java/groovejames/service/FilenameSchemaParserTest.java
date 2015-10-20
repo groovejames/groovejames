@@ -9,7 +9,7 @@ public class FilenameSchemaParserTest /* extends TestCase */ {
         Song song = new Song();
         song.setArtistName("Beck");
         song.setAlbumName("Odelay");
-        song.setName("Devil's Haircut");
+        song.setSongName("Devil's Haircut");
 
         assertEquals("foo", parser.parse(song, "foo"));
         assertEquals("foo?", parser.parse(song, "foo?"));
@@ -82,7 +82,7 @@ public class FilenameSchemaParserTest /* extends TestCase */ {
 
         song.setArtistName("Beck");
         song.setAlbumName("Odelay");
-        song.setName("Devil's Haircut");
+        song.setSongName("Devil's Haircut");
         song.setTrackNum(1);
         assertEquals("Beck/Odelay/01 - Devil's Haircut.mp3", parser.parse(song, FilenameSchemeParser.DEFAULT_FILENAME_SCHEME));
 
