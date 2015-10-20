@@ -673,13 +673,13 @@ public class Main extends AbstractApplication {
 
     private void updatePlayProgress(Track track, int audioPosition) {
         audioPosition = max(audioPosition, 0);
-        Double estimateDuration = track.getSong().getEstimateDuration();
-        if (estimateDuration != null && estimateDuration > 0.0) {
-            double percentage = (double) audioPosition / (estimateDuration * 1000L);
+        Integer duration = track.getSong().getDuration();
+        if (duration != null && duration > 0) {
+            double percentage = (double) audioPosition / (duration * 1000L);
             playProgress.setPercentage(min(max(percentage, 0.0), 1.0));
-            playProgress.setText(format("%s / %s", durationToString(audioPosition / 1000.0), durationToString(estimateDuration)));
+            playProgress.setText(format("%s / %s", durationToString(audioPosition / 1000), durationToString(duration)));
         } else {
-            playProgress.setText(durationToString(audioPosition / 1000.0));
+            playProgress.setText(durationToString(audioPosition / 1000));
         }
     }
 

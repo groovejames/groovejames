@@ -88,7 +88,7 @@ public class SearchService {
                         //song.setImageURL(neSongDetails.artists[0].img1v1Url);
                         song.setImageURL(neSongDetails.album.picUrl);
                         song.setPopularity(neSongDetails.popularity / 100.0);
-                        song.setEstimateDuration((double) neSongDetails.duration);
+                        song.setDuration(neSongDetails.duration / 1000);
                     }
                 }
                 break;
@@ -110,7 +110,7 @@ public class SearchService {
                     song.setImageURL(neSongDetails.artists[0].img1v1Url);
                     song.setImageURL(neSongDetails.album.picUrl);
                     song.setPopularity(neSongDetails.popularity / 100.0);
-                    song.setEstimateDuration((double) neSongDetails.duration);
+                    song.setDuration(neSongDetails.duration / 1000);
                     song.setTrackNum(neSongDetails.no);
                     songs[i++] = song;
                 }

@@ -200,13 +200,13 @@ public class Util {
         }
     }
 
-    public static String durationToString(Double duration) {
+    public static String durationToString(Integer duration) {
         if (duration == null) {
             return "";
         }
-        long hour = (long) (duration / 3600.0);
-        long min = ((long) (duration / 60.0)) % 60;
-        long sec = Math.round(duration) % 60;
+        int hour = duration / 3600;
+        int min = duration / 60 % 60;
+        int sec = duration % 60;
         StringBuilder sb = new StringBuilder();
         if (hour > 0) {
             if (hour < 10) {

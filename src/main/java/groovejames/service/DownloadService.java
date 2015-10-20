@@ -172,7 +172,7 @@ public class DownloadService {
                 StreamInfo streamInfo = searchService.getStreamInfo(track.getSong().getSongID());
                 track.setStartDownloadTime(System.currentTimeMillis());
                 if (streamInfo.getDuration() > 0)
-                    track.getSong().setEstimateDuration(streamInfo.getDuration() / 1000.0);
+                    track.getSong().setDuration(streamInfo.getDuration() / 1000);
                 fireDownloadStatusChanged();
                 if (Boolean.getBoolean("mockNet"))
                     fakedownload(streamInfo);

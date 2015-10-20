@@ -10,7 +10,7 @@ public class Song extends BaseModelObject {
     private String albumName;
     private String imageURL;
     private Integer trackNum;
-    private Double estimateDuration;
+    private Integer duration;
     /** must be a number between 0.0 and 1.0 */
     private Double popularity;
 
@@ -80,21 +80,21 @@ public class Song extends BaseModelObject {
     }
 
     /**
-     * Return estimate duration of this song, in seconds
+     * Return duration of this song, in seconds
      *
-     * @return the estimate duration, in seconds, or {@code null} if duration is unknown
+     * @return the duration, in seconds, or {@code null} if duration is unknown
      */
-    public Double getEstimateDuration() {
-        return estimateDuration;
+    public Integer getDuration() {
+        return duration;
     }
 
     /**
-     * Set the estimate duration of this song, in seconds.
+     * Set the duration of this song, in seconds.
      *
-     * @param estimateDuration the estimate duration, in seconds, or {@code null} if duration is unknown
+     * @param duration the duration, in seconds, or {@code null} if duration is unknown
      */
-    public void setEstimateDuration(Double estimateDuration) {
-        this.estimateDuration = estimateDuration;
+    public void setDuration(Integer duration) {
+        this.duration = duration;
     }
 
     /** get popularity, a value between 0.0 and 1.0, or {@code null} if popularity is unknown */
@@ -132,7 +132,7 @@ public class Song extends BaseModelObject {
         sb.append("{songID=").append(songID);
         sb.append(", songName='").append(songName).append('\'');
         sb.append(", imageURL='").append(imageURL).append('\'');
-        sb.append(", estimateDuration=").append(estimateDuration);
+        sb.append(", duration=").append(duration);
         sb.append('}');
         return sb.toString();
     }

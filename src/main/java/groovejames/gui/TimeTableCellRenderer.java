@@ -26,13 +26,13 @@ public class TimeTableCellRenderer extends TableViewCellRenderer {
         return durationToString(getDuration(row));
     }
 
-    private Double getDuration(Object row) {
+    private Integer getDuration(Object row) {
         if (row == null)
             return null;
         else if (row instanceof Song)
-            return ((Song) row).getEstimateDuration();
+            return ((Song) row).getDuration();
         else if (row instanceof Track)
-            return ((Track) row).getSong().getEstimateDuration();
+            return ((Track) row).getSong().getDuration();
         else
             throw new IllegalStateException("row not instance of Song or Track");
     }

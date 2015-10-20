@@ -3,6 +3,7 @@ package groovejames.model;
 public class StreamInfo {
 
     private final String downloadUrl;
+    /** in ms */
     private final int duration;
     private final String imageURL;
 
