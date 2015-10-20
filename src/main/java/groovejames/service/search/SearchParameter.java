@@ -2,7 +2,7 @@ package groovejames.service.search;
 
 public interface SearchParameter {
 
-    int DEFAULT_SEARCH_LIMIT = 20;
+    int DEFAULT_SEARCH_LIMIT = 100;
 
     /**
      * the search type.

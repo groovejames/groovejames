@@ -19,7 +19,7 @@
                         <view>
                             <guicomponents:ClickableTableView
                                     bxml:id="playlistTable" selectMode="single"
-                                    clickableColumns="1"
+                                    clickableColumns="1,2"
                                     styles="{showHorizontalGridLines:false, showVerticalGridLines:false}"
                                     sort="[{columnName:'name', sortDirection:'ASCENDING'}]">
                                 <columns>
@@ -32,6 +32,7 @@
                                         </cellRenderer>
                                     </TableView.Column>
                                     <TableView.Column name="name" headerData="Name" width="1*"/>
+                                    <TableView.Column name="userName" headerData="created by" width="100"/>
                                     <TableView.Column name="numSongs" headerData="# Songs" width="55"/>
                                 </columns>
                             </guicomponents:ClickableTableView>

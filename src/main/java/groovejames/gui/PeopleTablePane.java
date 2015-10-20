@@ -47,7 +47,7 @@ public class PeopleTablePane extends AbstractSearchTablePane<User> {
                 TableView.Column column = source.getColumns().get(columnIndex);
                 if ("username".equals(column.getName()) || "name".equals(column.getName())) {
                     User user = (User) row;
-                    main.openSearchTab(new UserSearch(user.getUserID(), user.getUsername(), user.getName()));
+                    main.openSearchTab(new UserSearch(user.getUserID(), user.getUsername()));
                 }
                 return false;
             }

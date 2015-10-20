@@ -42,18 +42,6 @@ task updateVersionProperties << {
 }
 compileJava.dependsOn updateVersionProperties
 
-// Copy resources files from src (*.bxml files) to classes dir.
-// Note that we don't mark src as resource folder as it causes problems with IntelliJ
-//compileJava {
-//    doLast {
-//        copy {
-//            from "src"
-//            into sourceSets.main.output.classesDir
-//            exclude "**/*.java"
-//        }
-//    }
-//}
-
 
 jar {
     // build uber-jar containing all other jars
@@ -70,7 +58,7 @@ tasks.jar.dependsOn updateVersionProperties
 
 task distBinPrepare(type: Copy) {
     dependsOn jar
-    from 'CHANGES.txt', 'grooveJames.exe'
+    from 'CHANGES.md', 'grooveJames.exe'
     from("$buildDir/libs/") {
         include 'groovejames-*.jar'
     }

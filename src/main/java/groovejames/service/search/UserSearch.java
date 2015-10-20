@@ -1,19 +1,15 @@
 package groovejames.service.search;
 
-import groovejames.util.Util;
-
 import static java.lang.String.format;
 
 public class UserSearch extends AbstractSearchParameter {
 
     private final Long userID;
-    private final String username;
-    private final String name;
+    private final String userName;
 
-    public UserSearch(Long userID, String username, String name) {
+    public UserSearch(Long userID, String userName) {
         this.userID = userID;
-        this.username = username;
-        this.name = name;
+        this.userName = userName;
     }
 
     @Override
@@ -23,7 +19,7 @@ public class UserSearch extends AbstractSearchParameter {
 
     @Override
     public String getLabel() {
-        return format("User: %s", Util.isEmpty(name) ? username : name);
+        return format("User: %s", userName);
     }
 
     @Override
@@ -33,19 +29,15 @@ public class UserSearch extends AbstractSearchParameter {
 
     @Override
     public String getDescription() {
-        return username;
+        return userName;
     }
 
     public Long getUserID() {
         return userID;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public String getName() {
-        return name;
+    public String getUserName() {
+        return userName;
     }
 
     @Override

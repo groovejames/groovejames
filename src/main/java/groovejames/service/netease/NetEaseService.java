@@ -19,7 +19,7 @@ public class NetEaseService implements INetEaseService {
     private static final String REFERER = "http://music.163.com";
 
     enum SearchType {
-        songs(1), albums(10), artists(100), playlists(1000);
+        songs(1), albums(10), artists(100), playlists(1000), users(1002), unknown(1009);
 
         private final int type;
 
@@ -44,6 +44,12 @@ public class NetEaseService implements INetEaseService {
     @Override
     public NEArtistSearchResult searchArtists(String searchString, int offset, int limit) throws Exception {
         NEArtistSearchResultResponse response = search(searchString, offset, limit, SearchType.artists, NEArtistSearchResultResponse.class);
+        return response.result;
+    }
+
+    @Override
+    public NEPlaylistSearchResult searchPlaylists(String searchString, int offset, int limit) throws Exception {
+        NEPlaylistSearchResultResponse response = search(searchString, offset, limit, SearchType.playlists, NEPlaylistSearchResultResponse.class);
         return response.result;
     }
 
