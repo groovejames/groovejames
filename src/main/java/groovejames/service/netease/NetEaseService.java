@@ -73,23 +73,34 @@ public class NetEaseService implements INetEaseService {
     }
 
     @Override
-    public NEArtistAlbumsSearchResultResponse getAlbums(long artistID, int offset, int limit) throws Exception {
-        HttpResponse<NEArtistAlbumsSearchResultResponse> httpResponse = Unirest.get(MUSIC163_API + "/artist/albums/{artistID}")
+    public NEArtistDetailsResponse getHotSongs(long artistID) throws Exception {
+        // this request ignores offset and limit
+        HttpResponse<NEArtistDetailsResponse> httpResponse = Unirest.get(MUSIC163_API + "/artist/{artistID}")
+                .routeParam("artistID", Long.toString(artistID))
+                .asObject(NEArtistDetailsResponse.class);
+        NEArtistDetailsResponse response = httpResponse.getBody();
+        if (response.code != 200) throw new NetEaseException("error getting artists top songs: " + response.code);
+        return response;
+    }
+
+    @Override
+    public NEArtistAlbumsResultResponse getAlbums(long artistID, int offset, int limit) throws Exception {
+        HttpResponse<NEArtistAlbumsResultResponse> httpResponse = Unirest.get(MUSIC163_API + "/artist/albums/{artistID}")
                 .routeParam("artistID", Long.toString(artistID))
                 .queryString("offset", offset)
                 .queryString("limit", limit)
-                .asObject(NEArtistAlbumsSearchResultResponse.class);
-        NEArtistAlbumsSearchResultResponse response = httpResponse.getBody();
+                .asObject(NEArtistAlbumsResultResponse.class);
+        NEArtistAlbumsResultResponse response = httpResponse.getBody();
         if (response.code != 200) throw new NetEaseException("error getting artists albums: " + response.code);
         return response;
     }
 
     @Override
     public NEAlbum getAlbum(long albumID) throws Exception {
-        HttpResponse<NEAlbumDetailsResultResponse> httpResponse = Unirest.get(MUSIC163_API + "/album/{albumID}")
+        HttpResponse<NEAlbumDetailsResponse> httpResponse = Unirest.get(MUSIC163_API + "/album/{albumID}")
                 .routeParam("albumID", Long.toString(albumID))
-                .asObject(NEAlbumDetailsResultResponse.class);
-        NEAlbumDetailsResultResponse response = httpResponse.getBody();
+                .asObject(NEAlbumDetailsResponse.class);
+        NEAlbumDetailsResponse response = httpResponse.getBody();
         if (response.code != 200) throw new NetEaseException("error getting album details: " + response.code);
         return response.album;
     }
@@ -97,10 +108,10 @@ public class NetEaseService implements INetEaseService {
     @Override
     public Map<Long, NESongDetails> getSongDetails(long[] songIDs) throws Exception {
         String songIDList = "[" + Util.join(songIDs, ',') + "]";
-        HttpResponse<NESongDetailsResultResponse> httpResponse = Unirest.post(MUSIC163_API + "/song/detail")
+        HttpResponse<NESongDetailsResponse> httpResponse = Unirest.post(MUSIC163_API + "/song/detail")
                 .field("ids", songIDList)
-                .asObject(NESongDetailsResultResponse.class);
-        NESongDetailsResultResponse result = httpResponse.getBody();
+                .asObject(NESongDetailsResponse.class);
+        NESongDetailsResponse result = httpResponse.getBody();
         if (result.code != 200) throw new NetEaseException("error getting song details: " + result.code);
         if (result.songs == null || result.songs.length == 0) throw new NetEaseException("song details not found for song ids: " + songIDList);
         Map<Long, NESongDetails> map = new HashMap<>();

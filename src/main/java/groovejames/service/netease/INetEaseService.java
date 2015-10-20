@@ -12,7 +12,9 @@ public interface INetEaseService {
 
     NEPlaylistSearchResult searchPlaylists(String searchString, int offset, int limit) throws Exception;
 
-    NEArtistAlbumsSearchResultResponse getAlbums(long artistID, int offset, int limit) throws Exception;
+    NEArtistDetailsResponse getHotSongs(long artistID) throws Exception;
+
+    NEArtistAlbumsResultResponse getAlbums(long artistID, int offset, int limit) throws Exception;
 
     NEAlbum getAlbum(long albumID) throws Exception;
 

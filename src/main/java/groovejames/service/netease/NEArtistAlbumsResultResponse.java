@@ -1,6 +1,6 @@
 package groovejames.service.netease;
 
-public class NEArtistAlbumsSearchResultResponse extends NEResponse {
+public class NEArtistAlbumsResultResponse extends NEResponse {
 
     public NEArtist artist;
     public NEAlbum[] hotAlbums;

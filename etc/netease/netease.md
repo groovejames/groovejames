@@ -24,6 +24,12 @@ Params:
 
 Returns: SearchResult containing one of SongSearchResult (type=1), AlbumSearchResult (type=10), ArtistSearchResult (type=100), PlaylistSearchResult (type=1000), DjChannelSearchResult (type=1009)
 
+### artist details
+
+GET http://music.163.com/api/artist/[artistId]
+
+Returns: ArtistDetailSearchResult
+
 ### albums of an artist
 
 GET http://music.163.com/api/artist/albums/[artistId]
@@ -35,7 +41,7 @@ Params:
 
 Returns: ArtistAlbumsSearchResult
 
-### album info
+### album details
 
 GET http://music.163.com/api/album/[albumId]
 
@@ -106,12 +112,19 @@ Not all properties are listed, only the more important ones.
 - songCount: (int)
 - songs: (array of Song)
 
+### ArtistDetailSearchResult
+
+- code: (int) 200: ok, otherwise: error
+- artist: (Artist)
+- hotSongs: (array of SongDetail)
+- more: (boolean) often true, but no way to get more hotSongs, because the artist details request doesn't accept offset and limit
+
 ### ArtistAlbumsSearchResult
 
 - code: (int) 200: ok, otherwise: error
 - artist: (Artist)
 - hotAlbums: (array of Album)
-- more: boolean
+- more: (boolean)
 
 ### Artist
 
@@ -125,7 +138,7 @@ Not all properties are listed, only the more important ones.
 - img1v1: (long) ID in img1v1Url
 - picUrl: (string) alternative image URL, sometimes null
 - picId: (long) ID in picURL
-- trans: chinese translated name
+- trans: (string) chinese translated name
 - transnames: (array of string) chinese translated names
 - mvSize: (int) ???
 

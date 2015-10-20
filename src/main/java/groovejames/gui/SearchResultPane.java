@@ -61,7 +61,7 @@ public class SearchResultPane extends TablePane implements Bindable {
                 break;
             case Artist:
                 addTab("albumtablepane.bxml", "Albums");
-                addTab("songtablepane.bxml", "Songs");
+                addTab("songtablepane.bxml", "Top Songs");
                 break;
             case Album:
                 addTab("songtablepane.bxml", "Songs");
