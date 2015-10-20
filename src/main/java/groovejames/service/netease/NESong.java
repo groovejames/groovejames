@@ -5,5 +5,4 @@ public class NESong {
     public String name;
     public NEAlbum album;
     public NEArtist[] artists;
-    public long duration;
 }

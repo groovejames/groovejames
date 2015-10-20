@@ -3,7 +3,6 @@ package groovejames.service.search;
 import groovejames.model.Album;
 import groovejames.model.Artist;
 import groovejames.model.Playlist;
-import groovejames.model.Scoreable;
 import groovejames.model.SearchResult;
 import groovejames.model.Song;
 import groovejames.model.StreamInfo;
@@ -80,6 +79,7 @@ public class SearchService {
                         song.setArtistName(neSong.artists[0].name);
                         song.setArtistID(neSong.artists[0].id);
                         song.setImageURL(neSong.artists[0].img1v1Url);
+                        song.setRelevance(1.0 - (((double) (searchParameter.getOffset() + i)) / (double) total));
                         result[i] = song;
                         songIDs[i] = neSong.id;
                         i++;
@@ -88,8 +88,7 @@ public class SearchService {
                     for (Song song : result) {
                         NESongDetails neSongDetails = songDetailsMap.get(song.getSongID());
                         song.setImageURL(neSongDetails.album.picUrl);
-                        song.setScore(neSongDetails.score);
-                        song.setPopularity(neSongDetails.popularity);
+                        song.setPopularity(neSongDetails.popularity / 100.0);
                         song.setEstimateDuration((double) neSongDetails.duration);
                     }
                 }
@@ -112,10 +111,9 @@ public class SearchService {
                     song.setArtistID(neSongDetails.artists[0].id);
                     song.setImageURL(neSongDetails.artists[0].img1v1Url);
                     song.setImageURL(neSongDetails.album.picUrl);
-                    song.setScore(neSongDetails.score);
-                    song.setPopularity(neSongDetails.popularity);
+                    song.setPopularity(neSongDetails.popularity / 100.0);
                     song.setEstimateDuration((double) neSongDetails.duration);
-                    song.setTrackNum(neSongDetails.position);
+                    song.setTrackNum(neSongDetails.no);
                     songs[i++] = song;
                 }
                 total = songs.length;
@@ -156,7 +154,6 @@ public class SearchService {
                 throw new IllegalArgumentException("invalid search type: " + searchType);
             }
         }
-        normalize(result);
         return new SearchResult<>(result, total);
     }
 
@@ -205,6 +202,7 @@ public class SearchService {
                         artist.setArtistID(neArtist.id);
                         artist.setArtistName(neArtist.name);
                         artist.setImageURL(neArtist.img1v1Url);
+                        artist.setRelevance(1.0 - (((double) (searchParameter.getOffset() + i)) / (double) total));
                         result[i++] = artist;
                     }
                 }
@@ -212,7 +210,6 @@ public class SearchService {
             default:
                 throw new IllegalArgumentException("invalid search type: " + searchType);
         }
-        //normalize(result);
         return new SearchResult<>(result, total);
     }
 
@@ -244,7 +241,6 @@ public class SearchService {
             default:
                 throw new IllegalArgumentException("invalid search type: " + searchType);
         }
-        //normalize(result);
         return new SearchResult<>(result, result.length);
     }
 
@@ -259,20 +255,22 @@ public class SearchService {
             default:
                 throw new IllegalArgumentException("invalid search type: " + searchType);
         }
-        //normalize(result);
         return new SearchResult<>(result, result.length);
     }
 
     public SearchResult<Playlist> searchPlaylists(SearchParameter searchParameter) throws Exception {
         SearchType searchType = searchParameter.getSearchType();
         Playlist[] result;
+        int total;
         switch (searchType) {
             case General:
                 String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
                 NEPlaylistSearchResult nePlaylistSearchResult = netEaseService.searchPlaylists(searchString, searchParameter.getOffset(), searchParameter.getLimit());
                 if (nePlaylistSearchResult.playlistCount == 0 || nePlaylistSearchResult.playlists == null) {
+                    total = 0;
                     result = new Playlist[0];
                 } else {
+                    total = nePlaylistSearchResult.playlistCount;
                     result = new Playlist[nePlaylistSearchResult.playlists.length];
                     int i = 0;
                     for (NEPlaylist nePlaylist : nePlaylistSearchResult.playlists) {
@@ -283,19 +281,20 @@ public class SearchService {
                         playlist.setNumSongs(nePlaylist.trackCount);
                         playlist.setUserID(nePlaylist.userId);
                         playlist.setUserName(nePlaylist.creator.nickname);
+                        playlist.setRelevance(1.0 - (((double) (searchParameter.getOffset() + i)) / (double) total));
                         result[i++] = playlist;
                     }
                 }
                 break;
             case User:
                 Long userID = ((UserSearch) searchParameter).getUserID();
+                total = 0;
                 result = new Playlist[0];
                 break;
             default:
                 throw new IllegalArgumentException("invalid search type: " + searchType);
         }
-        //normalize(result);
-        return new SearchResult<>(result, result.length);
+        return new SearchResult<>(result, total);
     }
 
     private Song[] filterDuplicateSongs(Song[] songs) {
@@ -309,63 +308,6 @@ public class SearchService {
             }
         }
         return resultList.toArray(new Song[resultList.size()]);
-    }
-
-    private void normalize(Scoreable[] scoreables) {
-        Double minScore = null, maxScore = null;
-        Long minPopularityIndex = null, maxPopularityIndex = null;
-        Double minPopularity = null, maxPopularity = null;
-        for (Scoreable scoreable : scoreables) {
-            Double score = scoreable.getScore();
-            if (score != null && score > 0.0) {
-                if (minScore == null || score < minScore) minScore = score;
-                if (maxScore == null || score > maxScore) maxScore = score;
-            }
-            Long popularityIndex = scoreable.getPopularityIndex();
-            if (popularityIndex != null && popularityIndex > 0) {
-                if (minPopularityIndex == null || popularityIndex < minPopularityIndex) minPopularityIndex = popularityIndex;
-                if (maxPopularityIndex == null || popularityIndex > maxPopularityIndex) maxPopularityIndex = popularityIndex;
-            }
-            Double popularity = scoreable.getPopularity();
-            if (popularity != null && popularity > 0.0) {
-                if (minPopularity == null || popularity < minPopularity) minPopularity = popularity;
-                if (maxPopularity == null || popularity > maxPopularity) maxPopularity = popularity;
-            }
-            if (scoreable instanceof Song) {
-                fixup((Song) scoreable);
-            }
-        }
-        boolean canAdjustScore = minScore != null && maxScore != null && minScore < maxScore;
-        boolean canAdjustPopularityIndex = minPopularityIndex != null && maxPopularityIndex != null && minPopularityIndex < maxPopularityIndex;
-        boolean canAdjustPopularity = minPopularity != null && maxPopularity != null && minPopularity < maxPopularity;
-        if (!canAdjustScore && !canAdjustPopularityIndex && !canAdjustPopularity) {
-            return;
-        }
-        for (Scoreable scoreable : scoreables) {
-            if (canAdjustScore)
-                if (scoreable.getScore() != null)
-                    scoreable.setScorePercentage((scoreable.getScore() - minScore) / (maxScore - minScore));
-                else
-                    scoreable.setScore(0.0);
-            if (canAdjustPopularityIndex)
-                if (scoreable.getPopularityIndex() != null)
-                    scoreable.setPopularityPercentage(((double) (scoreable.getPopularityIndex() - minPopularityIndex)) / ((double) (maxPopularityIndex - minPopularityIndex)));
-                else
-                    scoreable.setPopularityIndex(0L);
-            else if (canAdjustPopularity)
-                if (scoreable.getPopularity() != null)
-                    scoreable.setPopularityPercentage((scoreable.getPopularity() - minPopularity) / (maxPopularity - minPopularity));
-                else
-                    scoreable.setPopularity(0.0);
-        }
-    }
-
-    private void fixup(Song song) {
-        if (song.getEstimateDuration() != null) {
-            if (song.getEstimateDuration() <= 0 || song.getEstimateDuration() >= 4096.0 /* unreasonable value (1:08h) */) {
-                song.setEstimateDuration(null);
-            }
-        }
     }
 
 }

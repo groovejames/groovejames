@@ -30,4 +30,12 @@ abstract class AbstractSearchParameter implements SearchParameter {
         this.limit = limit;
     }
 
+    @Override
+    public SearchParameter clone() {
+        try {
+            return (SearchParameter) super.clone();
+        } catch (CloneNotSupportedException ex) {
+            throw new RuntimeException(ex); // impossible
+        }
+    }
 }

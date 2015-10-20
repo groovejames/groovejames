@@ -28,7 +28,7 @@
                             <guicomponents:ClickableTableView bxml:id="albumTable" selectMode="single"
                                                               clickableColumns="1,2"
                                                               styles="{font:{bold:true, size:'130%'}, showHorizontalGridLines:false, showVerticalGridLines:false}"
-                                                              sort="[{columnName:'popularityPercentage', sortDirection:'DESCENDING'}]">
+                                                              sort="[{columnName:'albumName', sortDirection:'ASCENDING'}]">
                                 <columns>
                                     <TableView.Column name="image" width="50">
                                         <cellRenderer>
@@ -45,12 +45,6 @@
                                             <wtkcontent:TableViewDateCellRenderer dateFormat="YYYY"/>
                                         </cellRenderer>
                                     </TableView.Column>
-                                    <TableView.Column name="popularityPercentage" headerData="Popularity" width="80">
-                                        <cellRenderer>
-                                            <guicomponents:MeterTableCellRenderer/>
-                                        </cellRenderer>
-                                    </TableView.Column>
-                                    <!--<TableView.Column name="dummy" width="1*"/>-->
                                 </columns>
                             </guicomponents:ClickableTableView>
                         </view>

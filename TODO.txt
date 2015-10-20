@@ -1,3 +1,9 @@
+- default sorting is not correct
+- playlists before people, or remove people, or rename "People" to "DJ Channels"
+- "load all" link
+- "loading" spinning wheel should be translucent over original panel (StackPane instead of CardPane?!?)
+- search autocomplete
+
 - cleanup dependencies (remove httpclient?!? json-simple?!?)
 - mp3 player: add seek forward/backward
 - persist current downloads list so that it survives restarts

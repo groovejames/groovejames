@@ -29,7 +29,7 @@ import static groovejames.util.Util.containsIgnoringCase;
 public class PlaylistTablePane extends AbstractSearchTablePane<Playlist> {
 
     private Main main;
-    private FilteredList<Playlist> playlistList = new FilteredList<>();
+    private FilteredList<Playlist> playlistList = new FilteredList<>(new ArrayList<Playlist>());
 
     @BXML private ClickableTableView playlistTable;
     @BXML private TextInput playlistSearchInPage;
@@ -60,16 +60,22 @@ public class PlaylistTablePane extends AbstractSearchTablePane<Playlist> {
         playlistSearchInPage.getComponentKeyListeners().add(new ComponentKeyListener.Adapter() {
             @Override
             public boolean keyTyped(Component searchField, char character) {
-                final String searchString = ((TextInput) searchField).getText().trim();
-                playlistList.setFilter(new Filter<Playlist>() {
-                    @Override
-                    public boolean include(Playlist playlist) {
-                        return containsIgnoringCase(playlist.getName(), searchString);
-                    }
-                });
-                return false;
+                return updateFilter();
             }
         });
+
+        updateFilter();
+    }
+
+    private boolean updateFilter() {
+        final String searchString = playlistSearchInPage.getText().trim();
+        playlistList.setFilter(new Filter<Playlist>() {
+            @Override
+            public boolean include(Playlist playlist) {
+                return containsIgnoringCase(playlist.getName(), searchString);
+            }
+        });
+        return false;
     }
 
     @Override
@@ -85,7 +91,7 @@ public class PlaylistTablePane extends AbstractSearchTablePane<Playlist> {
 
     @Override
     public void beforeSearch() {
-        playlistList.setSource(new ArrayList<Playlist>());
+        // nothing to be done
     }
 
     @Override
@@ -97,6 +103,8 @@ public class PlaylistTablePane extends AbstractSearchTablePane<Playlist> {
     public void afterSearch(SearchResult<Playlist> searchResult) {
         updateCountTextAndMoreLink(searchResult);
         Playlist[] playlists = searchResult.getResult();
-        playlistList.setSource(new ArrayList<>(playlists));
+        for (Playlist playlist : playlists) {
+            playlistList.add(playlist);
+        }
     }
 }

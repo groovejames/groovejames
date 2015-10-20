@@ -150,6 +150,7 @@ Not all properties are listed, only the more important ones.
 ### AlbumDetail
 
 _extends: Song_
+
 - songs: (array of SongDetail) songs of this album
 
 ### AlbumDetailSearchResult
@@ -163,7 +164,7 @@ _extends: Song_
 - name: (string)
 - album: (Album)
 - alias: (array of ???) empty
-- artists: (array of Artist)
+- artists: (array of Artist) if length>1 song has multiple authors. Attention! If artist.id == 0, then artist is not available in details search! 
 - duration: (long) in ms
 - fee: (int) ??? 0
 - ftype: (int) ??? 0
@@ -181,9 +182,12 @@ _extends: Song_
 ### SongDetail
 
 _extends: Song_
+
 - mp3Url: (string) low quality mp3 url (96k)
-- no: (int) position on album???
-- position: (int) position on album
+- no: (int) position on album
+- position: (int) position on album?!? mostly the same as "no", but not always
+- popularity: (double) from 0.0 to 100.0
+- score: (int) same as popularity, as int
 - audition: (StreamInfo) m4a, very low quality (64k)
 - bMusic: (StreamInfo) mp3, low quality (96k)
 - lMusic: (StreamInfo) mp3, low quality (96k)
@@ -223,6 +227,7 @@ _extends: Song_
 ### PlaylistDetail
 
 _extends: Playlist_
+
 - artists: null
 - tracks: (array of SongDetail)
 - description: (string)
@@ -271,6 +276,7 @@ TBD
 ### DjChannelDetail
 
 _extends: DjChannel_
+
 - mainSong: (SongDetail) the whole channel as one track
 - songs: (array of SongDetail) optional, some tracks of the dj set
 

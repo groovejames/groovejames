@@ -95,18 +95,18 @@
                                             bxml:id="songTable"
                                             clickableColumns="2,3"
                                             selectMode="multi"
-                                            sort="[{columnName:'popularityPercentage', sortDirection:'DESCENDING'}]">
+                                            sort="[{columnName:'relevance', sortDirection:'DESCENDING'}]">
                                         <columns>
                                             <TableView.Column name="trackNum" headerData="#" width="30"/>
-                                            <TableView.Column name="songName" headerData="Name" width="220"/>
+                                            <TableView.Column name="songName" headerData="Name" width="1*"/>
                                             <TableView.Column name="artistName" headerData="Artist" width="180"/>
                                             <TableView.Column name="albumName" headerData="Album" width="180"/>
-                                            <TableView.Column name="popularityPercentage" headerData="Popularity" width="1*">
+                                            <TableView.Column name="popularity" headerData="Popularity" width="80">
                                                 <cellRenderer>
                                                     <guicomponents:MeterTableCellRenderer/>
                                                 </cellRenderer>
                                             </TableView.Column>
-                                            <TableView.Column name="scorePercentage" headerData="Relevance" width="1*">
+                                            <TableView.Column name="relevance" headerData="Relevance" width="80">
                                                 <cellRenderer>
                                                     <guicomponents:MeterTableCellRenderer/>
                                                 </cellRenderer>

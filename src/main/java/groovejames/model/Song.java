@@ -11,7 +11,9 @@ public class Song extends BaseModelObject {
     private String albumName;
     private String imageURL;
     private Integer trackNum;
-    private Double estimateDuration; // in seconds, alas not reliable; often 0.00
+    private Double estimateDuration;
+    /** must be a number between 0.0 and 1.0 */
+    private Double popularity;
 
     public long getArtistID() {
         return artistID;
@@ -104,6 +106,21 @@ public class Song extends BaseModelObject {
      */
     public void setEstimateDuration(Double estimateDuration) {
         this.estimateDuration = estimateDuration;
+    }
+
+    /** get popularity, a value between 0.0 and 1.0, or {@code null} if popularity is unknown */
+
+    public Double getPopularity() {
+        return popularity;
+    }
+
+    /**
+     * Set popularity
+     *
+     * @param popularity must be either {@code null} or a value between 0.0 and 1.0 (inclusive)
+     */
+    public void setPopularity(Double popularity) {
+        this.popularity = popularity;
     }
 
     @Override

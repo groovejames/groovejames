@@ -9,6 +9,10 @@
     <rows>
         <TablePane.Row>
             <BoxPane styles="{fill:true, horizontalAlignment:'right'}">
+                <FlowPane styles="%searchresultpane.count.styles">
+                    <Label bxml:id="countText" text="100 of 234"/>
+                    <LinkButton bxml:id="moreLink" buttonData="(more...)" styles="%searchresultpane.moreLink.styles"/>
+                </FlowPane>
                 <TextInput bxml:id="playlistSearchInPage" prompt="Search in page..."/>
             </BoxPane>
         </TablePane.Row>
@@ -21,7 +25,7 @@
                                     bxml:id="playlistTable" selectMode="single"
                                     clickableColumns="1,2"
                                     styles="{showHorizontalGridLines:false, showVerticalGridLines:false}"
-                                    sort="[{columnName:'name', sortDirection:'ASCENDING'}]">
+                                    sort="[{columnName:'relevance', sortDirection:'DESCENDING'}]">
                                 <columns>
                                     <TableView.Column name="image" width="50">
                                         <cellRenderer>
@@ -34,6 +38,11 @@
                                     <TableView.Column name="name" headerData="Name" width="1*"/>
                                     <TableView.Column name="userName" headerData="created by" width="100"/>
                                     <TableView.Column name="numSongs" headerData="# Songs" width="55"/>
+                                    <TableView.Column name="relevance" headerData="Relevance" width="80">
+                                        <cellRenderer>
+                                            <guicomponents:MeterTableCellRenderer/>
+                                        </cellRenderer>
+                                    </TableView.Column>
                                 </columns>
                             </guicomponents:ClickableTableView>
                         </view>

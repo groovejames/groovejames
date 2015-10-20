@@ -18,6 +18,7 @@ import org.apache.pivot.util.Resources;
 import org.apache.pivot.wtk.Component;
 import org.apache.pivot.wtk.ComponentKeyListener;
 import org.apache.pivot.wtk.Mouse;
+import org.apache.pivot.wtk.SortDirection;
 import org.apache.pivot.wtk.TableView;
 import org.apache.pivot.wtk.TextInput;
 
@@ -72,6 +73,7 @@ public class PeopleTablePane extends AbstractSearchTablePane<User> {
     @Override
     public void afterLoad() {
         super.afterLoad();
+        peopleTable.setSort("username", SortDirection.ASCENDING);
         WtkUtil.setupColumnWidthSaver(peopleTable, "peopleTable", searchParameter.getSearchType().name());
     }
 

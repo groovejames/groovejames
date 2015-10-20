@@ -56,8 +56,8 @@ public class SearchResultPane extends TablePane implements Bindable {
                 addTab("artisttablepane.bxml", "Artists");
                 addTab("songtablepane.bxml", "Songs");
                 addTab("albumtablepane.bxml", "Albums");
-                addTab("peopletablepane.bxml", "People");
                 addTab("playlisttablepane.bxml", "Playlists");
+                addTab("peopletablepane.bxml", "Users");
                 break;
             case Artist:
                 addTab("albumtablepane.bxml", "Albums");
@@ -112,7 +112,7 @@ public class SearchResultPane extends TablePane implements Bindable {
         LazyLoadingCardPane selectedCardPane = (LazyLoadingCardPane) tabPane.getSelectedTab();
         if (selectedCardPane != null) {
             try {
-                selectedCardPane.load(searchParameter);
+                selectedCardPane.load(searchParameter.clone());
             } catch (Exception ex) {
                 main.showError("could not open " + searchParameter.getShortLabel(), ex);
             }

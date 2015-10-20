@@ -300,30 +300,29 @@ public class SongTablePane extends AbstractSearchTablePane<Song> {
             case Artist:
                 // remove "Artist" column
                 WtkUtil.removeColumn(songTable, "artistName");
-                // sort by popularity (instead of score)
-                songTable.setSort("popularityPercentage", SortDirection.DESCENDING);
+                // remove "Relevance" column
+                WtkUtil.removeColumn(songTable, "relevance");
+                // sort by popularity (instead of relevance)
+                songTable.setSort("popularity", SortDirection.DESCENDING);
                 break;
             case Album:
                 // remove "Album" column
                 WtkUtil.removeColumn(songTable, "albumName");
-                // sort by track number (instead of score)
+                // remove "Relevance" column
+                WtkUtil.removeColumn(songTable, "relevance");
+                // sort by track number (instead of relevance)
                 songTable.setSort("trackNum", SortDirection.ASCENDING);
                 break;
             case Playlist:
-                // remove "Relevance" column because it is always 0 if we search for playlist's songs
-                WtkUtil.removeColumn(songTable, "scorePercentage");
-                // sort by track number (instead of score)
+            case Songs:
+                // remove "Relevance" column
+                WtkUtil.removeColumn(songTable, "relevance");
+                // sort by track number (instead of relevance)
                 songTable.setSort("trackNum", SortDirection.ASCENDING);
                 break;
             case User:
-                // remove "Relevance" column because it is always 0 if we search for user's songs
-                WtkUtil.removeColumn(songTable, "scorePercentage");
                 // don't sort at all
                 songTable.clearSort();
-                break;
-            case Songs:
-                // sort by track number (instead of score)
-                songTable.setSort("trackNum", SortDirection.ASCENDING);
                 break;
             default:
                 break;
