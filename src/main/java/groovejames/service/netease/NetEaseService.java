@@ -48,6 +48,12 @@ public class NetEaseService implements INetEaseService {
     }
 
     @Override
+    public NEAlbumSearchResult searchAlbums(String searchString, int offset, int limit) throws Exception {
+        NEAlbumSearchResultResponse response = search(searchString, offset, limit, SearchType.albums, NEAlbumSearchResultResponse.class);
+        return response.result;
+    }
+
+    @Override
     public NEPlaylistSearchResult searchPlaylists(String searchString, int offset, int limit) throws Exception {
         NEPlaylistSearchResultResponse response = search(searchString, offset, limit, SearchType.playlists, NEPlaylistSearchResultResponse.class);
         return response.result;

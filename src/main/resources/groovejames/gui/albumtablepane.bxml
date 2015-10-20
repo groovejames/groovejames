@@ -28,7 +28,7 @@
                             <guicomponents:ClickableTableView bxml:id="albumTable" selectMode="single"
                                                               clickableColumns="1,2"
                                                               styles="{font:{bold:true, size:'130%'}, showHorizontalGridLines:false, showVerticalGridLines:false}"
-                                                              sort="[{columnName:'albumName', sortDirection:'ASCENDING'}]">
+                                                              sort="[{columnName:'relevance', sortDirection:'DESCENDING'}]">
                                 <columns>
                                     <TableView.Column name="image" width="50">
                                         <cellRenderer>
@@ -43,6 +43,11 @@
                                     <TableView.Column name="publishingTime" headerData="Year" width="80">
                                         <cellRenderer>
                                             <wtkcontent:TableViewDateCellRenderer dateFormat="YYYY"/>
+                                        </cellRenderer>
+                                    </TableView.Column>
+                                    <TableView.Column name="relevance" headerData="Relevance" width="80">
+                                        <cellRenderer>
+                                            <guicomponents:MeterTableCellRenderer/>
                                         </cellRenderer>
                                     </TableView.Column>
                                 </columns>

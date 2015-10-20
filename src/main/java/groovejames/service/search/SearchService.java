@@ -9,6 +9,7 @@ import groovejames.model.StreamInfo;
 import groovejames.model.User;
 import groovejames.service.netease.INetEaseService;
 import groovejames.service.netease.NEAlbum;
+import groovejames.service.netease.NEAlbumSearchResult;
 import groovejames.service.netease.NEArtist;
 import groovejames.service.netease.NEArtistAlbumsSearchResultResponse;
 import groovejames.service.netease.NEArtistSearchResult;
@@ -213,33 +214,41 @@ public class SearchService {
 
     public SearchResult<Album> searchAlbums(SearchParameter searchParameter) throws Exception {
         SearchType searchType = searchParameter.getSearchType();
-        Album[] result;
         switch (searchType) {
-            case General:
+            case General: {
                 String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
-                result = new Album[0];
-                break;
-            case Artist:
+                NEAlbumSearchResult neAlbumSearchResult = netEaseService.searchAlbums(searchString, searchParameter.getOffset(), searchParameter.getLimit());
+                int total = neAlbumSearchResult.albumCount;
+                Album[] result = total == 0 || neAlbumSearchResult.albums == null ? new Album[0] : convert(neAlbumSearchResult.albums, searchParameter.getOffset(), total);
+                return new SearchResult<>(result, total);
+            }
+            case Artist: {
                 // search for albums of a certain artist
                 Long artistID = ((ArtistSearch) searchParameter).getArtistID();
                 NEArtistAlbumsSearchResultResponse response = netEaseService.getAlbums(artistID, searchParameter.getOffset(), searchParameter.getLimit());
-                result = new Album[response.hotAlbums.length];
-                int i = 0;
-                for (NEAlbum neAlbum : response.hotAlbums) {
-                    Album album = new Album();
-                    album.setAlbumID(neAlbum.id);
-                    album.setAlbumName(neAlbum.name);
-                    album.setArtistID(neAlbum.artist.id);
-                    album.setArtistName(neAlbum.artist.name);
-                    album.setImageURL(neAlbum.picUrl);
-                    album.setPublishingTime(new Date(neAlbum.publishTime));
-                    result[i++] = album;
-                }
+                Album[] result = convert(response.hotAlbums, -1, -1);
                 return new SearchResult<>(result, response.more);
+            }
             default:
                 throw new IllegalArgumentException("invalid search type: " + searchType);
         }
-        return new SearchResult<>(result, result.length);
+    }
+
+    private Album[] convert(NEAlbum[] neAlbums, int startOffset, int total) {
+        Album[] result = new Album[neAlbums.length];
+        int i = 0;
+        for (NEAlbum neAlbum : neAlbums) {
+            Album album = new Album();
+            album.setAlbumID(neAlbum.id);
+            album.setAlbumName(neAlbum.name);
+            album.setArtistID(neAlbum.artist.id);
+            album.setArtistName(neAlbum.artist.name);
+            album.setImageURL(neAlbum.picUrl);
+            album.setPublishingTime(new Date(neAlbum.publishTime));
+            if (total > 0) album.setRelevance(1.0 - (((double) (startOffset + i)) / (double) total));
+            result[i++] = album;
+        }
+        return result;
     }
 
     public SearchResult<User> searchPeople(SearchParameter searchParameter) throws Exception {

@@ -34,6 +34,11 @@ public class NetEaseServiceMock implements INetEaseService {
     }
 
     @Override
+    public NEAlbumSearchResult searchAlbums(String searchString, int offset, int limit) throws Exception {
+        return null; // TODO
+    }
+
+    @Override
     public NEPlaylistSearchResult searchPlaylists(String searchString, int offset, int limit) throws Exception {
         return null; // TODO
     }

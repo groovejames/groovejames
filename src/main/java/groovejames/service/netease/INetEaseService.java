@@ -8,6 +8,8 @@ public interface INetEaseService {
 
     NEArtistSearchResult searchArtists(String searchString, int offset, int limit) throws Exception;
 
+    NEAlbumSearchResult searchAlbums(String searchString, int offset, int limit) throws Exception;
+
     NEPlaylistSearchResult searchPlaylists(String searchString, int offset, int limit) throws Exception;
 
     NEArtistAlbumsSearchResultResponse getAlbums(long artistID, int offset, int limit) throws Exception;

@@ -85,12 +85,13 @@ public class AlbumTablePane extends AbstractSearchTablePane<Album> {
 
         WtkUtil.setupColumnWidthSaver(albumTable, "albumTable", searchParameter.getSearchType().name());
 
-        // sort by name
-        albumTable.setSort("albumName", SortDirection.ASCENDING);
-
         if (searchParameter.getSearchType() == SearchType.Artist) {
             // remove "Artist" column
             WtkUtil.removeColumn(albumTable, "artistName");
+            // remove "Relevance" column
+            WtkUtil.removeColumn(albumTable, "relevance");
+            // sort by name instead of relevance
+            albumTable.setSort("albumName", SortDirection.ASCENDING);
         }
     }
 
