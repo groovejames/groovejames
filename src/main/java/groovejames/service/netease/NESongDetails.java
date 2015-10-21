@@ -1,7 +1,6 @@
 package groovejames.service.netease;
 
 public class NESongDetails extends NESong {
-    public String name;
     public NEAlbum album;
     public NEArtist[] artists;
     public String mp3Url;

@@ -20,6 +20,8 @@ public interface INetEaseService {
 
     Map<Long, NESongDetails> getSongDetails(long[] songIDs) throws Exception;
 
+    NESuggestionsResult getSuggestions(String query, int limit) throws Exception;
+
     String getDownloadUrl(NESongDetails songDetails);
 
 }

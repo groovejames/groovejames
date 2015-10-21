@@ -18,16 +18,6 @@ public class NetEaseService implements INetEaseService {
     private static final String SECRET = System.getProperty("netease.secret", "3go8&$8*3*3h0k(2)2");
     private static final String REFERER = "http://music.163.com";
 
-    enum SearchType {
-        songs(1), albums(10), artists(100), playlists(1000), users(1002), unknown(1009);
-
-        private final int type;
-
-        SearchType(int type) {
-            this.type = type;
-        }
-    }
-
     public NetEaseService(HttpClientService httpClientService) {
         Unirest.setObjectMapper(new JacksonObjectMapper());
         Unirest.setDefaultHeader("Referer", REFERER);
@@ -37,32 +27,32 @@ public class NetEaseService implements INetEaseService {
 
     @Override
     public NESongSearchResult searchSongs(String searchString, int offset, int limit) throws Exception {
-        NESongSearchResultResponse response = search(searchString, offset, limit, SearchType.songs, NESongSearchResultResponse.class);
+        NESongSearchResultResponse response = search(searchString, offset, limit, NESearchType.songs, NESongSearchResultResponse.class);
         return response.result;
     }
 
     @Override
     public NEArtistSearchResult searchArtists(String searchString, int offset, int limit) throws Exception {
-        NEArtistSearchResultResponse response = search(searchString, offset, limit, SearchType.artists, NEArtistSearchResultResponse.class);
+        NEArtistSearchResultResponse response = search(searchString, offset, limit, NESearchType.artists, NEArtistSearchResultResponse.class);
         return response.result;
     }
 
     @Override
     public NEAlbumSearchResult searchAlbums(String searchString, int offset, int limit) throws Exception {
-        NEAlbumSearchResultResponse response = search(searchString, offset, limit, SearchType.albums, NEAlbumSearchResultResponse.class);
+        NEAlbumSearchResultResponse response = search(searchString, offset, limit, NESearchType.albums, NEAlbumSearchResultResponse.class);
         return response.result;
     }
 
     @Override
     public NEPlaylistSearchResult searchPlaylists(String searchString, int offset, int limit) throws Exception {
-        NEPlaylistSearchResultResponse response = search(searchString, offset, limit, SearchType.playlists, NEPlaylistSearchResultResponse.class);
+        NEPlaylistSearchResultResponse response = search(searchString, offset, limit, NESearchType.playlists, NEPlaylistSearchResultResponse.class);
         return response.result;
     }
 
-    private <T extends NEResponse> T search(String searchString, int offset, int limit, SearchType searchType, Class<T> responseClass) throws com.mashape.unirest.http.exceptions.UnirestException {
+    private <T extends NEResponse> T search(String searchString, int offset, int limit, NESearchType searchType, Class<T> responseClass) throws com.mashape.unirest.http.exceptions.UnirestException {
         HttpResponse<T> httpResponse = Unirest.post(MUSIC163_API + "/search/get")
                 .field("s", searchString)
-                .field("type", searchType.type)
+                .field("type", searchType.getType())
                 .field("offset", offset)
                 .field("limit", limit)
                 .field("sub", false)
@@ -119,6 +109,17 @@ public class NetEaseService implements INetEaseService {
             map.put(song.id, song);
         }
         return map;
+    }
+
+    @Override
+    public NESuggestionsResult getSuggestions(String query, int limit) throws Exception {
+        HttpResponse<NESuggestionsResultResponse> httpResponse = Unirest.post(MUSIC163_API + "/search/suggest")
+                .field("s", query)
+                .field("limit", limit)
+                .asObject(NESuggestionsResultResponse.class);
+        NESuggestionsResultResponse response = httpResponse.getBody();
+        if (response.code != 200) throw new NetEaseException("error getting song details: " + response.code);
+        return response.result;
     }
 
     @Override

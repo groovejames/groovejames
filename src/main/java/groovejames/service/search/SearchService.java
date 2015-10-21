@@ -16,15 +16,16 @@ import groovejames.service.netease.NEArtistDetailsResponse;
 import groovejames.service.netease.NEArtistSearchResult;
 import groovejames.service.netease.NEPlaylist;
 import groovejames.service.netease.NEPlaylistSearchResult;
+import groovejames.service.netease.NESearchType;
 import groovejames.service.netease.NESong;
 import groovejames.service.netease.NESongDetails;
 import groovejames.service.netease.NESongSearchResult;
+import groovejames.service.netease.NESuggestionsResult;
 import groovejames.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -42,8 +43,35 @@ public class SearchService {
         this.netEaseService = netEaseService;
     }
 
-    public List<String> getAutocomplete(String query) throws Exception {
-        return Collections.emptyList();
+    public List<SearchParameter> getAutocomplete(String query) throws Exception {
+        NESuggestionsResult suggestions = netEaseService.getSuggestions(query, 15);
+        List<SearchParameter> result = new ArrayList<>();
+        for (NESearchType searchType : suggestions.order) {
+            switch (searchType) {
+                case artists:
+                    if (suggestions.artists != null) {
+                        for (NEArtist artist : suggestions.artists) {
+                            result.add(new ArtistSearch(artist.id, artist.name));
+                        }
+                    }
+                    break;
+                case albums:
+                    if (suggestions.albums != null) {
+                        for (NEAlbum album : suggestions.albums) {
+                            result.add(new AlbumSearch(album.id, album.name, album.artist.name, false));
+                        }
+                    }
+                    break;
+                case songs:
+                    if (suggestions.songs != null) {
+                        for (NESong song : suggestions.songs) {
+                            result.add(new SongSearch(song.id, song.name, false));
+                        }
+                    }
+                    break;
+            }
+        }
+        return result;
     }
 
     public StreamInfo getStreamInfo(long songID) throws Exception {

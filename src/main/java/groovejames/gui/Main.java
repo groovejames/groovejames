@@ -61,6 +61,7 @@ import org.apache.pivot.wtk.Display;
 import org.apache.pivot.wtk.ImageView;
 import org.apache.pivot.wtk.Keyboard;
 import org.apache.pivot.wtk.Label;
+import org.apache.pivot.wtk.ListView;
 import org.apache.pivot.wtk.Menu;
 import org.apache.pivot.wtk.MenuHandler;
 import org.apache.pivot.wtk.MessageType;
@@ -82,6 +83,7 @@ import org.apache.pivot.wtk.Theme;
 import org.apache.pivot.wtk.Tooltip;
 import org.apache.pivot.wtk.Window;
 import org.apache.pivot.wtk.content.ButtonData;
+import org.apache.pivot.wtk.content.ListViewItemRenderer;
 import org.apache.pivot.wtk.content.MenuItemData;
 import org.apache.pivot.wtk.effects.SaturationDecorator;
 import org.apache.pivot.wtk.media.BufferedImageSerializer;
@@ -443,11 +445,11 @@ public class Main extends AbstractApplication {
         TooltipTableMouseListener.install(playerTable);
         WtkUtil.setupColumnWidthSaver(playerTable, "playerTable");
 
-        final SuggestionPopupTextInputContentListener suggestionPopupTextInputContentListener = new SuggestionPopupTextInputContentListener(
-                new SuggestionsProvider<String>() {
+        final SuggestionPopupTextInputContentListener suggestionPopupTextInputContentListener = new SuggestionPopupTextInputContentListener<>(
+                new SuggestionsProvider<SearchParameter>() {
                     @Override
-                    public List<String> getSuggestions(String query) throws Exception {
-                        if (query.length() > 3) {
+                    public List<SearchParameter> getSuggestions(String query) throws Exception {
+                        if (query.length() > 2) {
                             return new ListAdapter<>(Services.getSearchService().getAutocomplete(query));
                         } else {
                             return null;
@@ -455,13 +457,29 @@ public class Main extends AbstractApplication {
                     }
 
                     @Override
-                    public void accepted(String text) {
-                        doSearch();
+                    public void accepted(String text, SearchParameter selectedSuggestion) {
+                        if (selectedSuggestion != null) {
+                            openSearchTab(selectedSuggestion);
+                        } else {
+                            doSearch();
+                        }
                     }
 
                     @Override
                     public void executeGetSuggestionsFailed(String query, Throwable exception) {
-                        log.error(format("could not autocomplete '%s': %s", query, toErrorString(exception, "; reason: ")));
+                        log.error(format("could not autocomplete '%s'", query), exception);
+                    }
+                },
+                new ListViewItemRenderer() {
+                    @Override
+                    public void render(Object item, int index, ListView listView, boolean selected, boolean checked, boolean highlighted, boolean disabled) {
+                        super.render(item, index, listView, selected, checked, highlighted, disabled);
+                        label.setText(((SearchParameter) item).getLabel());
+                    }
+
+                    @Override
+                    public String toString(Object item) {
+                        return searchField.getText();
                     }
                 });
         searchField.getTextInputContentListeners().add(suggestionPopupTextInputContentListener);

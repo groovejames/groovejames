@@ -6,15 +6,17 @@ public interface SuggestionsProvider<V> {
 
     List<V> getSuggestions(String query) throws Exception;
 
-    void accepted(String text);
+    void accepted(String text, V selectedSuggestion);
 
     void executeGetSuggestionsFailed(String query, Throwable exception);
 
-    public static abstract class Adapter<V> implements SuggestionsProvider<V> {
-        @Override public void accepted(String text) {
+    abstract class Adapter<V> implements SuggestionsProvider<V> {
+        @Override
+        public void accepted(String text, Object selectedSuggestion) {
         }
 
-        @Override public void executeGetSuggestionsFailed(String query, Throwable exception) {
+        @Override
+        public void executeGetSuggestionsFailed(String query, Throwable exception) {
         }
     }
 }

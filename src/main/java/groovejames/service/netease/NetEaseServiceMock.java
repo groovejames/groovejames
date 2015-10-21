@@ -80,6 +80,11 @@ public class NetEaseServiceMock implements INetEaseService {
         return new NetEaseService(null).getDownloadUrl(songDetails);
     }
 
+    @Override
+    public NESuggestionsResult getSuggestions(String query, int limit) {
+        return null; // TODO
+    }
+
     private NEAlbum createAlbum(String name) {
         NEAlbum album = new NEAlbum();
         album.name = "Album " + name;

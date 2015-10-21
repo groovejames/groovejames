@@ -16,18 +16,18 @@ import org.apache.pivot.wtk.TextInputContentListener;
 /**
  * @see <a href="http://svn.apache.org/repos/asf/pivot/trunk/demos/src/org/apache/pivot/demos/suggest/SuggestionDemo.java">SuggestionDemo.java</a>
  */
-public class SuggestionPopupTextInputContentListener extends TextInputContentListener.Adapter {
+public class SuggestionPopupTextInputContentListener<V> extends TextInputContentListener.Adapter {
 
-    private final SuggestionsProvider<?> suggestionsProvider;
+    private final SuggestionsProvider<V> suggestionsProvider;
     private final SuggestionPopup suggestionPopup;
     private SuggestionTask suggestionTask;
     private String lastText;
 
-    public SuggestionPopupTextInputContentListener(SuggestionsProvider<?> suggestionsProvider) {
+    public SuggestionPopupTextInputContentListener(SuggestionsProvider<V> suggestionsProvider) {
         this(suggestionsProvider, null);
     }
 
-    public SuggestionPopupTextInputContentListener(SuggestionsProvider<?> suggestionsProvider, ListView.ItemRenderer suggestionRenderer) {
+    public SuggestionPopupTextInputContentListener(SuggestionsProvider<V> suggestionsProvider, ListView.ItemRenderer suggestionRenderer) {
         if (suggestionsProvider == null) {
             throw new IllegalArgumentException("suggestionsProvider may not be null");
         }
@@ -64,8 +64,6 @@ public class SuggestionPopupTextInputContentListener extends TextInputContentLis
         getSuggestions(textInput);
     }
 
-
-    @SuppressWarnings({"unchecked"})
     private void getSuggestions(final TextInput textInput) {
         final String query = textInput.getText();
         if (query.equals(lastText)) {
@@ -81,23 +79,26 @@ public class SuggestionPopupTextInputContentListener extends TextInputContentLis
             }
         }
         suggestionTask = new SuggestionTask(query);
-        suggestionTask.execute(new TaskAdapter(new TaskListener() {
+        suggestionTask.execute(new TaskAdapter<>(new TaskListener<List<V>>() {
             @Override
-            public void taskExecuted(Task task) {
+            public void taskExecuted(Task<List<V>> task) {
                 if (task == suggestionTask) {
-                    List<?> suggestions = (List<?>) suggestionTask.getResult();
+                    List<V> suggestions = suggestionTask.getResult();
                     if (suggestions == null || suggestions.isEmpty()) {
                         suggestionPopup.close();
                     } else {
                         suggestionPopup.setSuggestionData(suggestions);
                         suggestionPopup.open(textInput, new SuggestionPopupCloseListener() {
                             @Override
-                            public void suggestionPopupClosed(SuggestionPopup suggestionPopup) {
+                            public void suggestionPopupClosed(final SuggestionPopup suggestionPopup) {
                                 if (suggestionPopup.getResult()) {
                                     ApplicationContext.queueCallback(new Runnable() {
-                                        @Override public void run() {
+                                        @Override
+                                        @SuppressWarnings("unchecked")
+                                        public void run() {
                                             String text = textInput.getText();
-                                            suggestionsProvider.accepted(text);
+                                            V selectedSuggestion = (V) suggestionPopup.getSelectedSuggestion();
+                                            suggestionsProvider.accepted(text, selectedSuggestion);
                                         }
                                     });
                                 }
@@ -118,7 +119,7 @@ public class SuggestionPopupTextInputContentListener extends TextInputContentLis
         }));
     }
 
-    private class SuggestionTask extends Task {
+    private class SuggestionTask extends Task<List<V>> {
         private final String query;
 
         public SuggestionTask(String query) {
@@ -126,12 +127,12 @@ public class SuggestionPopupTextInputContentListener extends TextInputContentLis
         }
 
         @Override
-        public final List execute() throws TaskExecutionException {
+        public final List<V> execute() throws TaskExecutionException {
             if (abort) {
                 throw new AbortException();
             }
             try {
-                List<?> suggestions = suggestionsProvider.getSuggestions(query);
+                List<V> suggestions = suggestionsProvider.getSuggestions(query);
                 return abort ? null : suggestions;
             } catch (Exception ex) {
                 throw new TaskExecutionException("error getting suggestions for " + query, ex);

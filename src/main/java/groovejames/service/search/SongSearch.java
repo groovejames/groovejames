@@ -1,5 +1,6 @@
 package groovejames.service.search;
 
+import java.util.Collections;
 import java.util.Set;
 
 public class SongSearch extends AbstractSearchParameter {
@@ -12,6 +13,12 @@ public class SongSearch extends AbstractSearchParameter {
         this.songIDs = songIDs;
         this.songNames = songNames;
         this.autoPlaySongIds = autoPlaySongIds;
+    }
+
+    public SongSearch(long songID, String songName, boolean autoplay) {
+        this.songIDs = Collections.singleton(songID);
+        this.songNames = Collections.singleton(songName);
+        this.autoPlaySongIds = autoplay ? this.songIDs : Collections.<Long>emptySet();
     }
 
     @Override

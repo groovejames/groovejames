@@ -24,6 +24,17 @@ Params:
 
 Returns: SearchResult containing one of SongSearchResult (type=1), AlbumSearchResult (type=10), ArtistSearchResult (type=100), PlaylistSearchResult (type=1000), DjChannelSearchResult (type=1009)
 
+### search suggestion (autocomplete)
+
+POST http://music.163.com/api/search/suggest
+
+Params:
+
+- s: (string) search string
+- limit: (int)
+
+Returns: SearchResult containing SuggestResult
+
 ### artist details
 
 GET http://music.163.com/api/artist/[artistId]
@@ -90,7 +101,7 @@ Not all properties are listed, only the more important ones.
 ### SearchResult
 
 - code: (int) 200: ok, otherwise: error
-- result: (PlaylistSearchResult | ArtistSearchResult | AlbumSearchResult | SongSearchResult | DjChannelSearchResult)
+- result: (PlaylistSearchResult | ArtistSearchResult | AlbumSearchResult | SongSearchResult | DjChannelSearchResult | SuggestResult)
 
 ### PlaylistSearchResult
 
@@ -293,4 +304,9 @@ _extends: DjChannel_
 - mainSong: (SongDetail) the whole channel as one track
 - songs: (array of SongDetail) optional, some tracks of the dj set
 
+### SuggestResult
 
+- order: (array of string) in which order to display results, possible values: "artists", "songs", "albums"
+- artists: (array of Artist)
+- albums: (array of Album)
+- songs: (array of Song)
