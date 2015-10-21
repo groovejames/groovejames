@@ -10,6 +10,7 @@ public class Album extends BaseModelObject {
     private String albumName;
     private String imageURL;
     private Date publishingTime;
+    private int numSongs;
 
     public long getArtistID() {
         return artistID;
@@ -66,6 +67,14 @@ public class Album extends BaseModelObject {
 
     public void setPublishingTime(Date publishingTime) {
         this.publishingTime = publishingTime;
+    }
+
+    public int getNumSongs() {
+        return numSongs;
+    }
+
+    public void setNumSongs(int numSongs) {
+        this.numSongs = numSongs;
     }
 
     @Override

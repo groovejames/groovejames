@@ -286,6 +286,7 @@ public class SearchService {
             album.setArtistName(neAlbum.artist.name);
             album.setImageURL(neAlbum.picUrl);
             album.setPublishingTime(new Date(neAlbum.publishTime));
+            album.setNumSongs(neAlbum.size);
             if (total > 0) album.setRelevance(1.0 - (((double) (startOffset + i)) / (double) total));
             result[i++] = album;
         }

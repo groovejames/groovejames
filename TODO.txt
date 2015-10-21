@@ -3,6 +3,8 @@
 - dj channels
 - find out why sometimes the same image is loaded twice (or use Guava Cache for image cache)
 - show song's bitrate
+- don't fetch song details again when playing/downloading
+- play with lower bitrate, download with highest bitrate
 
 - mp3 player: add seek forward/backward
 - persist current downloads list so that it survives restarts
