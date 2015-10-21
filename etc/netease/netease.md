@@ -6,7 +6,7 @@
 - https://gist.github.com/scturtle/5972996
 - http://www.rubydoc.info/gems/mplug163/0.1.1/NetEase
 - https://github.com/bluetomlee/NetEase-MusicBox/blob/master/src/api.py
-
+- https://github.com/sk1418/zhuaxia
 
 ## Netease API
 
