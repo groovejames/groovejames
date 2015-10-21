@@ -5,7 +5,6 @@ import groovejames.model.Artist;
 import groovejames.model.Playlist;
 import groovejames.model.SearchResult;
 import groovejames.model.Song;
-import groovejames.model.StreamInfo;
 import groovejames.model.User;
 import groovejames.service.netease.INetEaseService;
 import groovejames.service.netease.NEAlbum;
@@ -14,6 +13,7 @@ import groovejames.service.netease.NEArtist;
 import groovejames.service.netease.NEArtistAlbumsResultResponse;
 import groovejames.service.netease.NEArtistDetailsResponse;
 import groovejames.service.netease.NEArtistSearchResult;
+import groovejames.service.netease.NEDownloadInfo;
 import groovejames.service.netease.NEPlaylist;
 import groovejames.service.netease.NEPlaylistSearchResult;
 import groovejames.service.netease.NESearchType;
@@ -72,13 +72,6 @@ public class SearchService {
             }
         }
         return result;
-    }
-
-    public StreamInfo getStreamInfo(long songID) throws Exception {
-        NESongDetails songDetails = netEaseService.getSongDetails(new long[] {songID}).get(songID);
-        String downloadUrl = netEaseService.getDownloadUrl(songDetails);
-        String imageURL = songDetails.album.picUrl;
-        return new StreamInfo(downloadUrl, songDetails.duration, imageURL);
     }
 
     public SearchResult<Song> searchSongs(SearchParameter searchParameter) throws Exception {
@@ -195,6 +188,10 @@ public class SearchService {
         song.setImageURL(neSongDetails.album.picUrl);
         song.setPopularity(neSongDetails.popularity / 100.0);
         song.setDuration(neSongDetails.duration / 1000);
+
+        NEDownloadInfo downloadInfo = netEaseService.getDownloadInfo(neSongDetails);
+        song.setDownloadURL(downloadInfo.url);
+        song.setBitrate(downloadInfo.bitrate != null ? downloadInfo.bitrate / 1000 : null);
     }
 
     public Song autoplayGetSong(Iterable<Song> songsAlreadySeen) throws Exception {

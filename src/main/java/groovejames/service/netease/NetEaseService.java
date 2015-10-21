@@ -123,17 +123,22 @@ public class NetEaseService implements INetEaseService {
     }
 
     @Override
-    public String getDownloadUrl(NESongDetails songDetails) {
+    public NEDownloadInfo getDownloadInfo(NESongDetails songDetails) {
+        NEDownloadInfo downloadInfo = new NEDownloadInfo();
         NEStreamInfo streamInfo = findBestStreamInfo(songDetails);
-        if (streamInfo == null) {
-            if (Util.isEmpty(songDetails.mp3Url))
-                throw new NetEaseException("no download location for song id " + songDetails.id);
-            return songDetails.mp3Url;
+        if (streamInfo != null) {
+            String encryptedId = encryptId(streamInfo);
+            String baseUrl = Util.stripPath(songDetails.mp3Url);
+            if (baseUrl == null) baseUrl = "http://m1.music.126.net";
+            downloadInfo.url = String.format("%s/%s/%s.%s", baseUrl, encryptedId, streamInfo.dfsId, streamInfo.extension);
+            downloadInfo.bitrate = streamInfo.bitrate;
+        } else if (Util.isEmpty(songDetails.mp3Url)) {
+            throw new NetEaseException("no download location for song id " + songDetails.id);
+        } else {
+            downloadInfo.url = songDetails.mp3Url;
+            downloadInfo.bitrate = null; // bitrate is unknown
         }
-        String encryptedId = encryptId(streamInfo);
-        String baseUrl = Util.stripPath(songDetails.mp3Url);
-        if (baseUrl == null) baseUrl = "http://m1.music.126.net";
-        return String.format("%s/%s/%s.%s", baseUrl, encryptedId, streamInfo.dfsId, streamInfo.extension);
+        return downloadInfo;
     }
 
     private NEStreamInfo findBestStreamInfo(NESongDetails songDetails) {

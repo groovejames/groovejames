@@ -1,5 +1,6 @@
 package groovejames.service;
 
+import groovejames.service.netease.NEDownloadInfo;
 import groovejames.service.netease.NESongDetails;
 import groovejames.service.netease.NetEaseService;
 
@@ -18,7 +19,7 @@ public class NetEaseServiceTest {
         HttpClientService httpClientService = new HttpClientService();
         NetEaseService netEaseService = new NetEaseService(httpClientService);
         NESongDetails songDetails = netEaseService.getSongDetails(new long[] {songID}).get(songID);
-        String downloadUrl = netEaseService.getDownloadUrl(songDetails);
-        System.out.println(downloadUrl);
+        NEDownloadInfo downloadInfo = netEaseService.getDownloadInfo(songDetails);
+        System.out.printf("URL: %s%nBitrate: %s%n", downloadInfo.url, downloadInfo.bitrate);
     }
 }

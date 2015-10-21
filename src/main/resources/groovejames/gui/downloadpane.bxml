@@ -66,6 +66,11 @@
                                     <TableView.Column name="songName" headerData="Name" width="190"/>
                                     <TableView.Column name="artistName" headerData="Artist" width="155"/>
                                     <TableView.Column name="albumName" headerData="Album" width="155"/>
+                                    <TableView.Column name="song.bitrate" headerData="Bitrate" width="45">
+                                        <cellRenderer>
+                                            <content:TableViewNumberCellRenderer/>
+                                        </cellRenderer>
+                                    </TableView.Column>
                                     <TableView.Column name="progress" headerData="Progress" width="1*">
                                         <cellRenderer>
                                             <gui:DownloadProgressTableCellRenderer/>

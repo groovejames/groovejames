@@ -76,8 +76,8 @@ public class NetEaseServiceMock implements INetEaseService {
     }
 
     @Override
-    public String getDownloadUrl(NESongDetails songDetails) {
-        return new NetEaseService(null).getDownloadUrl(songDetails);
+    public NEDownloadInfo getDownloadInfo(NESongDetails songDetails) {
+        return new NetEaseService(null).getDownloadInfo(songDetails);
     }
 
     @Override

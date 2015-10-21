@@ -13,6 +13,8 @@ public class Song extends BaseModelObject {
     private Integer duration;
     /** must be a number between 0.0 and 1.0 */
     private Double popularity;
+    private Integer bitrate;
+    private String downloadURL;
 
     public long getArtistID() {
         return artistID;
@@ -112,6 +114,22 @@ public class Song extends BaseModelObject {
         this.popularity = popularity;
     }
 
+    public Integer getBitrate() {
+        return bitrate;
+    }
+
+    public void setBitrate(Integer bitrate) {
+        this.bitrate = bitrate;
+    }
+
+    public String getDownloadURL() {
+        return downloadURL;
+    }
+
+    public void setDownloadURL(String downloadURL) {
+        this.downloadURL = downloadURL;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -133,6 +151,7 @@ public class Song extends BaseModelObject {
         sb.append(", songName='").append(songName).append('\'');
         sb.append(", imageURL='").append(imageURL).append('\'');
         sb.append(", duration=").append(duration);
+        sb.append(", bitrate=").append(bitrate);
         sb.append('}');
         return sb.toString();
     }

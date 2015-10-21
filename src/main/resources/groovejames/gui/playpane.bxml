@@ -107,12 +107,17 @@
                                                                   styles="{showVerticalGridLines:true}">
                                     <columns>
                                         <TableView.Column name="isPlaying" width="20"/>
-                                        <TableView.Column name="songName" headerData="Name" width="180"/>
+                                        <TableView.Column name="songName" headerData="Name" width="1*"/>
                                         <TableView.Column name="artistName" headerData="Artist" width="140"/>
                                         <TableView.Column name="albumName" headerData="Album" width="140"/>
                                         <TableView.Column name="duration" headerData="Length" width="45">
                                             <cellRenderer>
                                                 <gui:TimeTableCellRenderer/>
+                                            </cellRenderer>
+                                        </TableView.Column>
+                                        <TableView.Column name="bitrate" headerData="Bitrate" width="45">
+                                            <cellRenderer>
+                                                <content:TableViewNumberCellRenderer/>
                                             </cellRenderer>
                                         </TableView.Column>
                                     </columns>

@@ -4,7 +4,6 @@ import groovejames.model.FileStore;
 import groovejames.model.MemoryStore;
 import groovejames.model.Song;
 import groovejames.model.Store;
-import groovejames.model.StreamInfo;
 import groovejames.model.Track;
 import groovejames.service.search.SearchService;
 import groovejames.util.Util;
@@ -169,15 +168,12 @@ public class DownloadService {
                 log.info("start download track " + track);
                 track.setStatus(Track.Status.INITIALIZING);
                 fireDownloadStatusChanged();
-                StreamInfo streamInfo = searchService.getStreamInfo(track.getSong().getSongID());
                 track.setStartDownloadTime(System.currentTimeMillis());
-                if (streamInfo.getDuration() > 0)
-                    track.getSong().setDuration(streamInfo.getDuration() / 1000);
                 fireDownloadStatusChanged();
                 if (Boolean.getBoolean("mockNet"))
-                    fakedownload(streamInfo);
+                    fakedownload();
                 else
-                    download(streamInfo);
+                    download();
                 track.setStatus(Track.Status.FINISHED);
                 fireDownloadStatusChanged();
                 log.info("finished download track " + track);
@@ -213,8 +209,8 @@ public class DownloadService {
             return false;
         }
 
-        private void download(StreamInfo streamInfo) throws IOException {
-            String url = streamInfo.getDownloadUrl();
+        private void download() throws IOException {
+            String url = track.getSong().getDownloadURL();
             httpGet = new HttpGet(url);
             HttpResponse httpResponse = httpClientService.getHttpClient().execute(httpGet);
             HttpEntity httpEntity = httpResponse.getEntity();
@@ -251,8 +247,8 @@ public class DownloadService {
             }
         }
 
-        private void fakedownload(StreamInfo streamInfo) throws InterruptedException, IOException {
-            httpGet = new HttpGet(streamInfo.getDownloadUrl());
+        private void fakedownload() throws InterruptedException, IOException {
+            httpGet = new HttpGet(track.getSong().getDownloadURL());
             Thread.sleep(1000);
             String songName = track.getSongName();
             songName = songName.contains("track1") ? "track1" : songName.contains("track2") ? "track2" : songName;

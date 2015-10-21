@@ -22,6 +22,6 @@ public interface INetEaseService {
 
     NESuggestionsResult getSuggestions(String query, int limit) throws Exception;
 
-    String getDownloadUrl(NESongDetails songDetails);
+    NEDownloadInfo getDownloadInfo(NESongDetails songDetails);
 
 }
