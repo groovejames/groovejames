@@ -1,0 +1,7 @@
+<gui:LazyLoadingPane xmlns="org.apache.pivot.wtk"
+                     xmlns:gui="groovejames.gui"
+                     xmlns:bxml="http://pivot.apache.org/bxml">
+    <BoxPane bxml:id="boxPane" styles="{horizontalAlignment:'center', verticalAlignment:'center'}">
+        <ActivityIndicator bxml:id="activityIndicator" active="false" preferredWidth="150" preferredHeight="150"/>
+    </BoxPane>
+</gui:LazyLoadingPane>

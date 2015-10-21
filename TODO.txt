@@ -1,6 +1,5 @@
 - "load all" link
-- "loading" spinning wheel should be translucent over original panel (StackPane instead of CardPane?!?)
-- preserve scrolling position and selection when loading more
+- preserve selection when loading more
 - dj channels
 - find out why sometimes the same image is loaded twice (or use Guava Cache for image cache)
 - play with lower bitrate, download with highest bitrate

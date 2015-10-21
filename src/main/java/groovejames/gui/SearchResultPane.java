@@ -33,12 +33,14 @@ public class SearchResultPane extends TablePane implements Bindable {
     public SearchResultPane() {
     }
 
-    @Override public void initialize(Map<String, Object> namespace, URL location, Resources resources) {
+    @Override
+    public void initialize(Map<String, Object> namespace, URL location, Resources resources) {
         this.main = (Main) namespace.get("main");
         this.resources = resources;
 
         tabPane.getTabPaneSelectionListeners().add(new TabPaneSelectionListener.Adapter() {
-            @Override public void selectedIndexChanged(TabPane tabPane, int previousSelectedIndex) {
+            @Override
+            public void selectedIndexChanged(TabPane tabPane, int previousSelectedIndex) {
                 startSearch();
             }
         });
@@ -84,19 +86,19 @@ public class SearchResultPane extends TablePane implements Bindable {
 
     private void addTab(String contentResource, String tabTitle) {
         try {
-            LazyLoadingCardPane lazyLoadingCardPane = createNewLazyLoadingCardPane();
-            lazyLoadingCardPane.setContentResource(contentResource);
-            tabPane.getTabs().add(lazyLoadingCardPane);
-            TabPane.setTabData(lazyLoadingCardPane, new ButtonData(tabTitle));
+            LazyLoadingPane lazyLoadingPane = createNewLazyLoadingPane();
+            lazyLoadingPane.setContentResource(contentResource);
+            tabPane.getTabs().add(lazyLoadingPane);
+            TabPane.setTabData(lazyLoadingPane, new ButtonData(tabTitle));
         } catch (Exception ex) {
             main.showError("could not add tab " + tabTitle + " using " + contentResource, ex);
         }
     }
 
-    private LazyLoadingCardPane createNewLazyLoadingCardPane() throws SerializationException, IOException {
+    private LazyLoadingPane createNewLazyLoadingPane() throws SerializationException, IOException {
         BXMLSerializer bxmlSerializer = new BXMLSerializer();
         bxmlSerializer.getNamespace().put("main", main);
-        return (LazyLoadingCardPane) bxmlSerializer.readObject(getClass().getResource("lazyloadingcardpane.bxml"), resources);
+        return (LazyLoadingPane) bxmlSerializer.readObject(getClass().getResource("lazyloadingpane.bxml"), resources);
     }
 
     public String getLabel() {
@@ -109,7 +111,7 @@ public class SearchResultPane extends TablePane implements Bindable {
     }
 
     public void startSearch() {
-        LazyLoadingCardPane selectedCardPane = (LazyLoadingCardPane) tabPane.getSelectedTab();
+        LazyLoadingPane selectedCardPane = (LazyLoadingPane) tabPane.getSelectedTab();
         if (selectedCardPane != null) {
             try {
                 selectedCardPane.load(searchParameter.clone());
