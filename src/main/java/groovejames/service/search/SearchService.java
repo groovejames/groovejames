@@ -124,7 +124,8 @@ public class SearchService {
                 for (NESongDetails neSongDetails : neAlbum.songs) {
                     Song song = new Song();
                     setSongAttributes(song, neSongDetails);
-                    song.setTrackNum(neSongDetails.no);
+                    //song.setTrackNum(neSongDetails.no);
+                    song.setTrackNum(i + 1);
                     songs[i++] = song;
                 }
                 total = songs.length;

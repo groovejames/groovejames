@@ -208,7 +208,8 @@ _extends: Song_
 _extends: Song_
 
 - mp3Url: (string) low quality mp3 url (96k)
-- no: (int) position on album
+- disc: (string) number of disc if album is multi-disc, otherwise empty string 
+- no: (int) position on disc
 - position: (int) position on album?!? mostly the same as "no", but not always
 - popularity: (double) from 0.0 to 100.0
 - score: (int) same as popularity, as int
