@@ -151,7 +151,7 @@ public class PlayService {
         return playThread.isAlive();
     }
 
-    public synchronized void clearPlaylist() {
+    public void clearPlaylist() {
         stopPlaying();
         currentSongIndex = -1;
         playlist.clear();
