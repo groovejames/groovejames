@@ -6,6 +6,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 
@@ -54,6 +55,8 @@ public class HttpClientService {
                 .setMaxConnTotal(200)
                 /* increate max connections per route from 2 to 200 (we only have one route) */
                 .setMaxConnPerRoute(200)
+                /* set retry handler with maximum 3 retries and requestSentRetryEnabled=true so that even POST requests are retried (default is false) */
+                .setRetryHandler(new DefaultHttpRequestRetryHandler(3, true))
                 .setDefaultRequestConfig(RequestConfig.custom()
                         /* timeout in milliseconds until a connection is established, in ms */
                         .setConnectTimeout(SOCKET_TIMEOUT * 1000)
