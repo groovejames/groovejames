@@ -4,10 +4,10 @@ import static java.lang.String.format;
 
 public class UserSearch extends AbstractSearchParameter {
 
-    private final Long userID;
+    private final long userID;
     private final String userName;
 
-    public UserSearch(Long userID, String userName) {
+    public UserSearch(long userID, String userName) {
         this.userID = userID;
         this.userName = userName;
     }
@@ -32,7 +32,7 @@ public class UserSearch extends AbstractSearchParameter {
         return userName;
     }
 
-    public Long getUserID() {
+    public long getUserID() {
         return userID;
     }
 
@@ -45,11 +45,11 @@ public class UserSearch extends AbstractSearchParameter {
         if (this == o) return true;
         if (!(o instanceof UserSearch)) return false;
         UserSearch that = (UserSearch) o;
-        return userID.equals(that.userID);
+        return userID == that.userID;
     }
 
     @Override
     public int hashCode() {
-        return userID.hashCode();
+        return Long.valueOf(userID).hashCode();
     }
 }

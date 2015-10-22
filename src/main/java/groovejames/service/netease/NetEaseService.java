@@ -112,6 +112,16 @@ public class NetEaseService implements INetEaseService {
     }
 
     @Override
+    public NEPlaylistDetails getPlaylistDetails(long playlistID) throws Exception {
+        HttpResponse<NEPlaylistDetailsResponse> httpResponse = Unirest.get(MUSIC163_API + "/playlist/detail")
+                .queryString("id", Long.toString(playlistID))
+                .asObject(NEPlaylistDetailsResponse.class);
+        NEPlaylistDetailsResponse response = httpResponse.getBody();
+        if (response.code != 200) throw new NetEaseException("error getting playlist details: " + response.code);
+        return response.result;
+    }
+
+    @Override
     public NESuggestionsResult getSuggestions(String query, int limit) throws Exception {
         HttpResponse<NESuggestionsResultResponse> httpResponse = Unirest.post(MUSIC163_API + "/search/suggest")
                 .field("s", query)

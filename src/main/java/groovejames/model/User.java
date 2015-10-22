@@ -2,16 +2,16 @@ package groovejames.model;
 
 public class User extends BaseModelObject {
 
-    private Long userID;
+    private long userID;
     private String username;
     private String name;
     private String picture;
 
-    public Long getUserID() {
+    public long getUserID() {
         return userID;
     }
 
-    public void setUserID(Long userID) {
+    public void setUserID(long userID) {
         this.userID = userID;
     }
 
@@ -49,19 +49,19 @@ public class User extends BaseModelObject {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return userID.equals(user.userID);
+        return userID == user.userID;
     }
 
     @Override
     public int hashCode() {
-        return userID.hashCode();
+        return Long.valueOf(userID).hashCode();
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("User");
-        sb.append("{userID='").append(userID).append('\'');
+        sb.append("{userID=").append(userID);
         sb.append(", username='").append(username).append('\'');
         sb.append('}');
         return sb.toString();

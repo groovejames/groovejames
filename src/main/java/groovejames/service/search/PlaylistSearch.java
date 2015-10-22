@@ -4,10 +4,10 @@ import static java.lang.String.format;
 
 public class PlaylistSearch extends AbstractSearchParameter {
 
-    private final Long playlistID;
+    private final long playlistID;
     private final String name;
 
-    public PlaylistSearch(Long playlistID, String name) {
+    public PlaylistSearch(long playlistID, String name) {
         this.playlistID = playlistID;
         this.name = name;
     }
@@ -32,7 +32,7 @@ public class PlaylistSearch extends AbstractSearchParameter {
         return name;
     }
 
-    public Long getPlaylistID() {
+    public long getPlaylistID() {
         return playlistID;
     }
 
@@ -45,11 +45,11 @@ public class PlaylistSearch extends AbstractSearchParameter {
         if (this == o) return true;
         if (!(o instanceof PlaylistSearch)) return false;
         PlaylistSearch that = (PlaylistSearch) o;
-        return playlistID.equals(that.playlistID);
+        return playlistID == that.playlistID;
     }
 
     @Override
     public int hashCode() {
-        return playlistID.hashCode();
+        return Long.valueOf(playlistID).hashCode();
     }
 }

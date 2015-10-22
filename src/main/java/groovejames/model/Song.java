@@ -140,7 +140,7 @@ public class Song extends BaseModelObject {
 
     @Override
     public int hashCode() {
-        return (int) songID;
+        return Long.valueOf(songID).hashCode();
     }
 
     @Override
@@ -149,7 +149,6 @@ public class Song extends BaseModelObject {
         sb.append("Song");
         sb.append("{songID=").append(songID);
         sb.append(", songName='").append(songName).append('\'');
-        sb.append(", imageURL='").append(imageURL).append('\'');
         sb.append(", duration=").append(duration);
         sb.append(", bitrate=").append(bitrate);
         sb.append('}');

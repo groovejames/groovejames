@@ -76,13 +76,18 @@ public class NetEaseServiceMock implements INetEaseService {
     }
 
     @Override
-    public NEDownloadInfo getDownloadInfo(NESongDetails songDetails) {
-        return new NetEaseService(null).getDownloadInfo(songDetails);
+    public NEPlaylistDetails getPlaylistDetails(long playlistID) {
+        return null; // TODO
     }
 
     @Override
     public NESuggestionsResult getSuggestions(String query, int limit) {
         return null; // TODO
+    }
+
+    @Override
+    public NEDownloadInfo getDownloadInfo(NESongDetails songDetails) {
+        return new NetEaseService(null).getDownloadInfo(songDetails);
     }
 
     private NEAlbum createAlbum(String name) {

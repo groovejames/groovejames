@@ -87,7 +87,7 @@ public class Album extends BaseModelObject {
 
     @Override
     public int hashCode() {
-        return (int) albumID;
+        return Long.valueOf(albumID).hashCode();
     }
 
     @Override
@@ -96,7 +96,6 @@ public class Album extends BaseModelObject {
         sb.append("Album");
         sb.append("{albumID=").append(albumID);
         sb.append(", albumName='").append(albumName).append('\'');
-        sb.append(", imageURL='").append(imageURL).append('\'');
         sb.append('}');
         return sb.toString();
     }

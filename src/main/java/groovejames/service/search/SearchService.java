@@ -15,6 +15,7 @@ import groovejames.service.netease.NEArtistDetailsResponse;
 import groovejames.service.netease.NEArtistSearchResult;
 import groovejames.service.netease.NEDownloadInfo;
 import groovejames.service.netease.NEPlaylist;
+import groovejames.service.netease.NEPlaylistDetails;
 import groovejames.service.netease.NEPlaylistSearchResult;
 import groovejames.service.netease.NESearchType;
 import groovejames.service.netease.NESong;
@@ -26,6 +27,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -112,15 +115,7 @@ public class SearchService {
                 // search for songs of the given album
                 Long albumID = ((AlbumSearch) searchParameter).getAlbumID();
                 NEAlbum neAlbum = netEaseService.getAlbum(albumID);
-                Song[] songs = new Song[neAlbum.songs.length];
-                int i = 0;
-                for (NESongDetails neSongDetails : neAlbum.songs) {
-                    Song song = new Song();
-                    setSongAttributes(song, neSongDetails);
-                    //song.setTrackNum(neSongDetails.no);
-                    song.setTrackNum(i + 1);
-                    songs[i++] = song;
-                }
+                Song[] songs = convert(neAlbum.songs, true);
                 total = songs.length;
                 result = songs;
                 break;
@@ -129,43 +124,34 @@ public class SearchService {
                 // search for all songs of the given artist
                 long artistID = ((ArtistSearch) searchParameter).getArtistID();
                 NEArtistDetailsResponse response = netEaseService.getHotSongs(artistID);
-                Song[] songs = new Song[response.hotSongs.length];
-                int i = 0;
-                for (NESongDetails neSongDetails : response.hotSongs) {
-                    Song song = new Song();
-                    setSongAttributes(song, neSongDetails);
-                    songs[i++] = song;
-                }
+                Song[] songs = convert(response.hotSongs, false);
                 total = songs.length;
                 result = songs;
                 break;
             }
             case User: {
                 // search for library songs of the given user
-                String userID = ((UserSearch) searchParameter).getUserID().toString();
+                long userID = ((UserSearch) searchParameter).getUserID();
                 Song[] songs = new Song[0];
                 total = 0;
                 result = songs;
                 break;
             }
             case Playlist: {
-                Long playlistID = ((PlaylistSearch) searchParameter).getPlaylistID();
-                Song[] songs = new Song[0];
-                total = 0;
+                // search for songs of the given playlist
+                long playlistID = ((PlaylistSearch) searchParameter).getPlaylistID();
+                NEPlaylistDetails nePlaylistDetails = netEaseService.getPlaylistDetails(playlistID);
+                Song[] songs = convert(nePlaylistDetails.tracks, true);
+                total = songs.length;
                 result = songs;
                 break;
             }
             case Songs: {
+                // search for songs with the given song IDs
                 Set<Long> songIDs = ((SongSearch) searchParameter).getSongIDs();
                 long[] songIDArray = Util.convert(songIDs);
                 Map<Long, NESongDetails> songDetails = netEaseService.getSongDetails(songIDArray);
-                Song[] songs = new Song[songDetails.size()];
-                int i = 0;
-                for (NESongDetails neSongDetails : songDetails.values()) {
-                    Song song = new Song();
-                    setSongAttributes(song, neSongDetails);
-                    songs[i++] = song;
-                }
+                Song[] songs = convert(songDetails.values(), false);
                 total = songs.length;
                 result = songs;
                 break;
@@ -175,6 +161,25 @@ public class SearchService {
             }
         }
         return new SearchResult<>(result, total);
+    }
+
+    private Song[] convert(NESongDetails[] neSongs, boolean setTrackNum) {
+        return convert(Arrays.asList(neSongs), setTrackNum);
+    }
+
+    private Song[] convert(Collection<NESongDetails> neSongs, boolean setTrackNum) {
+        Song[] songs = new Song[neSongs.size()];
+        int i = 0;
+        for (NESongDetails neSongDetails : neSongs) {
+            Song song = new Song();
+            setSongAttributes(song, neSongDetails);
+            if (setTrackNum) {
+                song.setTrackNum(i + 1);
+                //song.setTrackNum(neSongDetails.no);
+            }
+            songs[i++] = song;
+        }
+        return songs;
     }
 
     private void setSongAttributes(Song song, NESongDetails neSongDetails) {

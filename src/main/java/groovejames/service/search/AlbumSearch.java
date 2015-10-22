@@ -62,6 +62,6 @@ public class AlbumSearch extends AbstractSearchParameter {
 
     @Override
     public int hashCode() {
-        return (int) albumID;
+        return Long.valueOf(albumID).hashCode();
     }
 }

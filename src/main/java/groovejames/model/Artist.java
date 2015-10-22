@@ -49,14 +49,14 @@ public class Artist extends BaseModelObject {
 
     @Override
     public int hashCode() {
-        return (int) artistID;
+        return Long.valueOf(artistID).hashCode();
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("Artist");
-        sb.append("{artistID='").append(artistID).append('\'');
+        sb.append("{artistID=").append(artistID);
         sb.append(", artistName='").append(artistName).append('\'');
         sb.append('}');
         return sb.toString();

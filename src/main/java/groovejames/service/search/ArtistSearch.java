@@ -48,6 +48,6 @@ public class ArtistSearch extends AbstractSearchParameter {
 
     @Override
     public int hashCode() {
-        return (int) artistID;
+        return Long.valueOf(artistID).hashCode();
     }
 }
