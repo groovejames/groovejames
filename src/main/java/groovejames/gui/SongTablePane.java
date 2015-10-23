@@ -78,9 +78,9 @@ public class SongTablePane extends AbstractSearchTablePane<Song> {
         downloadAction = new Action(false) {
             @Override
             public void perform(Component source) {
-                Sequence<?> selectedRows = songTable.getSelectedRows();
+                Sequence<Song> selectedRows = getSelectedSongs();
                 for (int i = 0, len = selectedRows.getLength(); i < len; i++) {
-                    Song song = (Song) selectedRows.get(i);
+                    Song song = selectedRows.get(i);
                     main.download(song);
                 }
             }
@@ -88,27 +88,24 @@ public class SongTablePane extends AbstractSearchTablePane<Song> {
 
         playAction = new Action(false) {
             @Override
-            @SuppressWarnings("unchecked")
             public void perform(Component source) {
-                Sequence<Song> selectedRows = (Sequence<Song>) songTable.getSelectedRows();
+                Sequence<Song> selectedRows = getSelectedSongs();
                 main.play(selectedRows, PlayService.AddMode.NOW);
             }
         };
 
         enqueueAction = new Action(false) {
             @Override
-            @SuppressWarnings("unchecked")
             public void perform(Component source) {
-                Sequence<Song> selectedRows = (Sequence<Song>) songTable.getSelectedRows();
+                Sequence<Song> selectedRows = getSelectedSongs();
                 main.play(selectedRows, PlayService.AddMode.LAST);
             }
         };
 
         shareAction = new Action(false) {
             @Override
-            @SuppressWarnings("unchecked")
             public void perform(Component source) {
-                Sequence<Song> selectedRows = (Sequence<Song>) songTable.getSelectedRows();
+                Sequence<Song> selectedRows = getSelectedSongs();
                 if (selectedRows.getLength() > 0) {
                     main.shareSongs(selectedRows);
                 } else if (searchParameter.getSearchType() == SearchType.Album) {
@@ -200,12 +197,9 @@ public class SongTablePane extends AbstractSearchTablePane<Song> {
         songTable.setMenuHandler(new MenuHandler.Adapter() {
             @Override
             public boolean configureContextMenu(Component component, Menu menu, int x, int y) {
-                int length = 0;
-                ImmutableList<Span> ranges = songTable.getSelectedRanges();
-                for (Span span : ranges) {
-                    length += span.getLength();
-                }
-                String suffix = length == 0 ? "" : length == 1 ? " this song" : " " + length + " songs";
+                int total = songTable.getTableData().getLength();
+                int selected = getSelectedRows();
+                String suffix = total == 0 ? "" : selected == 0 ? " all songs" : selected == 1 ? " this song" : " " + selected + " songs";
                 Menu.Item downloadMenuItem = new Menu.Item("Download" + suffix);
                 downloadMenuItem.setAction(downloadAction);
                 Menu.Item playMenuItem = new Menu.Item("Play" + suffix);
@@ -233,36 +227,54 @@ public class SongTablePane extends AbstractSearchTablePane<Song> {
             }
         });
 
-        updateToolbarButtons();
         updateFilter();
+        updateToolbarButtons();
     }
 
     private void updateToolbarButtons() {
         boolean isSongsForAlbums = (searchParameter != null && searchParameter.getSearchType() == SearchType.Album);
-        int length = 0;
-        ImmutableList<Span> ranges = songTable.getSelectedRanges();
-        for (Span span : ranges) {
-            length += span.getLength();
-        }
-        downloadAction.setEnabled(length > 0);
-        playAction.setEnabled(length > 0);
-        enqueueAction.setEnabled(length > 0);
-        shareAction.setEnabled(isSongsForAlbums || length > 0);
+        int total = songTable.getTableData().getLength();
+        int selected = getSelectedRows();
+        downloadAction.setEnabled(total > 0);
+        playAction.setEnabled(total > 0);
+        enqueueAction.setEnabled(total > 0);
+        shareAction.setEnabled(isSongsForAlbums || total > 0);
 
-        String suffix = length == 0 ? "" : " (" + length + ")";
+        String suffix = total == 0 ? "" : selected == 0 ? " all" : " (" + selected + ")";
         downloadButton.setButtonData(new ButtonData(((ButtonData) downloadButton.getButtonData()).getIcon(), "Download" + suffix));
         playButton.setButtonData(new ButtonData(((ButtonData) playButton.getButtonData()).getIcon(), "Play" + suffix));
         enqueueButton.setButtonData(new ButtonData(((ButtonData) enqueueButton.getButtonData()).getIcon(), "Enqueue" + suffix));
 
         String shareButtonText = "Share song(s)";
-        if (length == 1) {
+        if (selected == 1 || total == 1) {
             shareButtonText = "Share this song";
-        } else if (length > 1) {
-            shareButtonText = "Share " + length + " songs";
+        } else if (selected > 1) {
+            shareButtonText = "Share " + selected + " songs";
         } else if (isSongsForAlbums) {
             shareButtonText = "Share this album";
+        } else if (total > 1) {
+            shareButtonText = "Share all songs";
         }
         shareButton.setButtonData(new ButtonData(((ButtonData) shareButton.getButtonData()).getIcon(), shareButtonText));
+    }
+
+    private int getSelectedRows() {
+        int selected = 0;
+        ImmutableList<Span> ranges = songTable.getSelectedRanges();
+        for (Span span : ranges) {
+            selected += span.getLength();
+        }
+        return selected;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Sequence<Song> getSelectedSongs() {
+        if (songTable.getFirstSelectedIndex() == -1) {
+            // nothing is selected, return all
+            return (Sequence<Song>) songTable.getTableData();
+        } else {
+            return (Sequence<Song>) songTable.getSelectedRows();
+        }
     }
 
     private void updateFilter() {
@@ -289,8 +301,6 @@ public class SongTablePane extends AbstractSearchTablePane<Song> {
     @Override
     public void afterLoad() {
         super.afterLoad();
-
-        //songList.setSource(new ArrayList<Song>());
 
         updateToolbarButtons();
 
@@ -358,6 +368,7 @@ public class SongTablePane extends AbstractSearchTablePane<Song> {
         Song[] songs = result.getResult();
         boolean isFirstAdd = songList.isEmpty();
         addSongs(songs);
+        updateToolbarButtons();
         Set<Long> autoPlaySongIds = new java.util.HashSet<>();
         if (searchParameter.getSearchType() == SearchType.Album) {
             if (((AlbumSearch) searchParameter).isAutoplay()) {
@@ -420,9 +431,7 @@ public class SongTablePane extends AbstractSearchTablePane<Song> {
     private class SongListFilter implements Filter<Song> {
         @Override
         public boolean include(Song song) {
-            if (songListSelectedAlbumID != null) {
-                if (songListSelectedAlbumID == -1)
-                    return true;
+            if (songListSelectedAlbumID != null && songListSelectedAlbumID != -1) {
                 if (!songListSelectedAlbumID.equals(song.getAlbumID()))
                     return false;
             }
