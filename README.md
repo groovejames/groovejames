@@ -4,7 +4,7 @@
 
 Was previously used to download songs from the late Grooveshark service, but is now being rewritten to use the music.163.com service.
 
-Current status: _w.i.p. / unstable_ (only downloading of songs possible at the moment) 
+Current status: r28 (beta): allows searching for artists, albums, songs, playlists; downloading of songs and albums, preview songs
 
 #### Requirements:
 - Java7 or higher
