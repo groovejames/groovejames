@@ -6,7 +6,10 @@
 - https://gist.github.com/scturtle/5972996
 - http://www.rubydoc.info/gems/mplug163/0.1.1/NetEase
 - https://github.com/bluetomlee/NetEase-MusicBox/blob/master/src/api.py
-- https://github.com/sk1418/zhuaxia
+- [Zhuxia downloader](https://github.com/sk1418/zhuaxia)
+- [New login API info](https://github.com/darknessomi/musicbox/wiki/%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90%E6%96%B0%E7%99%BB%E5%BD%95API%E5%88%86%E6%9E%90)
+- [New login API src, most complete API](https://github.com/wu-nerd/dmusic-plugin-NeteaseCloudMusic/blob/master/neteasecloudmusic/netease_api.py)
+- [New login API src, alternative](https://github.com/stkevintan/nw_musicbox/blob/master/src/model/NetEaseMusic.js)
 
 ## Netease API
 
