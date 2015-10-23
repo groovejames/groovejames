@@ -1,7 +1,8 @@
 # GrooveJames change history
 
-### r28 (unreleased)
+### r28 (2015/10/23)
 - since Grooveshark is dead, GrooveJames now uses music.163.com aka NetEase
+- most features are retained except radio and the People tab. Both might come back later. 
 - now requires Java7 or higher (instead of Java6)
 - project switched from JavaForge to GitHub: https://github.com/groovejames/groovejames
 
