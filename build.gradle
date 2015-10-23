@@ -21,7 +21,7 @@ dependencies {
         exclude group: 'com.sun.jdmk', module: 'jmxtools'
         exclude group: 'com.sun.jmx', module: 'jmxri'
     }
-    compile 'org.apache.httpcomponents:httpclient:4.0.1'
+    compile 'org.apache.httpcomponents:httpclient:4.3.6'
     compile 'org.blinkenlights.jid3:JID3:0.46'
     compile 'org.apache.pivot:pivot-core:2.0.4'
     compile 'org.apache.pivot:pivot-wtk:2.0.4'
