@@ -88,12 +88,14 @@
                                 <content:ButtonData text="Share song(s)" icon="@images/mail.png"/>
                             </buttonData>
                         </PushButton>
+                        <!--
                         <PushButton bxml:id="radioButton" action="toggleRadio" toggleButton="true"
                                     tooltipText="Play similar tracks like the one(s) on the left">
                             <buttonData>
                                 <content:ButtonData text="RADIO OFF"/>
                             </buttonData>
                         </PushButton>
+                        -->
                     </FlowPane>
                 </TablePane.Row>
                 <TablePane.Row height="1*">
