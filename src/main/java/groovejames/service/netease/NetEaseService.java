@@ -15,7 +15,8 @@ import java.util.Map;
 public class NetEaseService implements INetEaseService {
 
     private static final String MUSIC163_API = "http://music.163.com/api";
-    private static final String SECRET = System.getProperty("netease.secret", "3go8&$8*3*3h0k(2)2");
+    private static final String SYMKEY = "bxdnldW5lg9Fryar";
+    private static final String SECRET = System.getProperty("netease.secret", Util.aesDecrypt(SYMKEY, "c90e89db10670d7e2a458cc90754292d63f0028456232453f3847daa93ff3d60"));
     private static final String REFERER = "http://music.163.com";
 
     public NetEaseService(HttpClientService httpClientService) {

@@ -4,6 +4,9 @@ import org.apache.log4j.Logger;
 import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.util.concurrent.TaskExecutionException;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -19,6 +22,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,6 +40,59 @@ public class Util {
     private static final Logger log = Logger.getLogger(Util.class);
 
     private static final Pattern QUERY_PARAM_PATTERN = Pattern.compile("([^&=]+)=?([^&=]+)?");
+
+    private static final MessageDigest md5digest;
+
+    static {
+        try {
+            md5digest = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException ex) {
+            throw new RuntimeException("no MD5 digester", ex);
+        }
+    }
+
+    public static String md5(String s) {
+        try {
+            return bytesToHexString(md5digest.digest(s.getBytes("UTF-8")));
+        } catch (UnsupportedEncodingException ex) {
+            // utf-8 always available
+            throw new RuntimeException("no UTF-8 decoder available", ex);
+        }
+    }
+
+    /**
+     * @param secret secret key, must have length 16
+     */
+    public static String aesEncrypt(String secret, String plain) {
+        try {
+            byte[] data = plain.getBytes("UTF-8");
+            byte[] encrypted = aesEncryptDecrypt(secret, data, Cipher.ENCRYPT_MODE);
+            return bytesToHexString(encrypted);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    /**
+     * @param secret secret key, must have length 16
+     */
+    public static String aesDecrypt(String secret, String encrypted) {
+        try {
+            byte[] data = hexStringToBytes(encrypted);
+            byte[] decrypted = aesEncryptDecrypt(secret, data, Cipher.DECRYPT_MODE);
+            return new String(decrypted, "UTF-8");
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private static byte[] aesEncryptDecrypt(String secret, byte[] data, int mode) throws Exception {
+        byte[] key = secret.getBytes("UTF-8");
+        Cipher c = Cipher.getInstance("AES");
+        SecretKeySpec k = new SecretKeySpec(key, "AES");
+        c.init(mode, k);
+        return c.doFinal(data);
+    }
 
     public static boolean isEmpty(String s) {
         return s == null || s.isEmpty();
@@ -58,6 +116,24 @@ public class Util {
             sb.append(Long.toString(id));
         }
         return sb.toString();
+    }
+
+    public static String bytesToHexString(byte[] bytes) {
+        StringBuilder result = new StringBuilder(bytes.length * 2 + 10);
+        for (byte b : bytes) {
+            result.append(String.format("%02x", b));
+        }
+        return result.toString();
+    }
+
+    public static byte[] hexStringToBytes(String hexStr) {
+        ByteArrayOutputStream outBytes = new ByteArrayOutputStream((hexStr.length() + 1) / 2 + 1);
+        for (int i = 0; i < hexStr.length(); i += 2) {
+            String str = hexStr.substring(i, i + 2);
+            byte byt = Integer.valueOf(Integer.parseInt(str, 16)).byteValue();
+            outBytes.write(byt);
+        }
+        return outBytes.toByteArray();
     }
 
     public static String toErrorString(Throwable t, String separator) {
