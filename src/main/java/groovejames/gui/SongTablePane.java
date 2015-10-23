@@ -251,7 +251,7 @@ public class SongTablePane extends AbstractSearchTablePane<Song> {
 
         String suffix = length == 0 ? "" : " (" + length + ")";
         downloadButton.setButtonData(new ButtonData(((ButtonData) downloadButton.getButtonData()).getIcon(), "Download" + suffix));
-        playButton.setButtonData(new ButtonData(((ButtonData) playButton.getButtonData()).getIcon(), "Play Now" + suffix));
+        playButton.setButtonData(new ButtonData(((ButtonData) playButton.getButtonData()).getIcon(), "Play" + suffix));
         enqueueButton.setButtonData(new ButtonData(((ButtonData) enqueueButton.getButtonData()).getIcon(), "Enqueue" + suffix));
 
         String shareButtonText = "Share song(s)";

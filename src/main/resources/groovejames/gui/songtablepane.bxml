@@ -27,7 +27,7 @@
             </PushButton>
             <PushButton bxml:id="playButton" enabled="false">
                 <buttonData>
-                    <content:ButtonData text="Play Now" icon="@images/player_play.png"/>
+                    <content:ButtonData text="Play" icon="@images/player_play.png"/>
                 </buttonData>
             </PushButton>
             <PushButton bxml:id="enqueueButton" enabled="false">
