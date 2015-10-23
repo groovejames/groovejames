@@ -9,7 +9,6 @@ import groovejames.model.Playlist;
 import groovejames.model.SearchResult;
 import groovejames.service.Services;
 import groovejames.service.search.PlaylistSearch;
-import groovejames.service.search.UserSearch;
 import groovejames.util.FilteredList;
 import org.apache.pivot.beans.BXML;
 import org.apache.pivot.collections.ArrayList;
@@ -49,9 +48,6 @@ public class PlaylistTablePane extends AbstractSearchTablePane<Playlist> {
                 if ("name".equals(column.getName())) {
                     Playlist playlist = (Playlist) row;
                     main.openSearchTab(new PlaylistSearch(playlist.getPlaylistID(), playlist.getName()));
-                } else if ("userName".equals(column.getName())) {
-                    Playlist playlist = (Playlist) row;
-                    main.openSearchTab(new UserSearch(playlist.getUserID(), playlist.getUserName()));
                 }
                 return false;
             }

@@ -23,7 +23,7 @@
                         <view>
                             <guicomponents:ClickableTableView
                                     bxml:id="playlistTable" selectMode="single"
-                                    clickableColumns="1,2"
+                                    clickableColumns="1"
                                     styles="{showHorizontalGridLines:false, showVerticalGridLines:false}"
                                     sort="[{columnName:'relevance', sortDirection:'DESCENDING'}]">
                                 <columns>
