@@ -37,6 +37,9 @@
         </ADDITIONAL_INDENT_OPTIONS>
         <codeStyleSettings language="JAVA">
           <option name="SPACE_BEFORE_ARRAY_INITIALIZER_LBRACE" value="true" />
+          <indentOptions>
+            <option name="CONTINUATION_INDENT_SIZE" value="4" />
+          </indentOptions>
         </codeStyleSettings>
         <codeStyleSettings language="JSON">
           <option name="KEEP_BLANK_LINES_IN_CODE" value="1" />

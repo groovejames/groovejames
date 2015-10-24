@@ -45,8 +45,8 @@ import java.util.Comparator;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
-import static groovejames.util.Util.compareNullSafe;
-import static groovejames.util.Util.containsIgnoringCase;
+import static groovejames.util.StringUtils.compareNullSafe;
+import static groovejames.util.StringUtils.containsIgnoringCase;
 
 public class SongTablePane extends AbstractSearchTablePane<Song> {
 

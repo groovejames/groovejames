@@ -4,7 +4,8 @@ import groovejames.gui.components.AbstractApplication;
 import groovejames.model.Song;
 import groovejames.service.Services;
 import groovejames.service.search.AlbumSearch;
-import groovejames.util.Util;
+import groovejames.util.IOUtils;
+import groovejames.util.OSUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.pivot.collections.ArrayList;
@@ -34,8 +35,8 @@ import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.Properties;
 
-import static groovejames.util.Util.isEmpty;
-import static groovejames.util.Util.urlencode;
+import static groovejames.util.StringUtils.isEmpty;
+import static groovejames.util.UrlUtils.urlencode;
 
 public class ShareAction extends Action {
 
@@ -100,7 +101,7 @@ public class ShareAction extends Action {
 
     private String createMailBody() {
         InputStream inputStream = ShareAction.class.getResourceAsStream(mailTemplateResourceName);
-        String mailTemplate = Util.readFully(inputStream, "UTF-8", mailTemplateResourceName);
+        String mailTemplate = IOUtils.readFully(inputStream, "UTF-8", mailTemplateResourceName);
         boolean singular = album != null || songs.getLength() == 1;
 
         Properties props = new Properties();
@@ -120,9 +121,9 @@ public class ShareAction extends Action {
             try {
                 Desktop.getDesktop().mail(mailtoURI);
             } catch (IOException ex) {
-                if (Util.isLinux()) {
+                if (OSUtils.isLinux()) {
                     log.warn("error opening mail client -- trying xdg-open now...", ex);
-                    Util.exec("xdg-open", mailtoURI.toASCIIString());
+                    OSUtils.exec("xdg-open", mailtoURI.toASCIIString());
                 } else {
                     throw ex;
                 }

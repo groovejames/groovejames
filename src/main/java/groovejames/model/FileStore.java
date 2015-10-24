@@ -1,6 +1,6 @@
 package groovejames.model;
 
-import groovejames.util.Util;
+import groovejames.util.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.blinkenlights.jid3.ID3Exception;
@@ -100,8 +100,8 @@ public class FileStore implements Store {
         synchronized (directoryDeleteLock) {
             while (dir != null && !dir.equals(downloadDir)) {
                 File parent = dir.getParentFile();
-                if (Util.isEmptyDirectory(dir)) {
-                    Util.deleteQuietly(dir);
+                if (FileUtils.isEmptyDirectory(dir)) {
+                    FileUtils.deleteQuietly(dir);
                     if (log.isDebugEnabled()) log.debug("deleted dir: " + dir);
                 } else {
                     break;

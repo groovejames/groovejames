@@ -12,6 +12,13 @@ public class NetEaseServiceMock implements INetEaseService {
     private String latestSearch;
 
     @Override
+    public NEAccount login(String username, String password) throws Exception {
+        NEAccount account = new NEAccount();
+        account.id = 1L;
+        return account;
+    }
+
+    @Override
     public NESongSearchResult searchSongs(String searchString, int offset, int limit) throws Exception {
         int cnt = 0;
         ArrayList<NESong> songs = new ArrayList<>();
@@ -81,12 +88,22 @@ public class NetEaseServiceMock implements INetEaseService {
     }
 
     @Override
+    public NESongDetails[] getSimilarSongs(long songID) throws Exception {
+        return null; // TODO
+    }
+
+    @Override
+    public NEArtist[] getSimilarArtists(long artistID) throws Exception {
+        return null; // TODO
+    }
+
+    @Override
     public NESuggestionsResult getSuggestions(String query, int limit) {
         return null; // TODO
     }
 
     @Override
-    public NEDownloadInfo getDownloadInfo(NESongDetails songDetails) {
+    public NEDownloadInfo getDownloadInfo(NESongDetails songDetails) throws Exception {
         return new NetEaseService(null).getDownloadInfo(songDetails);
     }
 

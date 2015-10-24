@@ -18,7 +18,7 @@ import java.io.InputStream;
 
 public class PlayService {
 
-    public static enum AddMode {
+    public enum AddMode {
         NOW, NEXT, LAST, REPLACE
     }
 
@@ -30,7 +30,7 @@ public class PlayService {
     private static final long PLAY_BUFFER_SIZE = 100000L;
 
     private final DownloadService downloadService;
-    private final ArrayList<Song> playlist = new ArrayList<Song>();
+    private final ArrayList<Song> playlist = new ArrayList<>();
     private int currentSongIndex = -1;
     private Track currentTrack;
     private int pausedFrame = -1;
@@ -220,7 +220,8 @@ public class PlayService {
         log.info("starting from " + framePosition + ": " + song);
         if (currentTrack == null || currentTrack.getSong() != song) {
             currentTrack = downloadService.downloadToMemory(song, new ChainedPlayServiceListener(listener) {
-                @Override public void downloadedBytesChanged(Track track) {
+                @Override
+                public void downloadedBytesChanged(Track track) {
                     if (!isPlaying() && !isPaused() && track == currentTrack && track.getDownloadedBytes() > PLAY_BUFFER_SIZE) {
                         startPlayingCurrentTrack(framePosition, audioPosition);
                     }
@@ -290,10 +291,10 @@ public class PlayService {
     private void addNextRadioSong() {
         try {
             log.info("fetching next radio song...");
-            Song nextRadioSong = Services.getSearchService().autoplayGetSong(playlist);
-            add(new LinkedList<Song>(nextRadioSong), AddMode.LAST);
+            Song[] nextRadioSongs = Services.getSearchService().autoplayGetSongs(playlist);
+            add(new LinkedList<>(nextRadioSongs), AddMode.LAST);
         } catch (Exception ex) {
-            log.error("error fetching next song for radio", ex);
+            log.error("error fetching next songs for radio", ex);
         }
     }
 
@@ -322,7 +323,8 @@ public class PlayService {
             this.insertIdx = insertIdx;
         }
 
-        @Override public void run() {
+        @Override
+        public void run() {
             if (insertIdx < playlist.getLength()) {
                 playlist.insert(song, insertIdx);
                 newInsertIdx = insertIdx;
@@ -346,13 +348,15 @@ public class PlayService {
             this.audioPositionOffset = audioPositionOffset;
         }
 
-        @Override public void playbackStarted(MP3Player player, int audioPosition) {
+        @Override
+        public void playbackStarted(MP3Player player, int audioPosition) {
             log.info("playback started: " + track);
             if (listener != null)
                 listener.playbackStarted(track);
         }
 
-        @Override public void playbackFinished(MP3Player player, int audioPosition) {
+        @Override
+        public void playbackFinished(MP3Player player, int audioPosition) {
             log.info("playback finished: " + track);
             if (listener != null)
                 listener.playbackFinished(track, audioPositionOffset + audioPosition);
@@ -361,12 +365,14 @@ public class PlayService {
             }
         }
 
-        @Override public void positionChanged(MP3Player player, int audioPosition) {
+        @Override
+        public void positionChanged(MP3Player player, int audioPosition) {
             if (listener != null)
                 listener.positionChanged(track, audioPositionOffset + audioPosition);
         }
 
-        @Override public void exception(MP3Player player, Exception ex) {
+        @Override
+        public void exception(MP3Player player, Exception ex) {
             handlePlayException(track, ex);
         }
     }
@@ -378,31 +384,38 @@ public class PlayService {
             this.origListener = origListener;
         }
 
-        @Override public void playbackStarted(Track track) {
+        @Override
+        public void playbackStarted(Track track) {
             if (origListener != null) origListener.playbackStarted(track);
         }
 
-        @Override public void playbackPaused(Track track, int audioPosition) {
+        @Override
+        public void playbackPaused(Track track, int audioPosition) {
             if (origListener != null) origListener.playbackPaused(track, audioPosition);
         }
 
-        @Override public void playbackFinished(Track track, int audioPosition) {
+        @Override
+        public void playbackFinished(Track track, int audioPosition) {
             if (origListener != null) origListener.playbackFinished(track, audioPosition);
         }
 
-        @Override public void positionChanged(Track track, int audioPosition) {
+        @Override
+        public void positionChanged(Track track, int audioPosition) {
             if (origListener != null) origListener.positionChanged(track, audioPosition);
         }
 
-        @Override public void exception(Track track, Exception ex) {
+        @Override
+        public void exception(Track track, Exception ex) {
             if (origListener != null) origListener.exception(track, ex);
         }
 
-        @Override public void statusChanged(Track track) {
+        @Override
+        public void statusChanged(Track track) {
             if (origListener != null) origListener.statusChanged(track);
         }
 
-        @Override public void downloadedBytesChanged(Track track) {
+        @Override
+        public void downloadedBytesChanged(Track track) {
             if (origListener != null) origListener.downloadedBytesChanged(track);
         }
     }

@@ -37,7 +37,7 @@ class ProcessStreamReader extends Thread {
         } catch (IOException ex) {
             log.error("error reading from process " + cmd, ex);
         } finally {
-            Util.closeQuietly(reader, "reader for " + cmd);
+            IOUtils.closeQuietly(reader, "reader for " + cmd);
         }
         log.debug("process " + cmd + " ends.");
     }

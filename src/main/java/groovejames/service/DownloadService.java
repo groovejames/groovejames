@@ -6,7 +6,7 @@ import groovejames.model.Song;
 import groovejames.model.Store;
 import groovejames.model.Track;
 import groovejames.service.search.SearchService;
-import groovejames.util.Util;
+import groovejames.util.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
@@ -242,8 +242,8 @@ public class DownloadService {
                             format("%s: %d %s", url, statusCode, statusLine.getReasonPhrase()));
                 }
             } finally {
-                Util.closeQuietly(instream, track.getStore().getDescription());
-                Util.closeQuietly(outputStream, track.getStore().getDescription());
+                IOUtils.closeQuietly(instream, track.getStore().getDescription());
+                IOUtils.closeQuietly(outputStream, track.getStore().getDescription());
             }
         }
 
@@ -273,8 +273,8 @@ public class DownloadService {
                 // write ID tags
                 store.writeTrackInfo(track);
             } finally {
-                Util.closeQuietly(outputStream, store.getDescription());
-                Util.closeQuietly(instream, file.getAbsolutePath());
+                IOUtils.closeQuietly(outputStream, store.getDescription());
+                IOUtils.closeQuietly(instream, file.getAbsolutePath());
             }
         }
 

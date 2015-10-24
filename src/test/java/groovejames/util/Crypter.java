@@ -4,10 +4,10 @@ public class Crypter {
     public static void main(String[] args) {
         switch (checkArgs(args)) {
             case "encrypt":
-                System.out.println(Util.aesEncrypt(args[1], args[2]));
+                System.out.println(CryptUtils.aesEncrypt(args[1], args[2]));
                 break;
             case "decrypt":
-                System.out.println(Util.aesDecrypt(args[1], args[2]));
+                System.out.println(CryptUtils.aesDecrypt(args[1], args[2]));
                 break;
             case "usage":
                 System.err.println("Usage: Crypter --encrypt|-e <secret> <plaintext>");

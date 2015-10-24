@@ -22,7 +22,7 @@ import groovejames.service.netease.NESong;
 import groovejames.service.netease.NESongDetails;
 import groovejames.service.netease.NESongSearchResult;
 import groovejames.service.netease.NESuggestionsResult;
-import groovejames.util.Util;
+import groovejames.util.MiscUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -30,11 +30,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 public class SearchService {
 
@@ -149,7 +148,7 @@ public class SearchService {
             case Songs: {
                 // search for songs with the given song IDs
                 Set<Long> songIDs = ((SongSearch) searchParameter).getSongIDs();
-                long[] songIDArray = Util.convert(songIDs);
+                long[] songIDArray = MiscUtils.convert(songIDs);
                 Map<Long, NESongDetails> songDetails = netEaseService.getSongDetails(songIDArray);
                 Song[] songs = convert(songDetails.values(), false);
                 total = songs.length;
@@ -163,11 +162,11 @@ public class SearchService {
         return new SearchResult<>(result, total);
     }
 
-    private Song[] convert(NESongDetails[] neSongs, boolean setTrackNum) {
+    private Song[] convert(NESongDetails[] neSongs, boolean setTrackNum) throws Exception {
         return convert(Arrays.asList(neSongs), setTrackNum);
     }
 
-    private Song[] convert(Collection<NESongDetails> neSongs, boolean setTrackNum) {
+    private Song[] convert(Collection<NESongDetails> neSongs, boolean setTrackNum) throws Exception {
         Song[] songs = new Song[neSongs.size()];
         int i = 0;
         for (NESongDetails neSongDetails : neSongs) {
@@ -182,7 +181,7 @@ public class SearchService {
         return songs;
     }
 
-    private void setSongAttributes(Song song, NESongDetails neSongDetails) {
+    private void setSongAttributes(Song song, NESongDetails neSongDetails) throws Exception {
         song.setSongID(neSongDetails.id);
         song.setSongName(neSongDetails.name);
         song.setAlbumName(neSongDetails.album.name);
@@ -199,28 +198,15 @@ public class SearchService {
         song.setBitrate(downloadInfo.bitrate != null ? downloadInfo.bitrate / 1000 : null);
     }
 
-    public Song autoplayGetSong(Iterable<Song> songsAlreadySeen) throws Exception {
-        /*
-       {"header":{"privacy":0,"country":{"DMA":807,"CC1":0,"ID":223,"CC2":0,"IPR":0,"CC4":1073741824,"CC3":0},"session":"d9c5aaa75a9a11ea52adf8e242938b72","token":"727e15ab9ccf8f098ba6a5047987d451796bf3255dedea","uuid":"2FBE082B-BF60-4E23-9EBC-7CC77CEB5AE0","client":"jsqueue","clientRevision":"20120830"},"parameters":{"songIDsAlreadySeen":[35501],"recentArtists":[822],"minDuration":60,"seedArtistWeightRange":[70,100],"country":{"DMA":807,"CC1":0,"ID":223,"CC2":0,"IPR":0,"CC4":1073741824,"CC3":0},"secondaryArtistWeightModifier":0.9,"weightModifierRange":[-9,9],"seedArtists":{"822":"p"},"songQueueID":"1346948642359","frowns":[],"maxDuration":1500},"method":"autoplayGetSong"}
-        */
-        ArrayList<Long> songIDsAlreadySeen = new ArrayList<>();
-        TreeSet<Long> recentArtistIDs = new TreeSet<>();
+    public Song[] autoplayGetSongs(Iterable<Song> songsAlreadySeen) throws Exception {
+        Set<Long> songIDsAlreadySeen = new HashSet<>();
+        long latestSongId = -1L;
         for (Song song : songsAlreadySeen) {
-            songIDsAlreadySeen.add(song.getSongID());
-            recentArtistIDs.add(song.getArtistID());
+            latestSongId = song.getSongID();
+            songIDsAlreadySeen.add(latestSongId);
         }
-        Map<String, String> seedArtists = new HashMap<>();
-        seedArtists.put(recentArtistIDs.iterator().next().toString(), "p");
-//        return grooveshark.autoplayGetSong(
-//            songIDsAlreadySeen,
-//            recentArtistIDs,
-//            /*minDuration*/ 60,
-//            /*maxDuration*/ 1500,
-//            seedArtists,
-//            /*frowns*/ new ArrayList<Long>(),
-//            /*songQueueID*/ 0,
-//            Country.DEFAULT_COUNTRY);
-        return null;
+        NESongDetails[] similarSongs = netEaseService.getSimilarSongs(latestSongId);
+        return convert(similarSongs, false);
     }
 
 

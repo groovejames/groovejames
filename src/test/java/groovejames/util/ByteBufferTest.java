@@ -1,32 +1,51 @@
 package groovejames.util;
 
+import org.junit.Test;
+
 import java.io.IOException;
 import java.io.InputStream;
 
+import static java.lang.String.format;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 public class ByteBufferTest {
 
-    public static void main(String[] args) {
+    @Test
+    public void testByteBuffers() throws Exception {
         final ByteBuffer buf = new ByteBuffer(1);
+        final Exception[] threadException = new Exception[1];
 
-        new Thread("read") {
-            @Override public void run() {
+        Thread readThread = new Thread("read") {
+            @Override
+            public void run() {
                 try {
                     read(buf);
                 } catch (Exception ex) {
+                    threadException[0] = ex;
                     throw new RuntimeException(ex);
                 }
             }
-        }.start();
+        };
 
-        new Thread("write") {
-            @Override public void run() {
+        Thread writeThread = new Thread("write") {
+            @Override
+            public void run() {
                 try {
                     write(buf);
                 } catch (Exception ex) {
+                    threadException[0] = ex;
                     throw new RuntimeException(ex);
                 }
             }
-        }.start();
+        };
+
+        readThread.start();
+        writeThread.start();
+        readThread.join();
+
+        if (threadException[0] != null)
+            throw threadException[0];
     }
 
     private static void read(ByteBuffer buf) throws IOException {
@@ -71,8 +90,6 @@ public class ByteBufferTest {
         assertEquals(0, bytes[3]);
         assertEquals(8, bytes[4]);
         assertEquals(15, bytes[5]);
-
-        System.out.println("All tests ok.");
     }
 
     private static void write(ByteBuffer os) throws IOException, InterruptedException {
@@ -82,22 +99,16 @@ public class ByteBufferTest {
 
         // write 5 bytes after 1000ms
         Thread.sleep(1000);
-        os.write(new byte[]{47, 11, 0, 8, 15});
+        os.write(new byte[] {47, 11, 0, 8, 15});
 
         // close stream after 1000ms
         Thread.sleep(1000);
         os.close();
     }
 
-    private static void assertEquals(int expected, int value) {
-        if (expected != value) {
-            throw new AssertionError("expected: " + expected + "; got: " + value);
-        }
-    }
-
     private static void assertBetween(long lowerBound, long upperBound, long value) {
         if (value < lowerBound || value > upperBound) {
-            throw new AssertionError("expected: value in [" + lowerBound + "," + upperBound + "]; got: " + value);
+            fail(format("expected: value in [%d,%d]; got: %d", lowerBound, upperBound, value));
         }
     }
 }

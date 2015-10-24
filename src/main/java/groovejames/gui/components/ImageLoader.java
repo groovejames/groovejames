@@ -26,7 +26,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static groovejames.util.Util.isEmpty;
+import static groovejames.util.StringUtils.isEmpty;
 import static java.lang.String.format;
 
 public class ImageLoader {

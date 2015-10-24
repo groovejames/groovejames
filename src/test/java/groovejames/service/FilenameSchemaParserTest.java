@@ -1,8 +1,14 @@
 package groovejames.service;
 
 import groovejames.model.Song;
+import org.junit.Assert;
+import org.junit.Test;
 
-public class FilenameSchemaParserTest /* extends TestCase */ {
+import static org.junit.Assert.assertEquals;
+
+public class FilenameSchemaParserTest {
+
+    @Test
     public void testParse() {
         FilenameSchemeParser parser = new FilenameSchemeParser();
 
@@ -96,19 +102,9 @@ public class FilenameSchemaParserTest /* extends TestCase */ {
     private static void assertIllegalArgumentException(String expectedExceptionMessage, Song song, String illegalFilenameScheme) {
         try {
             String result = new FilenameSchemeParser().parse(song, illegalFilenameScheme);
-            throw new AssertionError("expected IllegalArgumentException, got: " + str(result));
-        }
-        catch (IllegalArgumentException expected) {
+            Assert.fail("expected IllegalArgumentException, got: " + str(result));
+        } catch (IllegalArgumentException expected) {
             assertEquals(expectedExceptionMessage, expected.getMessage());
-        }
-    }
-
-    private static void assertEquals(String expected, String actual) {
-        if (expected == null) {
-            if (actual != null)
-                throw new AssertionError("expected: null, got: " + str(actual));
-        } else if (!expected.equals(actual)) {
-            throw new AssertionError("expected: " + str(expected) + ", got: " + str(actual));
         }
     }
 
@@ -116,7 +112,4 @@ public class FilenameSchemaParserTest /* extends TestCase */ {
         return s == null ? "null" : "\"" + s + "\"";
     }
 
-    public static void main(String[] args) {
-        new FilenameSchemaParserTest().testParse();
-    }
 }

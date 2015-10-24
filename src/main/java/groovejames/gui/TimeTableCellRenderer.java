@@ -6,7 +6,7 @@ import org.apache.pivot.wtk.HorizontalAlignment;
 import org.apache.pivot.wtk.TableView;
 import org.apache.pivot.wtk.content.TableViewCellRenderer;
 
-import static groovejames.util.Util.durationToString;
+import static groovejames.util.MiscUtils.durationToString;
 
 public class TimeTableCellRenderer extends TableViewCellRenderer {
 

@@ -28,6 +28,7 @@ dependencies {
     compile 'org.apache.pivot:pivot-wtk-terra:2.0.4'
     compile 'com.mashape.unirest:unirest-java:1.4.7'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.6.2'
+    testCompile "junit:junit:4.12"
 }
 
 

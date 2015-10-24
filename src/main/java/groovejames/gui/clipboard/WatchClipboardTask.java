@@ -10,15 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static groovejames.util.Util.clip;
-
 public class WatchClipboardTask {
 
     private static final Log log = LogFactory.getLog(WatchClipboardTask.class);
 
     private static int instanceCount;
 
-    private final List<ClipboardListener> clipboardListeners = new CopyOnWriteArrayList<ClipboardListener>();
+    private final List<ClipboardListener> clipboardListeners = new CopyOnWriteArrayList<>();
     private final Object mutex = new Object();
 
     private volatile long pollDelay = 1000;
@@ -41,7 +39,7 @@ public class WatchClipboardTask {
     }
 
     public List<ClipboardListener> getClipboardListeners() {
-        return new ArrayList<ClipboardListener>(clipboardListeners);
+        return new ArrayList<>(clipboardListeners);
     }
 
     public synchronized void startWatching() {
@@ -93,7 +91,8 @@ public class WatchClipboardTask {
             setDaemon(true);
         }
 
-        @Override public void run() {
+        @Override
+        public void run() {
             log.info("thread " + getName() + " started.");
             oldText = getClipboardText();
             while (shouldRun) {
@@ -135,7 +134,7 @@ public class WatchClipboardTask {
         }
 
         private void clipboardContentsChanged(String text) {
-            log.debug("thread " + getName() + ": clipboard contents changed: " + clip(text, 100));
+            log.debug("thread " + getName() + ": clipboard contents changed");
             for (ClipboardListener clipboardListener : clipboardListeners) {
                 try {
                     boolean consumed = clipboardListener.clipboardContentsChanged(text);

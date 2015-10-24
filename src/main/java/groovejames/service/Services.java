@@ -10,7 +10,7 @@ import groovejames.service.search.SearchService;
 import java.io.File;
 import java.io.IOException;
 
-import static groovejames.util.Util.isEmpty;
+import static groovejames.util.StringUtils.isEmpty;
 
 /**
  * This is something like a Spring ApplicationContext, built manually.

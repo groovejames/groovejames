@@ -4,6 +4,8 @@ import java.util.Map;
 
 public interface INetEaseService {
 
+    NEAccount login(String username, String password) throws Exception;
+
     NESongSearchResult searchSongs(String searchString, int offset, int limit) throws Exception;
 
     NEArtistSearchResult searchArtists(String searchString, int offset, int limit) throws Exception;
@@ -22,8 +24,12 @@ public interface INetEaseService {
 
     NEPlaylistDetails getPlaylistDetails(long playlistID) throws Exception;
 
+    NESongDetails[] getSimilarSongs(long songID) throws Exception;
+
+    NEArtist[] getSimilarArtists(long artistID) throws Exception;
+
     NESuggestionsResult getSuggestions(String query, int limit) throws Exception;
 
-    NEDownloadInfo getDownloadInfo(NESongDetails songDetails);
+    NEDownloadInfo getDownloadInfo(NESongDetails songDetails) throws Exception;
 
 }

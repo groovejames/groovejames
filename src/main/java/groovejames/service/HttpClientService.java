@@ -1,6 +1,6 @@
 package groovejames.service;
 
-import groovejames.util.Util;
+import groovejames.util.IOUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.CookieSpecs;
@@ -40,7 +40,7 @@ public class HttpClientService {
 
     private void closeHttpClient() {
         if (httpClient != null) {
-            Util.closeQuietly(httpClient);
+            IOUtils.closeQuietly(httpClient);
             httpClient = null;
         }
     }

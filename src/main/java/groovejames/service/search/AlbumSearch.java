@@ -1,6 +1,6 @@
 package groovejames.service.search;
 
-import static groovejames.util.Util.isEmpty;
+import static groovejames.util.StringUtils.isEmpty;
 
 public class AlbumSearch extends AbstractSearchParameter {
 

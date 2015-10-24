@@ -2,7 +2,7 @@ package groovejames.gui.clipboard;
 
 import groovejames.gui.Main;
 import groovejames.service.search.AlbumSearch;
-import groovejames.util.Util;
+import groovejames.util.UrlUtils;
 import org.apache.log4j.Logger;
 import org.apache.pivot.wtk.ApplicationContext;
 
@@ -40,7 +40,7 @@ public class GrooveJamesAlbumClipboardListener implements ClipboardListener {
             String uri = matcher.group();
             log.debug("found match: " + uri);
             try {
-                Map<String, List<String>> queryParams = Util.parseQueryParams(uri);
+                Map<String, List<String>> queryParams = UrlUtils.parseQueryParams(uri);
                 final boolean autoplay = !usedAutoplayOnce && getBoolean("autoplay", queryParams);
                 List<String> albumIdList = queryParams.get("id");
                 List<String> albumNameList = queryParams.get("albumName");

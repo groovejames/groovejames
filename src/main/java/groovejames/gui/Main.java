@@ -33,7 +33,7 @@ import groovejames.service.search.ArtistSearch;
 import groovejames.service.search.GeneralSearch;
 import groovejames.service.search.SearchParameter;
 import groovejames.util.ConsoleUtil;
-import groovejames.util.Util;
+import groovejames.util.OSUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pivot.beans.BXML;
@@ -101,9 +101,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.prefs.Preferences;
 
-import static groovejames.util.Util.durationToString;
-import static groovejames.util.Util.isEmpty;
-import static groovejames.util.Util.toErrorString;
+import static groovejames.util.MiscUtils.durationToString;
+import static groovejames.util.MiscUtils.toErrorString;
+import static groovejames.util.StringUtils.isEmpty;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.String.format;
@@ -147,7 +147,7 @@ public class Main extends AbstractApplication {
         ConsoleUtil.redirectStdErrToCommonsLogging();
         ConsoleUtil.redirectStdOutToCommonsLogging();
         System.setProperty("org.apache.pivot.wtk.skin.terra.location", "/groovejames/gui/GrooveJames_theme.json");
-        args = Util.filterSystemProperties(args);
+        args = OSUtils.filterSystemProperties(args);
         DesktopApplicationContext.main(Main.class, args);
     }
 

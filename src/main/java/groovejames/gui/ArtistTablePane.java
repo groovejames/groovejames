@@ -23,7 +23,7 @@ import org.apache.pivot.wtk.TextInput;
 
 import java.net.URL;
 
-import static groovejames.util.Util.containsIgnoringCase;
+import static groovejames.util.StringUtils.containsIgnoringCase;
 
 public class ArtistTablePane extends AbstractSearchTablePane<Artist> {
 

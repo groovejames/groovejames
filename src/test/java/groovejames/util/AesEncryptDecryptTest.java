@@ -1,16 +1,20 @@
 package groovejames.util;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 public class AesEncryptDecryptTest {
 
-    public static void main(String[] args) {
+    @Test
+    public void testAesEncryptAesDecrypt() {
         String secret = "1234567890123456";
         String plain = "Hello, World!";
-        System.out.println(plain);
-        String encrypted = Util.aesEncrypt(secret, plain);
-        System.out.println(encrypted);
-        String decrypted = Util.aesDecrypt(secret, encrypted);
-        System.out.println(decrypted);
-        if (!plain.equals(decrypted)) throw new AssertionError("expected: " + plain + "; got: " + decrypted);
+        //System.out.println(plain);
+        String encrypted = CryptUtils.aesEncrypt(secret, plain);
+        //System.out.println(encrypted);
+        String decrypted = CryptUtils.aesDecrypt(secret, encrypted);
+        //System.out.println(decrypted);
+        Assert.assertEquals(plain, decrypted);
     }
 
 }

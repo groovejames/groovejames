@@ -1,9 +1,16 @@
 package groovejames.service.netease;
 
-public class NetEaseException extends RuntimeException {
+public class NetEaseException extends Exception {
 
-    public NetEaseException(String message) {
-        super(message);
+    private final int code;
+
+    public NetEaseException(int code, String message) {
+        super(message + " (code " + code + ")");
+        this.code = code;
+    }
+
+    public int getCode() {
+        return code;
     }
 
 }
