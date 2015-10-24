@@ -1,7 +1,6 @@
 - "load all" link
 - preserve selection when loading more
 - dj channels
-- find out why sometimes the same image is loaded twice (or use Guava Cache for image cache)
 - play with lower bitrate, download with highest bitrate
 
 LATER:
