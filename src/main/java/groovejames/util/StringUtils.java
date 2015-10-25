@@ -1,6 +1,7 @@
 package groovejames.util;
 
 import java.io.ByteArrayOutputStream;
+import java.text.MessageFormat;
 
 public class StringUtils {
 
@@ -43,6 +44,11 @@ public class StringUtils {
         for (int i = 0; i < s.length(); i++)
             sb.append(String.format("%02x", (int) s.charAt(i)));
         return sb.toString();
+    }
+
+    /** @see <a href="http://docs.oracle.com/javase/7/docs/api/java/text/MessageFormat.html">MessageFormat</a> */
+    public static String msgformat(String pattern, Object... args) {
+        return MessageFormat.format(pattern, args);
     }
 
 }

@@ -12,6 +12,10 @@ public class Track {
         public boolean isFinished() {
             return this == FINISHED || this == CANCELLED || this == ERROR;
         }
+
+        public boolean isRunning() {
+            return this == INITIALIZING || this == DOWNLOADING;
+        }
     }
 
     private final Song song;

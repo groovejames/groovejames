@@ -57,6 +57,8 @@ import org.apache.pivot.wtk.ComponentMouseButtonListener;
 import org.apache.pivot.wtk.ComponentMouseListener;
 import org.apache.pivot.wtk.Cursor;
 import org.apache.pivot.wtk.DesktopApplicationContext;
+import org.apache.pivot.wtk.Dialog;
+import org.apache.pivot.wtk.DialogCloseListener;
 import org.apache.pivot.wtk.Display;
 import org.apache.pivot.wtk.ImageView;
 import org.apache.pivot.wtk.Keyboard;
@@ -104,6 +106,7 @@ import java.util.prefs.Preferences;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static groovejames.util.MiscUtils.durationToString;
 import static groovejames.util.MiscUtils.toErrorString;
+import static groovejames.util.StringUtils.msgformat;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.String.format;
@@ -181,7 +184,25 @@ public class Main extends AbstractApplication {
 
     @Override
     public boolean shutdown(boolean optional) throws Exception {
+        if (optional) {
+            int numberOfCurrentRunningDownloads = Services.getDownloadService().getNumberOfCurrentRunningDownloads();
+            if (numberOfCurrentRunningDownloads > 0) {
+                String message = msgformat("There {0,choice,1#is|1<are} currently {0} active download{0,choice,1#|1<s}.\nReally quit?", numberOfCurrentRunningDownloads);
+                final Alert alert = new Alert(MessageType.QUESTION, message, new ArrayList<>("Yes", "No"), true);
+                alert.setTitle("Quit?");
+                alert.open(this.display, this.window, new DialogCloseListener() {
+                    @Override
+                    public void dialogClosed(Dialog dialog, boolean modal) {
+                        if (alert.getSelectedOptionIndex() == 0) {
+                            DesktopApplicationContext.exit(false);
+                        }
+                    }
+                });
+                return true;
+            }
+        }
         Services.getDownloadService().shutdown();
+        Services.getHttpClientService().shutdown();
         this.display = null;
         return false;
     }

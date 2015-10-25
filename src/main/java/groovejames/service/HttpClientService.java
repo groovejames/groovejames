@@ -26,7 +26,7 @@ public class HttpClientService {
     public void setProxySettings(ProxySettings proxySettings) {
         if (proxySettings == null && this.proxySettings != null
                 || proxySettings != null && !proxySettings.equals(this.proxySettings)) {
-            closeHttpClient();
+            shutdown();
             this.httpClient = createHttpClient(proxySettings);
             this.proxySettings = proxySettings;
         }
@@ -38,7 +38,7 @@ public class HttpClientService {
         return httpClient;
     }
 
-    private void closeHttpClient() {
+    public void shutdown() {
         if (httpClient != null) {
             IOUtils.closeQuietly(httpClient);
             httpClient = null;

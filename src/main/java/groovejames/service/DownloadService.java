@@ -135,6 +135,16 @@ public class DownloadService {
         return null;
     }
 
+    public int getNumberOfCurrentRunningDownloads() {
+        int num = 0;
+        for (DownloadTask downloadTask : currentlyRunningDownloads) {
+            if (downloadTask.track.getStatus().isRunning()) {
+                num++;
+            }
+        }
+        return num;
+    }
+
     public void shutdown() {
         executorService.shutdownNow();
         executorServiceForPlay.shutdownNow();
@@ -239,7 +249,7 @@ public class DownloadService {
                     store.writeTrackInfo(track);
                 } else {
                     throw new HttpResponseException(statusCode,
-                            format("%s: %d %s", url, statusCode, statusLine.getReasonPhrase()));
+                        format("%s: %d %s", url, statusCode, statusLine.getReasonPhrase()));
                 }
             } finally {
                 IOUtils.closeQuietly(instream, track.getStore().getDescription());
