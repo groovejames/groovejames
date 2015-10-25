@@ -1,7 +1,7 @@
 apply plugin: 'java'
 
 group 'groovejames'
-version '29'
+version '30'
 
 compileJava.options.encoding = 'utf-8'
 compileJava.options.compilerArgs << "-Xlint:unchecked"
@@ -56,12 +56,14 @@ tasks.jar.dependsOn updateVersionProperties
 
 task distBinPrepare(type: Copy) {
     dependsOn jar
-    from 'CHANGES.md', 'grooveJames.exe'
+    from 'CHANGES.md', 'grooveJames.exe', 'etc/grooveJames.desktop'
+    from 'src/main/resources/groovejames/gui/images/butler-128.png'
     from("$buildDir/libs/") {
         include 'groovejames-*.jar'
     }
     into "$buildDir/dist/bin/"
     rename 'groovejames-.+\\.jar', 'grooveJames.jar'
+    rename 'butler-128.png', 'grooveJames.png'
 }
 
 

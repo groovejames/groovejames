@@ -1,0 +1,13 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Version=1.0
+Name=GrooveJames
+Comment=Play and download music from music.163.com
+Exec=java -jar grooveJames.jar $*
+Terminal=false
+Icon=grooveJames.png
+Type=Application
+Categories=AudioVideo;Audio;
+StartupNotify=true
+StartupWMClass=groovejames-gui-Main
+
