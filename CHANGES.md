@@ -1,7 +1,8 @@
 # GrooveJames change history
 
-### r29 (unreleased)
--
+### r29 (2015/10/25)
+- ask "Really quit?" if downloads are running
+- fixed image cache; no longer loads images with same url twice
 
 ### r28 (2015/10/23)
 - since Grooveshark is dead, GrooveJames now uses music.163.com aka NetEase
