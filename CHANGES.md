@@ -1,5 +1,8 @@
 # GrooveJames change history
 
+### r30 (unrelease)
+-
+
 ### r29 (2015/10/25)
 - ask "Really quit?" if downloads are running
 - fixed image cache; no longer loads images with same url twice
