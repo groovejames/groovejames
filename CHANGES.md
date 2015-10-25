@@ -1,7 +1,7 @@
 # GrooveJames change history
 
-### r30 (unrelease)
--
+### r30 (unreleased)
+- fixed "share this album" button: didn't create album link but songs link instead
 
 ### r29 (2015/10/25)
 - ask "Really quit?" if downloads are running

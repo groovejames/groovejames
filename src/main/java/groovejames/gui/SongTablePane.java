@@ -106,12 +106,12 @@ public class SongTablePane extends AbstractSearchTablePane<Song> {
             @Override
             public void perform(Component source) {
                 Sequence<Song> selectedRows = getSelectedSongs();
-                if (selectedRows.getLength() > 0) {
-                    main.shareSongs(selectedRows);
-                } else if (searchParameter.getSearchType() == SearchType.Album) {
+                if (searchParameter.getSearchType() == SearchType.Album) {
                     AlbumSearch currentAlbumSearch = (AlbumSearch) searchParameter;
                     AlbumSearch newAlbumSearch = new AlbumSearch(currentAlbumSearch.getAlbumID(), currentAlbumSearch.getAlbumName(), currentAlbumSearch.getArtistName(), true);
                     main.shareAlbum(newAlbumSearch);
+                } else if (selectedRows.getLength() > 0) {
+                    main.shareSongs(selectedRows);
                 }
             }
         };
