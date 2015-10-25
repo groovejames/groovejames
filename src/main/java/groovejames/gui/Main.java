@@ -101,9 +101,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.prefs.Preferences;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static groovejames.util.MiscUtils.durationToString;
 import static groovejames.util.MiscUtils.toErrorString;
-import static groovejames.util.StringUtils.isEmpty;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.String.format;
@@ -352,16 +352,16 @@ public class Main extends AbstractApplication {
     private void initShortcuts() {
         // Global shortcut: Reload GUI with Ctrl-R
         window.getActionMappings().add(new Window.ActionMapping(
-                new Keyboard.KeyStroke(Keyboard.KeyCode.R, Platform.getCommandModifier().getMask()),
-                "reloadGUI"));
+            new Keyboard.KeyStroke(Keyboard.KeyCode.R, Platform.getCommandModifier().getMask()),
+            "reloadGUI"));
         // Global shortcut: Close currently active tab with Ctrl-W
         window.getActionMappings().add(new Window.ActionMapping(
-                new Keyboard.KeyStroke(Keyboard.KeyCode.W, Platform.getCommandModifier().getMask()),
-                "closeCurrentTab"));
+            new Keyboard.KeyStroke(Keyboard.KeyCode.W, Platform.getCommandModifier().getMask()),
+            "closeCurrentTab"));
         // Global shortcut: Close all tabs with Ctrl-Shift-W
         window.getActionMappings().add(new Window.ActionMapping(
-                new Keyboard.KeyStroke(Keyboard.KeyCode.W, Platform.getCommandModifier().getMask() + Keyboard.Modifier.SHIFT.getMask()),
-                "closeAllTabs"));
+            new Keyboard.KeyStroke(Keyboard.KeyCode.W, Platform.getCommandModifier().getMask() + Keyboard.Modifier.SHIFT.getMask()),
+            "closeAllTabs"));
     }
 
     private Window createWindow() throws IOException, SerializationException {
@@ -446,42 +446,42 @@ public class Main extends AbstractApplication {
         WtkUtil.setupColumnWidthSaver(playerTable, "playerTable");
 
         final SuggestionPopupTextInputContentListener suggestionPopupTextInputContentListener = new SuggestionPopupTextInputContentListener<>(
-                new SuggestionsProvider<SearchParameter>() {
-                    @Override
-                    public List<SearchParameter> getSuggestions(String query) throws Exception {
-                        if (query.length() > 2) {
-                            return new ListAdapter<>(Services.getSearchService().getAutocomplete(query));
-                        } else {
-                            return null;
-                        }
+            new SuggestionsProvider<SearchParameter>() {
+                @Override
+                public List<SearchParameter> getSuggestions(String query) throws Exception {
+                    if (query.length() > 2) {
+                        return new ListAdapter<>(Services.getSearchService().getAutocomplete(query));
+                    } else {
+                        return null;
                     }
+                }
 
-                    @Override
-                    public void accepted(String text, SearchParameter selectedSuggestion) {
-                        if (selectedSuggestion != null) {
-                            openSearchTab(selectedSuggestion);
-                        } else {
-                            doSearch();
-                        }
+                @Override
+                public void accepted(String text, SearchParameter selectedSuggestion) {
+                    if (selectedSuggestion != null) {
+                        openSearchTab(selectedSuggestion);
+                    } else {
+                        doSearch();
                     }
+                }
 
-                    @Override
-                    public void executeGetSuggestionsFailed(String query, Throwable exception) {
-                        log.error(format("could not autocomplete '%s'", query), exception);
-                    }
-                },
-                new ListViewItemRenderer() {
-                    @Override
-                    public void render(Object item, int index, ListView listView, boolean selected, boolean checked, boolean highlighted, boolean disabled) {
-                        super.render(item, index, listView, selected, checked, highlighted, disabled);
-                        label.setText(((SearchParameter) item).getLabel());
-                    }
+                @Override
+                public void executeGetSuggestionsFailed(String query, Throwable exception) {
+                    log.error(format("could not autocomplete '%s'", query), exception);
+                }
+            },
+            new ListViewItemRenderer() {
+                @Override
+                public void render(Object item, int index, ListView listView, boolean selected, boolean checked, boolean highlighted, boolean disabled) {
+                    super.render(item, index, listView, selected, checked, highlighted, disabled);
+                    label.setText(((SearchParameter) item).getLabel());
+                }
 
-                    @Override
-                    public String toString(Object item) {
-                        return searchField.getText();
-                    }
-                });
+                @Override
+                public String toString(Object item) {
+                    return searchField.getText();
+                }
+            });
         searchField.getTextInputContentListeners().add(suggestionPopupTextInputContentListener);
         searchField.getComponentKeyListeners().add(new ComponentKeyListener.Adapter() {
             @Override
@@ -675,7 +675,7 @@ public class Main extends AbstractApplication {
         nowPlayingArtist.setText(track.getArtistName());
         nowPlayingSongname.setVisible(true);
         nowPlayingSongname.setText(track.getSongName());
-        if (!isEmpty(track.getAlbumName())) {
+        if (!isNullOrEmpty(track.getAlbumName())) {
             nowPlayingAlbum.setVisible(true);
             nowPlayingAlbum.setText("from «" + track.getAlbumName() + "»");
         } else {

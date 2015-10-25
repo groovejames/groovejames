@@ -2,10 +2,11 @@ package groovejames.util;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
+
+import static com.google.common.base.Charsets.UTF_8;
 
 public class CryptUtils {
 
@@ -20,18 +21,13 @@ public class CryptUtils {
     }
 
     public static String md5(String s) {
-        try {
-            return StringUtils.bytesToHexString(md5digest.digest(s.getBytes("UTF-8")));
-        } catch (UnsupportedEncodingException ex) {
-            // utf-8 always available
-            throw new RuntimeException("no UTF-8 decoder available", ex);
-        }
+        return StringUtils.bytesToHexString(md5digest.digest(s.getBytes(UTF_8)));
     }
 
     /** @param secret secret key, must have length 16 */
     public static String aesEncrypt(String secret, String plain) {
         try {
-            byte[] data = plain.getBytes("UTF-8");
+            byte[] data = plain.getBytes(UTF_8);
             byte[] encrypted = aesEncryptDecrypt(secret, data, Cipher.ENCRYPT_MODE);
             return StringUtils.bytesToHexString(encrypted);
         } catch (Exception ex) {
@@ -44,14 +40,14 @@ public class CryptUtils {
         try {
             byte[] data = StringUtils.hexStringToBytes(encrypted);
             byte[] decrypted = aesEncryptDecrypt(secret, data, Cipher.DECRYPT_MODE);
-            return new String(decrypted, "UTF-8");
+            return new String(decrypted, UTF_8);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
     }
 
     private static byte[] aesEncryptDecrypt(String secret, byte[] data, int mode) throws Exception {
-        byte[] key = secret.getBytes("UTF-8");
+        byte[] key = secret.getBytes(UTF_8);
         Cipher c = Cipher.getInstance("AES");
         SecretKeySpec k = new SecretKeySpec(key, "AES");
         c.init(mode, k);

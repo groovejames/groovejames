@@ -1,6 +1,5 @@
 package groovejames.gui.components;
 
-import groovejames.util.StringUtils;
 import org.apache.pivot.collections.HashSet;
 import org.apache.pivot.wtk.Component;
 import org.apache.pivot.wtk.ComponentMouseListener;
@@ -16,6 +15,8 @@ import org.apache.pivot.wtk.Tooltip;
 import java.awt.Font;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
+
+import static com.google.common.base.Strings.isNullOrEmpty;
 
 public class TooltipTableMouseListener extends ComponentMouseListener.Adapter implements ComponentTooltipListener {
 
@@ -62,7 +63,7 @@ public class TooltipTableMouseListener extends ComponentMouseListener.Adapter im
     @Override
     public void tooltipTriggered(Component component, int x, int y) {
         String tooltipText = component.getTooltipText();
-        if (!StringUtils.isEmpty(tooltipText)) {
+        if (!isNullOrEmpty(tooltipText)) {
             Display display = component.getDisplay();
             Point location = component.mapPointToAncestor(display, x, y);
             int tooltipX = location.x + 16;

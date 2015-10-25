@@ -1,10 +1,10 @@
 package groovejames.gui.action;
 
+import com.google.common.io.Resources;
 import groovejames.gui.components.AbstractApplication;
 import groovejames.model.Song;
 import groovejames.service.Services;
 import groovejames.service.search.AlbumSearch;
-import groovejames.util.IOUtils;
 import groovejames.util.OSUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -28,14 +28,13 @@ import org.apache.pivot.wtk.Window;
 
 import java.awt.Desktop;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.Charset;
 import java.util.Properties;
 
-import static groovejames.util.StringUtils.isEmpty;
+import static com.google.common.base.Charsets.UTF_8;
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static groovejames.util.UrlUtils.urlencode;
 
 public class ShareAction extends Action {
@@ -100,8 +99,7 @@ public class ShareAction extends Action {
     }
 
     private String createMailBody() {
-        InputStream inputStream = ShareAction.class.getResourceAsStream(mailTemplateResourceName);
-        String mailTemplate = IOUtils.readFully(inputStream, "UTF-8", mailTemplateResourceName);
+        String mailTemplate = readMailTemplate();
         boolean singular = album != null || songs.getLength() == 1;
 
         Properties props = new Properties();
@@ -113,6 +111,14 @@ public class ShareAction extends Action {
         props.put("it", singular ? "it" : "them");
 
         return replacePlaceholders(mailTemplate, props);
+    }
+
+    private String readMailTemplate() {
+        try {
+            return Resources.toString(getClass().getResource(mailTemplateResourceName), UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void openMailClient(String mailSubject, String mailBody) {
@@ -171,7 +177,7 @@ public class ShareAction extends Action {
 
     private static String createGroovejamesLink(AlbumSearch albumSearch) {
         StringBuilder sb = new StringBuilder("groovejames://album?id=").append(albumSearch.getAlbumID());
-        if (!isEmpty(albumSearch.getAlbumName())) {
+        if (!isNullOrEmpty(albumSearch.getAlbumName())) {
             sb.append("&albumName=").append(urlencode(albumSearch.getAlbumName()));
         }
         sb.append("&autoplay=").append(albumSearch.isAutoplay());
@@ -184,7 +190,7 @@ public class ShareAction extends Action {
             Song song = songs.get(i);
             sb.append(i == 0 ? '?' : '&');
             sb.append("id=").append(song.getSongID());
-            if (!isEmpty(song.getSongName())) {
+            if (!isNullOrEmpty(song.getSongName())) {
                 sb.append("&songName=").append(urlencode(song.getSongName()));
             }
         }
@@ -214,7 +220,7 @@ public class ShareAction extends Action {
 
     private static String enc(String s) {
         StringBuilder sb = new StringBuilder(s.length() + 50);
-        byte[] bytes = s.getBytes(Charset.forName("UTF-8"));
+        byte[] bytes = s.getBytes(UTF_8);
         for (byte b : bytes) {
             if (b != '?' && b != '&' && Character.isLetterOrDigit(b))
                 sb.append((char) b);

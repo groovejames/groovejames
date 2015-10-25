@@ -1,5 +1,8 @@
 package groovejames.service.netease;
 
+import com.google.common.base.Charsets;
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.mashape.unirest.http.Unirest;
 import groovejames.service.HttpClientService;
 import groovejames.util.CryptUtils;
@@ -14,8 +17,11 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.google.common.base.Strings.isNullOrEmpty;
 
 public class NetEaseService implements INetEaseService {
 
@@ -144,8 +150,8 @@ public class NetEaseService implements INetEaseService {
     }
 
     @Override
-    public Map<Long, NESongDetails> getSongDetails(long[] songIDs) throws Exception {
-        String songIDList = "[" + StringUtils.join(songIDs, ',') + "]";
+    public Map<Long, NESongDetails> getSongDetails(Collection<Long> songIDs) throws Exception {
+        String songIDList = "[" + Joiner.on(',').join(songIDs) + "]";
         NESongDetailsResponse response = Unirest.post(MUSIC163_API + "/song/detail")
             .field("ids", songIDList)
             .asObject(NESongDetailsResponse.class)
@@ -213,7 +219,7 @@ public class NetEaseService implements INetEaseService {
             if (baseUrl == null) baseUrl = MUSIC163_STREAMING_SERVER_URL;
             downloadInfo.url = String.format("%s/%s/%s.%s", baseUrl, encryptedId, streamInfo.dfsId, streamInfo.extension);
             downloadInfo.bitrate = streamInfo.bitrate;
-        } else if (StringUtils.isEmpty(songDetails.mp3Url)) {
+        } else if (isNullOrEmpty(songDetails.mp3Url)) {
             throw new NetEaseException(404, "no download location for song id " + songDetails.id);
         } else {
             downloadInfo.url = songDetails.mp3Url;
@@ -247,12 +253,12 @@ public class NetEaseService implements INetEaseService {
 
     private static String aesEncrypt(String plainText, String secretKey) throws Exception {
         int pad = 16 - plainText.length() % 16;
-        plainText += StringUtils.repeat((char) pad, pad);
+        plainText += Strings.repeat(String.valueOf((char) pad), pad);
         Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
-        SecretKeySpec key = new SecretKeySpec(secretKey.getBytes("UTF-8"), "AES");
-        IvParameterSpec iv = new IvParameterSpec(NETEASE_LOGIN_IV.getBytes("UTF-8"));
+        SecretKeySpec key = new SecretKeySpec(secretKey.getBytes(Charsets.UTF_8), "AES");
+        IvParameterSpec iv = new IvParameterSpec(NETEASE_LOGIN_IV.getBytes(Charsets.UTF_8));
         cipher.init(Cipher.ENCRYPT_MODE, key, iv);
-        byte[] encrypted = cipher.doFinal(plainText.getBytes("UTF-8"));
+        byte[] encrypted = cipher.doFinal(plainText.getBytes(Charsets.UTF_8));
         return Base64.encodeBase64String(encrypted);
     }
 
@@ -263,7 +269,7 @@ public class NetEaseService implements INetEaseService {
         BigInteger mod = new BigInteger(modulus, 16);
         BigInteger result = base.modPow(exp, mod);
         String s = result.toString(16);
-        return StringUtils.lpad(s, '0', 256);
+        return Strings.padStart(s, 256, '0');
     }
 
     private static class Credentials {

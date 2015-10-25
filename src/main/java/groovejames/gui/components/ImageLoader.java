@@ -28,7 +28,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static groovejames.util.StringUtils.isEmpty;
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.lang.String.format;
 
 public class ImageLoader {
@@ -77,7 +77,7 @@ public class ImageLoader {
         Image image = imageObject.getImage();
         if (image == null) {
             String imageURL = imageObject.getImageURL();
-            if (!isEmpty(imageURL)) {
+            if (!isNullOrEmpty(imageURL)) {
                 image = imageCache.getIfPresent(imageURL);
                 if (image == null) {
                     startLoadingImage(imageURL, imageObject, target);

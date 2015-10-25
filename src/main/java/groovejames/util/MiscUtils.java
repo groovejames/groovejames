@@ -3,19 +3,11 @@ package groovejames.util;
 import org.apache.pivot.util.concurrent.TaskExecutionException;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Set;
+
+import static com.google.common.base.Strings.isNullOrEmpty;
 
 /** utility methods that don't fit elsewhere. */
 public class MiscUtils {
-
-    public static long[] convert(Set<Long> longs) {
-        long[] result = new long[longs.size()];
-        int i = 0;
-        for (Long l : longs) {
-            result[i++] = l;
-        }
-        return result;
-    }
 
     public static String toErrorString(Throwable t, String separator) {
         StringBuilder result = new StringBuilder();
@@ -26,7 +18,7 @@ public class MiscUtils {
                 t = ((InvocationTargetException) t).getTargetException();
             } else {
                 result.append(t.getClass().getSimpleName());
-                if (!StringUtils.isEmpty(t.getMessage()))
+                if (!isNullOrEmpty(t.getMessage()))
                     result.append(": ").append(t.getMessage());
                 if (t.getCause() != t && t.getCause() != null) {
                     result.append(separator);

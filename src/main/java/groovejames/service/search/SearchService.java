@@ -22,7 +22,6 @@ import groovejames.service.netease.NESong;
 import groovejames.service.netease.NESongDetails;
 import groovejames.service.netease.NESongSearchResult;
 import groovejames.service.netease.NESuggestionsResult;
-import groovejames.util.MiscUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -92,15 +91,14 @@ public class SearchService {
                     result = new Song[0];
                 } else {
                     result = new Song[songSearchResult.songs.length];
-                    long[] songIDs = new long[songSearchResult.songs.length];
+                    ArrayList<Long> songIDs = new ArrayList<>();
                     int i = 0;
                     for (NESong neSong : songSearchResult.songs) {
                         Song song = new Song();
                         song.setSongID(neSong.id);
                         song.setRelevance(1.0 - (((double) (searchParameter.getOffset() + i)) / (double) total));
-                        result[i] = song;
-                        songIDs[i] = neSong.id;
-                        i++;
+                        songIDs.add(neSong.id);
+                        result[i++] = song;
                     }
                     Map<Long, NESongDetails> songDetailsMap = netEaseService.getSongDetails(songIDs);
                     for (Song song : result) {
@@ -148,8 +146,7 @@ public class SearchService {
             case Songs: {
                 // search for songs with the given song IDs
                 Set<Long> songIDs = ((SongSearch) searchParameter).getSongIDs();
-                long[] songIDArray = MiscUtils.convert(songIDs);
-                Map<Long, NESongDetails> songDetails = netEaseService.getSongDetails(songIDArray);
+                Map<Long, NESongDetails> songDetails = netEaseService.getSongDetails(songIDs);
                 Song[] songs = convert(songDetails.values(), false);
                 total = songs.length;
                 result = songs;

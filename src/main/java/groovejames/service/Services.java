@@ -10,7 +10,7 @@ import groovejames.service.search.SearchService;
 import java.io.File;
 import java.io.IOException;
 
-import static groovejames.util.StringUtils.isEmpty;
+import static com.google.common.base.Strings.isNullOrEmpty;
 
 /**
  * This is something like a Spring ApplicationContext, built manually.
@@ -67,7 +67,7 @@ public class Services {
     }
 
     public static void applySettings(Settings settings) {
-        httpClientService.setProxySettings(settings.isProxyEnabled() && !isEmpty(settings.getProxyHost()) ? new ProxySettings(settings.getProxyHost(), settings.getProxyPort()) : null);
+        httpClientService.setProxySettings(settings.isProxyEnabled() && !isNullOrEmpty(settings.getProxyHost()) ? new ProxySettings(settings.getProxyHost(), settings.getProxyPort()) : null);
         downloadService.setDownloadDir(new File(settings.getDownloadLocation()));
         downloadService.getFilenameSchemeParser().setFilenameScheme(settings.getFilenameScheme());
         setWatchClipboardTaskEnabled(settings.isWatchClipboard());

@@ -4,10 +4,6 @@ import java.io.ByteArrayOutputStream;
 
 public class StringUtils {
 
-    public static boolean isEmpty(String s) {
-        return s == null || s.isEmpty();
-    }
-
     public static boolean containsIgnoringCase(String s, String searchString) {
         return searchString == null || searchString.isEmpty()
             || (s != null && (!s.isEmpty() && s.toLowerCase().contains(searchString.toLowerCase())));
@@ -35,13 +31,6 @@ public class StringUtils {
         return outBytes.toByteArray();
     }
 
-    public static String repeat(char c, int times) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < times; i++)
-            sb.append(c);
-        return sb.toString();
-    }
-
     public static String reverse(String s) {
         StringBuilder sb = new StringBuilder(s.length() + 10);
         for (int i = s.length() - 1; i >= 0; i--)
@@ -56,24 +45,4 @@ public class StringUtils {
         return sb.toString();
     }
 
-    public static String lpad(String s, char padChar, int length) {
-        if (s.length() >= length) return s;
-        StringBuilder sb = new StringBuilder(length + 10);
-        int numCharsToPad = length - s.length();
-        for (int i = 0; i < numCharsToPad; i++)
-            sb.append(padChar);
-        sb.append(s);
-        return sb.toString();
-    }
-
-    public static String join(long[] ids, char separator) {
-        StringBuilder sb = new StringBuilder();
-        for (long id : ids) {
-            if (sb.length() > 0) {
-                sb.append(separator);
-            }
-            sb.append(Long.toString(id));
-        }
-        return sb.toString();
-    }
 }

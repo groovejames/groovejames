@@ -6,6 +6,8 @@ import groovejames.service.netease.NEDownloadInfo;
 import groovejames.service.netease.NESongDetails;
 import groovejames.service.netease.NetEaseService;
 
+import static java.util.Collections.singletonList;
+
 public class TestNetEaseService {
 
     public static void main(String[] args) throws Exception {
@@ -13,7 +15,7 @@ public class TestNetEaseService {
         System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
         System.setProperty("org.apache.commons.logging.simplelog.log.groovejames", "DEBUG");
         System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http", "DEBUG");
-        System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.wire", "DEBUG");
+        System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.wire", "WARN");
         System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.impl.conn", "DEBUG");
         System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.impl.client", "DEBUG");
 
@@ -33,7 +35,7 @@ public class TestNetEaseService {
 
     private static void testDownloadInfo(NetEaseService netEaseService) throws Exception {
         long songID = 28240577L;
-        NESongDetails songDetails = netEaseService.getSongDetails(new long[] {songID}).get(songID);
+        NESongDetails songDetails = netEaseService.getSongDetails(singletonList(songID)).get(songID);
         NEDownloadInfo downloadInfo = netEaseService.getDownloadInfo(songDetails);
         System.out.printf("URL: %s%nBitrate: %s%n", downloadInfo.url, downloadInfo.bitrate);
     }

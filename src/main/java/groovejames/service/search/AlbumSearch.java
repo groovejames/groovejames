@@ -1,6 +1,6 @@
 package groovejames.service.search;
 
-import static groovejames.util.StringUtils.isEmpty;
+import static com.google.common.base.Strings.isNullOrEmpty;
 
 public class AlbumSearch extends AbstractSearchParameter {
 
@@ -23,7 +23,7 @@ public class AlbumSearch extends AbstractSearchParameter {
 
     @Override
     public String getLabel() {
-        return "Album: \"" + albumName + "\"" + (isEmpty(artistName) ? "" : " by " + artistName);
+        return "Album: \"" + albumName + "\"" + (isNullOrEmpty(artistName) ? "" : " by " + artistName);
     }
 
     @Override
@@ -33,7 +33,7 @@ public class AlbumSearch extends AbstractSearchParameter {
 
     @Override
     public String getDescription() {
-        return albumName + (isEmpty(artistName) ? "" : " by " + artistName);
+        return albumName + (isNullOrEmpty(artistName) ? "" : " by " + artistName);
     }
 
     public long getAlbumID() {
