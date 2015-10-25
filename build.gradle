@@ -100,7 +100,7 @@ task exe << {
 }
 
 
-task all(dependsOn: [clean, build, distBin, distSrc])
+task distAll(dependsOn: [clean, build, distBin, distSrc])
 build.mustRunAfter clean
 
 
