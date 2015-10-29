@@ -2,7 +2,7 @@ package groovejames.model;
 
 public class Track {
 
-    public static enum Status {
+    public enum Status {
         QUEUED, INITIALIZING, DOWNLOADING, FINISHED, CANCELLED, ERROR;
 
         public boolean isSuccessful() {
@@ -147,6 +147,7 @@ public class Track {
         sb.append("{songID=").append(song.getSongID());
         sb.append(", store=").append(store.getDescription());
         sb.append(", status=").append(status);
+        sb.append(", downloadURL=").append(song.getDownloadURL());
         sb.append(", totalBytes=").append(totalBytes);
         sb.append(", downloadedBytes=").append(downloadedBytes);
         sb.append('}');

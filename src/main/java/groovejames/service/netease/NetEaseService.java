@@ -7,7 +7,6 @@ import com.mashape.unirest.http.Unirest;
 import groovejames.service.HttpClientService;
 import groovejames.util.CryptUtils;
 import groovejames.util.StringUtils;
-import groovejames.util.UrlUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,7 +27,7 @@ public class NetEaseService implements INetEaseService {
     private static final String GROOVEJAMES_SYMKEY = "bxdnldW5lg9Fryar";
     private static final String MUSIC163_API = "http://music.163.com/api";
     private static final String MUSIC163_LOGIN_API = "https://music.163.com/weapi/login/";
-    private static final String MUSIC163_STREAMING_SERVER_URL = "http://m1.music.126.net";
+    private static final String MUSIC163_STREAMING_SERVER_URL = System.getProperty("netease.streamingserver", "http://p3.music.126.net");
     private static final String MUSIC163_REFERER = "http://music.163.com";
     private static final String NETEASE_URLDECODE_SECRET = CryptUtils.aesDecrypt(GROOVEJAMES_SYMKEY, "c90e89db10670d7e2a458cc90754292d63f0028456232453f3847daa93ff3d60");
     private static final String NETEASE_NONCE = CryptUtils.aesDecrypt(GROOVEJAMES_SYMKEY, "591d78e816c9d376167ed673dcc5775333b9c52d730cdc996304eacf620c8d23");
@@ -215,8 +214,7 @@ public class NetEaseService implements INetEaseService {
         NEStreamInfo streamInfo = findBestStreamInfo(songDetails);
         if (streamInfo != null) {
             String encryptedId = encryptId(streamInfo);
-            String baseUrl = UrlUtils.getBaseUrl(songDetails.mp3Url);
-            if (baseUrl == null) baseUrl = MUSIC163_STREAMING_SERVER_URL;
+            String baseUrl = MUSIC163_STREAMING_SERVER_URL;
             downloadInfo.url = String.format("%s/%s/%s.%s", baseUrl, encryptedId, streamInfo.dfsId, streamInfo.extension);
             downloadInfo.bitrate = streamInfo.bitrate;
         } else if (isNullOrEmpty(songDetails.mp3Url)) {
