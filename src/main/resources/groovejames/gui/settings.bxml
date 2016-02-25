@@ -15,26 +15,6 @@
                 <TablePane.Row height="1*">
                     <TabPane>
                         <tabs>
-                            <Form bxml:id="networkForm" styles="{fill:true, showFlagIcons:false}">
-                                <TabPane.tabData>
-                                    <content:ButtonData text="Network"/>
-                                </TabPane.tabData>
-                                <sections>
-                                    <Form.Section heading="Proxy">
-                                        <Checkbox bxml:id="proxyEnabled" selectedKey="proxyEnabled"
-                                                  Form.label="Enabled"/>
-                                        <TextInput bxml:id="proxyHost" textKey="proxyHost" Form.label="HTTP Proxy"/>
-                                        <TextInput bxml:id="proxyPort" textKey="proxyPort" Form.label="Port"
-                                                   strictValidation="true" maximumLength="5">
-                                            <validator>
-                                                <validation:RegexTextValidator>
-                                                    <pattern><![CDATA[[0-9]*]]></pattern>
-                                                </validation:RegexTextValidator>
-                                            </validator>
-                                        </TextInput>
-                                    </Form.Section>
-                                </sections>
-                            </Form>
                             <Form bxml:id="downloadForm" styles="{fill:true, showFlagIcons:false}">
                                 <TabPane.tabData>
                                     <content:ButtonData text="Download"/>
@@ -54,7 +34,27 @@
                                             </validator>
                                         </TextInput>
                                         <Label preferredWidth="370" styles="{wrapText:true}"
-                                               text="This is a format string for file path of downloaded files.&#xA;Use / to create a subdirectory. Available placeholders:&#xA;&#xA;  &lt;Artist&gt;: artist's name&#xA;  &lt;Album&gt;: album title&#xA;  &lt;Title&gt;: track's name&#xA;  &lt;#&gt;: track number (if any)&#xA;  &lt;##&gt; or &lt;###&gt;: track number padded with leading zeroes&#xA;&#xA;The following applies to all tags:&#xA;  &lt;Tag?text&gt; inserts 'text' only if the tag's value is not empty&#xA;  &lt;TAGNAME&gt; the tag's value in uppercase&#xA;  &lt;tagname&gt;: the tag's value in lowercase"/>
+                                               text="This is a format string for file path of downloaded files.&#xA;Use / to create a subdirectory. Available placeholders:&#xA;&#xA;  &lt;Artist&gt; : artist's name&#xA;  &lt;Album&gt; : album title&#xA;  &lt;Title&gt; : track's name&#xA;  &lt;#&gt; : track number (if any)&#xA;  &lt;##&gt; or &lt;###&gt; : track number padded with leading zeroes&#xA;&#xA;The following applies to all tags:&#xA;  &lt;Tag?text&gt; : inserts 'text' only if the tag's value is not empty&#xA;  &lt;TAGNAME&gt; : the tag's value in uppercase&#xA;  &lt;tagname&gt; : the tag's value in lowercase"/>
+                                    </Form.Section>
+                                </sections>
+                            </Form>
+                            <Form bxml:id="networkForm" styles="{fill:true, showFlagIcons:false}">
+                                <TabPane.tabData>
+                                    <content:ButtonData text="Network"/>
+                                </TabPane.tabData>
+                                <sections>
+                                    <Form.Section heading="Proxy">
+                                        <Checkbox bxml:id="proxyEnabled" selectedKey="proxyEnabled"
+                                                  Form.label="Enabled"/>
+                                        <TextInput bxml:id="proxyHost" textKey="proxyHost" Form.label="HTTP Proxy"/>
+                                        <TextInput bxml:id="proxyPort" textKey="proxyPort" Form.label="Port"
+                                                   strictValidation="true" maximumLength="5">
+                                            <validator>
+                                                <validation:RegexTextValidator>
+                                                    <pattern><![CDATA[[0-9]*]]></pattern>
+                                                </validation:RegexTextValidator>
+                                            </validator>
+                                        </TextInput>
                                     </Form.Section>
                                 </sections>
                             </Form>
