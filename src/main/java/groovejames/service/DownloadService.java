@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.lang.String.format;
 
 public class DownloadService {
@@ -178,6 +179,9 @@ public class DownloadService {
                 log.info("start download track " + track);
                 track.setStatus(Track.Status.INITIALIZING);
                 fireDownloadStatusChanged();
+                if (isNullOrEmpty(track.getSong().getDownloadURL())) {
+                    throw new IllegalStateException("no download location - maybe this song is not available for your country");
+                }
                 track.setStartDownloadTime(System.currentTimeMillis());
                 fireDownloadStatusChanged();
                 if (Boolean.getBoolean("mockNet"))

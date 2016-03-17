@@ -1,7 +1,7 @@
 # GrooveJames change history
 
 ### r31 (unreleased)
-- 
+- bugfix: deal properly with songs without download url
 
 ### r30 (2015/10/29)
 - changed streaming server url

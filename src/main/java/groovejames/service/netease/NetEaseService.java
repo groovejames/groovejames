@@ -217,9 +217,7 @@ public class NetEaseService implements INetEaseService {
             String baseUrl = MUSIC163_STREAMING_SERVER_URL;
             downloadInfo.url = String.format("%s/%s/%s.%s", baseUrl, encryptedId, streamInfo.dfsId, streamInfo.extension);
             downloadInfo.bitrate = streamInfo.bitrate;
-        } else if (isNullOrEmpty(songDetails.mp3Url)) {
-            throw new NetEaseException(404, "no download location for song id " + songDetails.id);
-        } else {
+        } else if (!isNullOrEmpty(songDetails.mp3Url)) {
             downloadInfo.url = songDetails.mp3Url;
             downloadInfo.bitrate = null; // bitrate is unknown
         }
