@@ -46,7 +46,7 @@ public class LazyLoadingPane<T extends BaseModelObject> extends StackPane implem
         this.resources = resources;
     }
 
-    public void load(SearchParameter searchParameter) throws SerializationException, IOException {
+    public void load(SearchParameter searchParameter, ISearchLabelUpdater searchLabelUpdater) throws SerializationException, IOException {
         if (!loaded) {
             loaded = true;
 
@@ -57,7 +57,7 @@ public class LazyLoadingPane<T extends BaseModelObject> extends StackPane implem
             Component component = (Component) serializer.readObject(getClass().getResource(contentResource), resources);
             insert(component, 0);
 
-            asyncTaskListener = new GuiAsyncTaskListener();
+            asyncTaskListener = new GuiAsyncTaskListener(searchLabelUpdater);
 
             content = cast(component);
             content.setSearchParameter(searchParameter);
@@ -107,6 +107,12 @@ public class LazyLoadingPane<T extends BaseModelObject> extends StackPane implem
 
 
     private class GuiAsyncTaskListener implements TaskListener<SearchResult<T>> {
+        private final ISearchLabelUpdater searchLabelUpdater;
+
+        public GuiAsyncTaskListener(ISearchLabelUpdater searchLabelUpdater) {
+            this.searchLabelUpdater = searchLabelUpdater;
+        }
+
         @Override
         public void taskExecuted(Task<SearchResult<T>> task) {
             final SearchResult<T> result = task.getResult();
@@ -114,6 +120,9 @@ public class LazyLoadingPane<T extends BaseModelObject> extends StackPane implem
                 @Override
                 public void run() {
                     content.afterSearch(result);
+                    if (searchLabelUpdater != null && result.getUpdatedSearchLabel() != null) {
+                        searchLabelUpdater.updateSearchLabel(result.getUpdatedSearchLabel());
+                    }
                     hideActivityPane();
                 }
             });

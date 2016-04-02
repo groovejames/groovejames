@@ -114,7 +114,12 @@ public class SearchResultPane extends TablePane implements Bindable {
         LazyLoadingPane selectedCardPane = (LazyLoadingPane) tabPane.getSelectedTab();
         if (selectedCardPane != null) {
             try {
-                selectedCardPane.load(searchParameter.clone());
+                selectedCardPane.load(searchParameter.clone(), new ISearchLabelUpdater() {
+                    @Override
+                    public void updateSearchLabel(String updatedSearchLabel) {
+                        searchLabel.setText(updatedSearchLabel);
+                    }
+                });
             } catch (Exception ex) {
                 main.showError("could not open " + searchParameter.getShortLabel(), ex);
             }

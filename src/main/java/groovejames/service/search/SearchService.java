@@ -81,6 +81,7 @@ public class SearchService {
         int limit = searchParameter.getLimit();
         int total;
         Song[] result;
+        String updatedSearchLabel = null;
         switch (searchType) {
             case General: {
                 // search for song names via string search
@@ -115,6 +116,7 @@ public class SearchService {
                 Song[] songs = convert(neAlbum.songs, true);
                 total = songs.length;
                 result = songs;
+                updatedSearchLabel = "Album: \"" + neAlbum.name + "\"" + (neAlbum.artist == null ? "" : " by " + neAlbum.artist.name);
                 break;
             }
             case Artist: {
@@ -156,7 +158,7 @@ public class SearchService {
                 throw new IllegalArgumentException("invalid search type: " + searchType);
             }
         }
-        return new SearchResult<>(result, total);
+        return new SearchResult<>(result, total, updatedSearchLabel);
     }
 
     private Song[] convert(NESongDetails[] neSongs, boolean setTrackNum) throws Exception {

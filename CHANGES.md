@@ -2,6 +2,7 @@
 
 ### r31 (unreleased)
 - bugfix: deal properly with songs without download url
+- bugfix: after loading album details the UI now updates the album's artist, which might be different for compilations
 
 ### r30 (2015/10/29)
 - changed streaming server url
