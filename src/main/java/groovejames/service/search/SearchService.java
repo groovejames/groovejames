@@ -255,7 +255,7 @@ public class SearchService {
                 Long artistID = ((ArtistSearch) searchParameter).getArtistID();
                 NEArtistAlbumsResultResponse response = netEaseService.getAlbums(artistID, searchParameter.getOffset(), searchParameter.getLimit());
                 Album[] result = convert(response.hotAlbums, -1, -1);
-                return new SearchResult<>(result, response.more);
+                return new SearchResult<>(result, response.artist.albumSize, response.artist.name);
             }
             default:
                 throw new IllegalArgumentException("invalid search type: " + searchType);
