@@ -1,5 +1,8 @@
 # GrooveJames change history
 
+### r31 (unreleased)
+-
+
 ### r31 (2016/04/05)
 - bugfix: deal properly with songs without download url
 - bugfix: after loading album details the UI now updates the album's artist, which might be different for compilations
