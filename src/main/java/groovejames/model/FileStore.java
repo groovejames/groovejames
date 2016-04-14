@@ -56,19 +56,19 @@ public class FileStore implements Store {
 
             String artistName = track.getSong().getArtistName();
             if (artistName != null) {
-                id3V1Tag.setArtist(artistName);
+                id3V1Tag.setArtist(fixLongIDV1String(artistName));
                 id3V2Tag.setArtist(artistName);
             }
 
             String albumName = track.getSong().getAlbumName();
             if (albumName != null) {
-                id3V1Tag.setAlbum(albumName);
+                id3V1Tag.setAlbum(fixLongIDV1String(albumName));
                 id3V2Tag.setAlbum(albumName);
             }
 
             String songName = track.getSong().getSongName();
             if (songName != null) {
-                id3V1Tag.setTitle(songName);
+                id3V1Tag.setTitle(fixLongIDV1String(songName));
                 id3V2Tag.setTitle(songName);
             }
 
@@ -118,4 +118,27 @@ public class FileStore implements Store {
     @Override public boolean isSameLocation(Store other) {
         return other instanceof FileStore && file.equals(((FileStore)other).file);
     }
+
+    /**
+     * This method fixes a bug in org.blinkenlights.jid3:JID3 v0.46:
+     * if the first 30 characters of a song/album/artist string contains
+     * a Unicode character > 256 then the IDv3 tag is not properly truncated
+     * to the maximum allowed amount of 30 chars, leading to a
+     * NegativeArraySizeException. This fixup method returns a properly
+     * truncated string, whose bytes representation is no longer than 30
+     * chars, even if it contains two-byte Unicode codepoints.
+     *
+     * @param s song/album/artist name
+     * @return properly truncated string
+     */
+    private static String fixLongIDV1String(String s) {
+        if (s.length() > 30) s = s.substring(0, 30);
+        byte[] bytes;
+        do {
+            bytes = s.getBytes();
+            if (bytes.length > 30) s = s.substring(s.length() - 1);
+        } while (bytes.length > 30);
+        return new String(bytes);
+    }
+
 }
