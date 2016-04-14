@@ -1,5 +1,8 @@
 # GrooveJames change history
 
+### r33 (unreleased)
+-
+
 ### r32 (2016/04/14)
 - bugfix: workaround for a problem in the blinkenlights MP3 IDv1 tagger: songs with unicode codepoints > 256 in the first 30 characters of its name could not be properly tagged, leading to NegativeArraySizeException and leftover files named "id3.<hash>.tmp" in the download folder
 
