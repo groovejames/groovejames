@@ -1,8 +1,8 @@
 package groovejames.service.netease;
 
 import com.mashape.unirest.http.ObjectMapper;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -10,7 +10,7 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKN
 
 class JacksonObjectMapper implements ObjectMapper {
 
-    private static final Log log = LogFactory.getLog(JacksonObjectMapper.class);
+    private static final Logger log = LoggerFactory.getLogger(JacksonObjectMapper.class);
 
     private final com.fasterxml.jackson.databind.ObjectMapper jacksonObjectMapper;
 
@@ -21,8 +21,8 @@ class JacksonObjectMapper implements ObjectMapper {
 
     public <T> T readValue(String value, Class<T> valueType) {
         try {
-            log.debug("got: " + value);
-            log.debug("converting to " + valueType + " ...");
+            log.debug("got: {}", value);
+            log.debug("converting to {} ...", valueType);
             return jacksonObjectMapper.readValue(value, valueType);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -32,7 +32,7 @@ class JacksonObjectMapper implements ObjectMapper {
     public String writeValue(Object value) {
         try {
             String string = jacksonObjectMapper.writeValueAsString(value);
-            log.debug("write: " + string);
+            log.debug("write: {}", string);
             return string;
         } catch (IOException e) {
             throw new RuntimeException(e);

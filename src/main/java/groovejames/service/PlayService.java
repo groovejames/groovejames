@@ -5,12 +5,12 @@ import groovejames.model.Track;
 import javazoom.jl2.player.MP3Player;
 import javazoom.jl2.player.PlayThread;
 import javazoom.jl2.player.PlaybackListener;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.collections.LinkedList;
 import org.apache.pivot.collections.Sequence;
 import org.apache.pivot.wtk.ApplicationContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.EventQueue;
 import java.io.IOException;
@@ -22,7 +22,7 @@ public class PlayService {
         NOW, NEXT, LAST, REPLACE
     }
 
-    private static final Log log = LogFactory.getLog(PlayService.class);
+    private static final Logger log = LoggerFactory.getLogger(PlayService.class);
 
     /**
      * how many bytes to pre-download before actually begin playing
@@ -62,7 +62,7 @@ public class PlayService {
         int insertIdx = (addMode == AddMode.LAST ? playlist.getLength() : currentSongIndex + 1);
         for (int i = 0; i < songs.getLength(); i++) {
             Song song = songs.get(i);
-            log.info("adding: " + song);
+            log.info("adding: {}", song);
             insertIdx = addSong(song, insertIdx);
             if (i == 0 && (addMode == AddMode.NOW || addMode == AddMode.REPLACE)) {
                 currentSongIndex = insertIdx;
@@ -90,7 +90,7 @@ public class PlayService {
             currentSongIndex = 0;
         Song currentSong = getCurrentSong();
         if (currentSong != null) {
-            log.info("starting: " + currentSong);
+            log.info("starting: {}", currentSong);
             startPlaying(currentSong, 0, 0);
         } else {
             log.info("no current song");
@@ -99,20 +99,20 @@ public class PlayService {
 
     public synchronized void stop() {
         Song currentSong = getCurrentSong();
-        if (currentSong != null) log.info("stopping: " + currentSong);
+        if (currentSong != null) log.info("stopping: {}", currentSong);
         stopPlaying();
     }
 
     public synchronized void skipForward() {
         Song currentSong = getCurrentSong();
-        if (currentSong != null) log.info("stopping because of skip: " + currentSong);
+        if (currentSong != null) log.info("stopping because of skip: {}", currentSong);
         stopPlaying();
         skipToNext();
     }
 
     public synchronized void skipBackward() {
         Song currentSong = getCurrentSong();
-        if (currentSong != null) log.info("stopping because of skip: " + currentSong);
+        if (currentSong != null) log.info("stopping because of skip: {}", currentSong);
         stopPlaying();
         skipToPrevious();
     }
@@ -120,7 +120,7 @@ public class PlayService {
     public synchronized void pause() {
         Song currentSong = getCurrentSong();
         if (currentSong != null && !playThread.isStopForced()) {
-            log.info("pausing: " + currentSong);
+            log.info("pausing: {}", currentSong);
             pausedAudioPosition = playThread.getCurrentPosition();
             pausedFrame = playThread.forceStop();
             try {
@@ -128,7 +128,7 @@ public class PlayService {
             } catch (InterruptedException e) {
                 // ignored
             }
-            log.debug("paused at frame: " + pausedFrame + ", audioPosition: " + pausedAudioPosition);
+            log.debug("paused at frame: {}, audioPosition: ", pausedFrame, pausedAudioPosition);
             if (listener != null)
                 listener.playbackPaused(currentTrack, pausedAudioPosition);
         }
@@ -137,7 +137,7 @@ public class PlayService {
     public synchronized void resume() {
         Song currentSong = getCurrentSong();
         if (currentSong != null && pausedFrame != -1) {
-            log.info("resuming from frame: " + pausedFrame + ", audioPosition: " + pausedAudioPosition + ": " + currentSong);
+            log.info("resuming from frame: {}, audioPosition: {}: {}", pausedFrame, pausedAudioPosition, currentSong);
             startPlaying(currentSong, pausedFrame, pausedAudioPosition);
             pausedFrame = -1;
         }
@@ -178,16 +178,16 @@ public class PlayService {
         if (songIndex == currentSongIndex)
             return;
         if (songIndex < 0 || songIndex >= playlist.getLength()) {
-            log.error("playSong: index out of bounds: " + songIndex + "; must be in range [0," + playlist.getLength() + ")");
+            log.error("playSong: index out of bounds: {}; must be in range [0,{})", songIndex, playlist.getLength());
             return;
         }
         Song currentSong = getCurrentSong();
         if (currentSong != null)
-            log.info("stopping because of song index change to " + songIndex + ": " + currentSong);
+            log.info("stopping because of song index change to {}: {}", songIndex, currentSong);
         stopPlaying();
         currentSongIndex = songIndex;
         currentSong = getCurrentSong();
-        log.info("skipping to song index " + songIndex + ": " + currentSong);
+        log.info("skipping to song index {}: {}", songIndex, currentSong);
         startPlaying(currentSong, 0, 0);
     }
 
@@ -217,7 +217,7 @@ public class PlayService {
     private void startPlaying(final Song song, final int framePosition, final int audioPosition) {
         if (currentTrack != null && currentTrack.getSong() != song)
             stopPlaying();
-        log.info("starting from " + framePosition + ": " + song);
+        log.info("starting from {}: {}", framePosition, song);
         if (currentTrack == null || currentTrack.getSong() != song) {
             currentTrack = downloadService.downloadToMemory(song, new ChainedPlayServiceListener(listener) {
                 @Override
@@ -266,7 +266,7 @@ public class PlayService {
         if (currentSongIndex < playlist.getLength() - 1) {
             currentSongIndex++;
             Song currentSong = getCurrentSong();
-            log.info("skipping forward to: " + currentSong);
+            log.info("skipping forward to: {}", currentSong);
             startPlaying(currentSong, 0, 0);
         } else {
             log.info("skipped beyond end of playlist");
@@ -281,7 +281,7 @@ public class PlayService {
         if (currentSongIndex > 0) {
             currentSongIndex--;
             Song currentSong = getCurrentSong();
-            log.info("skipping back to: " + currentSong);
+            log.info("skipping back to: {}", currentSong);
             startPlaying(currentSong, 0, 0);
         } else {
             log.info("skipped beyond start of playlist");
@@ -299,7 +299,7 @@ public class PlayService {
     }
 
     private void handlePlayException(Track track, Exception ex) {
-        log.error("error playing track " + track, ex);
+        log.error("error playing track {}", track, ex);
         if (listener != null)
             listener.exception(track, ex);
         stop();
@@ -350,14 +350,14 @@ public class PlayService {
 
         @Override
         public void playbackStarted(MP3Player player, int audioPosition) {
-            log.info("playback started: " + track);
+            log.info("playback started: {}", track);
             if (listener != null)
                 listener.playbackStarted(track);
         }
 
         @Override
         public void playbackFinished(MP3Player player, int audioPosition) {
-            log.info("playback finished: " + track);
+            log.info("playback finished: {}", track);
             if (listener != null)
                 listener.playbackFinished(track, audioPositionOffset + audioPosition);
             if (player.isComplete()) {

@@ -6,8 +6,6 @@ import groovejames.model.Song;
 import groovejames.service.Services;
 import groovejames.service.search.AlbumSearch;
 import groovejames.util.OSUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.collections.List;
 import org.apache.pivot.collections.Map;
@@ -26,6 +24,9 @@ import org.apache.pivot.wtk.SheetCloseListener;
 import org.apache.pivot.wtk.TextArea;
 import org.apache.pivot.wtk.Window;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.Desktop;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -39,7 +40,7 @@ import static groovejames.util.UrlUtils.urlencode;
 
 public class ShareAction extends Action {
 
-    private static final Logger log = LogManager.getLogger(ShareAction.class);
+    private static final Logger log = LoggerFactory.getLogger(ShareAction.class);
     private static final String mailTemplateResourceName = "mail.template.txt";
 
     private final Window window;
@@ -142,7 +143,7 @@ public class ShareAction extends Action {
 
     private URI toMailUri(String subject, String body) throws URISyntaxException, UnsupportedEncodingException {
         URI uri = new URI("mailto:?to=&subject=" + enc(subject) + "&body=" + enc(body));
-        log.debug("created mail uri: " + uri);
+        log.debug("created mail uri: {}", uri);
         return uri;
     }
 

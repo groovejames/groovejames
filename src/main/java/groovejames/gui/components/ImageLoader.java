@@ -4,8 +4,6 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import groovejames.model.ImageObject;
 import groovejames.service.Services;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -17,6 +15,8 @@ import org.apache.pivot.wtk.ApplicationContext;
 import org.apache.pivot.wtk.Component;
 import org.apache.pivot.wtk.media.Image;
 import org.apache.pivot.wtk.media.Picture;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -33,7 +33,7 @@ import static java.lang.String.format;
 
 public class ImageLoader {
 
-    private static final Log log = LogFactory.getLog(ImageLoader.class);
+    private static final Logger log = LoggerFactory.getLogger(ImageLoader.class);
 
     private static final Cache<String, Image> imageCache = CacheBuilder.newBuilder().softValues().build();
     private static final Cache<String, Set<ImageTarget>> imageTargetCache = CacheBuilder.newBuilder().maximumSize(20000).build();
@@ -123,11 +123,8 @@ public class ImageLoader {
             Image image;
             try {
                 image = httpGetImage(url);
-                if (image == null) {
-                    image = defaultImage;
-                }
             } catch (IOException ex) {
-                log.error("error downloading image from url " + url, ex);
+                log.error("error downloading image from url {}", url, ex);
                 image = defaultImage;
             }
             imageCache.put(url, image);
@@ -135,7 +132,7 @@ public class ImageLoader {
         }
 
         private Image httpGetImage(String uri) throws IOException {
-            log.debug(format("getting image %s", uri));
+            log.debug("getting image {}", uri);
             HttpResponse httpResponse = Services.getHttpClientService().getHttpClient().execute(new HttpGet(uri));
             HttpEntity httpEntity = httpResponse.getEntity();
             try {

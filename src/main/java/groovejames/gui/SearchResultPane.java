@@ -1,8 +1,6 @@
 package groovejames.gui;
 
 import groovejames.service.search.SearchParameter;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pivot.beans.BXML;
 import org.apache.pivot.beans.BXMLSerializer;
 import org.apache.pivot.beans.Bindable;
@@ -20,8 +18,6 @@ import java.net.URL;
 
 @SuppressWarnings({"UnusedDeclaration"})
 public class SearchResultPane extends TablePane implements Bindable {
-
-    private static final Log log = LogFactory.getLog(SearchResultPane.class);
 
     @BXML private TabPane tabPane;
     @BXML private Label searchLabel;

@@ -8,8 +8,8 @@ import groovejames.service.HttpClientService;
 import groovejames.util.CryptUtils;
 import groovejames.util.StringUtils;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -44,19 +44,19 @@ public class NetEaseService implements INetEaseService {
             "08c3479b6c72947cc5b4f453806153645e86d41ecc142faf4122cdef19a7e5fa" +
             "09eff6de2abf4a7b38dea4ad4f91763f");
 
-    private static final Log log = LogFactory.getLog(NetEaseService.class);
+    private static final Logger log = LoggerFactory.getLogger(NetEaseService.class);
 
     static {
-        log.info("GROOVEJAMES_SYMKEY=" + GROOVEJAMES_SYMKEY);
-        log.info("MUSIC163_API=" + MUSIC163_API);
-        log.info("MUSIC163_LOGIN_API=" + MUSIC163_LOGIN_API);
-        log.info("MUSIC163_STREAMING_SERVER_URL=" + MUSIC163_STREAMING_SERVER_URL);
-        log.info("MUSIC163_REFERER=" + MUSIC163_REFERER);
-        log.info("NETEASE_URLDECODE_SECRET=" + NETEASE_URLDECODE_SECRET);
-        log.info("NETEASE_NONCE=" + NETEASE_NONCE);
-        log.info("NETEASE_LOGIN_IV=" + NETEASE_LOGIN_IV);
-        log.info("NETEASE_PUBLIC_KEY=" + NETEASE_PUBLIC_KEY);
-        log.info("NETEASE_MODULUS=" + NETEASE_MODULUS);
+        log.info("GROOVEJAMES_SYMKEY={}", GROOVEJAMES_SYMKEY);
+        log.info("MUSIC163_API={}", MUSIC163_API);
+        log.info("MUSIC163_LOGIN_API={}", MUSIC163_LOGIN_API);
+        log.info("MUSIC163_STREAMING_SERVER_URL={}", MUSIC163_STREAMING_SERVER_URL);
+        log.info("MUSIC163_REFERER={}", MUSIC163_REFERER);
+        log.info("NETEASE_URLDECODE_SECRET={}", NETEASE_URLDECODE_SECRET);
+        log.info("NETEASE_NONCE={}", NETEASE_NONCE);
+        log.info("NETEASE_LOGIN_IV={}", NETEASE_LOGIN_IV);
+        log.info("NETEASE_PUBLIC_KEY={}", NETEASE_PUBLIC_KEY);
+        log.info("NETEASE_MODULUS={}", NETEASE_MODULUS);
     }
 
     public NetEaseService(HttpClientService httpClientService) {

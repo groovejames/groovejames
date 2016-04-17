@@ -1,16 +1,16 @@
 package groovejames.util;
 
-import org.apache.log4j.Logger;
 import org.apache.pivot.collections.ArrayList;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Locale;
 
-import static java.util.Arrays.asList;
-
 public class OSUtils {
 
-    private static final Logger log = Logger.getLogger(OSUtils.class);
+    private static final Logger log = LoggerFactory.getLogger(OSUtils.class);
 
     public static boolean isLinux() {
         String osname = System.getProperty("os.name");
@@ -23,7 +23,7 @@ public class OSUtils {
         if (args.length < 1)
             throw new IllegalArgumentException("command is missing");
         ProcessBuilder processBuilder = new ProcessBuilder().command(args).redirectErrorStream(true);
-        log.debug("starting " + asList(args) + " ...");
+        log.debug("starting {} ...", (Object[]) args);
         Process process = processBuilder.start();
         new ProcessStreamReader(process.getInputStream(), args[0]).start();
     }

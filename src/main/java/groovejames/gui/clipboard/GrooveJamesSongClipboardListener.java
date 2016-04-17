@@ -3,8 +3,11 @@ package groovejames.gui.clipboard;
 import groovejames.gui.Main;
 import groovejames.service.search.SongSearch;
 import groovejames.util.UrlUtils;
-import org.apache.log4j.Logger;
+
 import org.apache.pivot.wtk.ApplicationContext;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URISyntaxException;
 import java.util.LinkedHashSet;
@@ -16,7 +19,7 @@ import java.util.regex.Pattern;
 
 public class GrooveJamesSongClipboardListener implements ClipboardListener {
 
-    private static final Logger log = Logger.getLogger(GrooveJamesSongClipboardListener.class);
+    private static final Logger log = LoggerFactory.getLogger(GrooveJamesSongClipboardListener.class);
 
     // URL examples:
     // "groovejames://song?id=1002"
@@ -42,7 +45,7 @@ public class GrooveJamesSongClipboardListener implements ClipboardListener {
         Matcher matcher = pattern.matcher(newClipboardContent);
         while (matcher.find()) {
             String uri = matcher.group();
-            log.debug("found match: " + uri);
+            log.debug("found match: {}", uri);
             try {
                 Map<String, List<String>> queryParams = UrlUtils.parseQueryParams(uri);
                 List<String> autoplayStrings = queryParams.get("autoplay");
@@ -55,7 +58,7 @@ public class GrooveJamesSongClipboardListener implements ClipboardListener {
                         if (autoplay) {
                             autoPlaySongIds.add(songID);
                         }
-                        log.debug("found song id=" + songID + "; autoplay=" + autoplay);
+                        log.debug("found song id={}; autoplay={}", songID, autoplay);
                     }
                 }
                 List<String> songNameList = queryParams.get("songName");
@@ -63,9 +66,9 @@ public class GrooveJamesSongClipboardListener implements ClipboardListener {
                     songNames.addAll(songNameList);
                 }
             } catch (URISyntaxException ex) {
-                log.error("wrong uri pattern: " + uri + "; exception: " + ex);
+                log.error("wrong uri pattern: {}; exception: ", uri, ex.toString());
             } catch (NumberFormatException ex) {
-                log.error("invalid song id: " + uri + "; exception: " + ex);
+                log.error("invalid song id: {}; exception: ", uri, ex.toString());
             }
         }
         if (!songIds.isEmpty()) {

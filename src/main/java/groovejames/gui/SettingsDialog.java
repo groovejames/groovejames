@@ -3,8 +3,6 @@ package groovejames.gui;
 import groovejames.gui.components.ToggleButton;
 import groovejames.gui.validation.FilenameSchemeTextValidator;
 import groovejames.model.Settings;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pivot.beans.BXMLSerializer;
 import org.apache.pivot.util.Resources;
 import org.apache.pivot.util.Vote;
@@ -22,10 +20,12 @@ import org.apache.pivot.wtk.SheetStateListener;
 import org.apache.pivot.wtk.TextInput;
 import org.apache.pivot.wtk.TextInputContentListener;
 import org.apache.pivot.wtk.Window;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SettingsDialog {
 
-    private static final Log log = LogFactory.getLog(SettingsDialog.class);
+    private static final Logger log = LoggerFactory.getLogger(SettingsDialog.class);
 
     private final Window window;
     private final Resources resources;

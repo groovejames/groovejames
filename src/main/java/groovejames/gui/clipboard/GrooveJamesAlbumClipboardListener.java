@@ -3,8 +3,10 @@ package groovejames.gui.clipboard;
 import groovejames.gui.Main;
 import groovejames.service.search.AlbumSearch;
 import groovejames.util.UrlUtils;
-import org.apache.log4j.Logger;
 import org.apache.pivot.wtk.ApplicationContext;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URISyntaxException;
 import java.util.List;
@@ -14,7 +16,7 @@ import java.util.regex.Pattern;
 
 public class GrooveJamesAlbumClipboardListener implements ClipboardListener {
 
-    private static final Logger log = Logger.getLogger(GrooveJamesAlbumClipboardListener.class);
+    private static final Logger log = LoggerFactory.getLogger(GrooveJamesAlbumClipboardListener.class);
 
     // URL examples
     // "groovejames://album?id=1426903"
@@ -38,7 +40,7 @@ public class GrooveJamesAlbumClipboardListener implements ClipboardListener {
         boolean usedAutoplayOnce = false;
         while (matcher.find()) {
             String uri = matcher.group();
-            log.debug("found match: " + uri);
+            log.debug("found match: {}", uri);
             try {
                 Map<String, List<String>> queryParams = UrlUtils.parseQueryParams(uri);
                 final boolean autoplay = !usedAutoplayOnce && getBoolean("autoplay", queryParams);
@@ -49,7 +51,7 @@ public class GrooveJamesAlbumClipboardListener implements ClipboardListener {
                         String albumIdString = albumIdList.get(i);
                         final long albumID = Long.parseLong(albumIdString);
                         final String albumName = albumNameList != null && albumNameList.size() > i ? albumNameList.get(i) : null;
-                        log.debug("found album id=" + albumID + "; autoplay=" + autoplay + "; albumName=" + albumName);
+                        log.debug("found album id={}; autoplay={}; albumName={}", albumID, autoplay, albumName);
                         ApplicationContext.queueCallback(new Runnable() {
                             @Override
                             public void run() {
@@ -63,9 +65,9 @@ public class GrooveJamesAlbumClipboardListener implements ClipboardListener {
                     }
                 }
             } catch (URISyntaxException ex) {
-                log.error("wrong uri pattern: " + uri + "; exception: " + ex);
+                log.error("wrong uri pattern: {}; exception: ", uri, ex.toString());
             } catch (NumberFormatException ex) {
-                log.error("invalid album id: " + uri + "; exception: " + ex);
+                log.error("invalid album id: {}; exception: ", uri, ex.toString());
             }
         }
         return foundMatch;

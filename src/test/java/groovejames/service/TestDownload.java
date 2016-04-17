@@ -11,14 +11,6 @@ import java.io.File;
 public class TestDownload {
 
     public static void main(String[] args) throws Exception {
-        System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
-        System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
-        System.setProperty("org.apache.commons.logging.simplelog.log.groovejames", "DEBUG");
-        System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http", "DEBUG");
-        System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.wire", "WARN");
-        System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.impl.conn", "DEBUG");
-        System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.impl.client", "DEBUG");
-
         HttpClientService httpClientService = new HttpClientService();
         NetEaseService netEaseService = new NetEaseService(httpClientService);
         SearchService searchService = new SearchService(netEaseService);
@@ -26,7 +18,7 @@ public class TestDownload {
         SearchResult<Song> songSearchResult = searchService.searchSongs(new SongSearch(1782142L, "Can Your Love Find It's Way (Club Vocal)", true));
         Song song = songSearchResult.getResult()[0];
 
-        DownloadService downloadService = new DownloadService(httpClientService, searchService);
+        DownloadService downloadService = new DownloadService(httpClientService);
         downloadService.setDownloadDir(new File("/tmp"));
         downloadService.download(song);
     }

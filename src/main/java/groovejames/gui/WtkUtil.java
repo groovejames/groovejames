@@ -1,13 +1,13 @@
 package groovejames.gui;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.util.concurrent.TaskExecutionException;
 import org.apache.pivot.wtk.ApplicationContext;
 import org.apache.pivot.wtk.TableView;
 import org.apache.pivot.wtk.TableViewColumnListener;
 import org.apache.pivot.wtk.media.Image;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.prefs.BackingStoreException;
@@ -15,7 +15,7 @@ import java.util.prefs.Preferences;
 
 public class WtkUtil {
 
-    private static final Log log = LogFactory.getLog(WtkUtil.class);
+    private static final Logger log = LoggerFactory.getLogger(WtkUtil.class);
 
     private static Preferences prefs = Preferences.userNodeForPackage(SearchResultPane.class);
 
@@ -55,7 +55,7 @@ public class WtkUtil {
                 }
             }
         } catch (BackingStoreException ex) {
-            log.error("cannot load column widths from preferences for table " + tableKey, ex);
+            log.error("cannot load column widths from preferences for table {}", tableKey, ex);
         }
 
         tableView.getTableViewColumnListeners().add(new TableViewColumnListener.Adapter() {

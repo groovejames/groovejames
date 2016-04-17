@@ -5,10 +5,7 @@ import groovejames.model.MemoryStore;
 import groovejames.model.Song;
 import groovejames.model.Store;
 import groovejames.model.Track;
-import groovejames.service.search.SearchService;
 import groovejames.util.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -16,6 +13,8 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.pivot.collections.ArrayList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;
@@ -31,7 +30,7 @@ import static java.lang.String.format;
 
 public class DownloadService {
 
-    private static final Log log = LogFactory.getLog(DownloadService.class);
+    private static final Logger log = LoggerFactory.getLogger(DownloadService.class);
 
     private static final int numberOfParallelDownloads = Integer.getInteger("numberOfParallelDownloads", 1);
 
@@ -54,15 +53,13 @@ public class DownloadService {
     private final ExecutorService executorService;
     private final ExecutorService executorServiceForPlay;
     private final HttpClientService httpClientService;
-    private final SearchService searchService;
     private final ArrayList<DownloadTask> currentlyRunningDownloads = new ArrayList<>();
     private final FilenameSchemeParser filenameSchemeParser;
 
     private File downloadDir;
 
-    public DownloadService(HttpClientService httpClientService, SearchService searchService) {
+    public DownloadService(HttpClientService httpClientService) {
         this.httpClientService = httpClientService;
-        this.searchService = searchService;
         this.downloadDir = defaultDownloadDir;
         this.executorService = Executors.newFixedThreadPool(numberOfParallelDownloads);
         this.executorServiceForPlay = Executors.newFixedThreadPool(1);
@@ -176,7 +173,7 @@ public class DownloadService {
                 Thread.sleep(initialDelay);
                 if (track.getStatus() == Track.Status.CANCELLED)
                     return;
-                log.info("start download track " + track);
+                log.info("start download track {}", track);
                 track.setStatus(Track.Status.INITIALIZING);
                 fireDownloadStatusChanged();
                 if (isNullOrEmpty(track.getSong().getDownloadURL())) {
@@ -190,13 +187,13 @@ public class DownloadService {
                     download();
                 track.setStatus(Track.Status.FINISHED);
                 fireDownloadStatusChanged();
-                log.info("finished download track " + track);
+                log.info("finished download track {}", track);
             } catch (Exception ex) {
                 if (aborted || ex instanceof InterruptedException) {
-                    log.info("cancel download by request: " + track);
+                    log.info("cancel download by request: {}", track);
                     track.setStatus(Track.Status.CANCELLED);
                 } else {
-                    log.error("error download track " + track, ex);
+                    log.error("error download track {}", track, ex);
                     track.setStatus(Track.Status.ERROR);
                     track.setFault(ex);
                 }
@@ -270,8 +267,8 @@ public class DownloadService {
             Store store = track.getStore();
             OutputStream storeOutputStream = store.getOutputStream();
             OutputStream outputStream = new MonitoredOutputStream(storeOutputStream);
-            InputStream instream = new FileInputStream(file);
             track.setTotalBytes(file.length());
+            InputStream instream = new FileInputStream(file);
             try {
                 byte[] buf = new byte[downloadBufferSize];
                 int l;

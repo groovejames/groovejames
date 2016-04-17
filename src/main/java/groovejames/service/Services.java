@@ -20,7 +20,7 @@ public class Services {
     private static final HttpClientService httpClientService = new HttpClientService();
     private static final INetEaseService neteaseService = Boolean.getBoolean("mockNet") ? new NetEaseServiceMock() : new NetEaseService(httpClientService);
     private static final SearchService searchService = new SearchService(neteaseService);
-    private static final DownloadService downloadService = new DownloadService(httpClientService, searchService);
+    private static final DownloadService downloadService = new DownloadService(httpClientService);
     private static final PlayService playService = new PlayService(downloadService);
     private static final WatchClipboardTask watchClipboardTask = new WatchClipboardTask();
 

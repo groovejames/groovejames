@@ -1,7 +1,7 @@
 package groovejames.util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.io.InputStreamReader;
 
 class ProcessStreamReader extends Thread {
 
-    private static final Log log = LogFactory.getLog(ProcessStreamReader.class);
+    private static final Logger log = LoggerFactory.getLogger(ProcessStreamReader.class);
 
     private static int instanceNo = 1;
 
@@ -31,14 +31,14 @@ class ProcessStreamReader extends Thread {
         try {
             while ((line = reader.readLine()) != null) {
                 if (log.isDebugEnabled()) {
-                    log.debug(cmd + ": " + line);
+                    log.debug("{}: {}", cmd, line);
                 }
             }
         } catch (IOException ex) {
-            log.error("error reading from process " + cmd, ex);
+            log.error("error reading from process {}", cmd, ex);
         } finally {
             IOUtils.closeQuietly(reader, "reader for " + cmd);
         }
-        log.debug("process " + cmd + " ends.");
+        log.debug("process {} ends.", cmd);
     }
 }

@@ -22,8 +22,6 @@ import groovejames.service.netease.NESong;
 import groovejames.service.netease.NESongDetails;
 import groovejames.service.netease.NESongSearchResult;
 import groovejames.service.netease.NESuggestionsResult;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,8 +33,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class SearchService {
-
-    private static final Log log = LogFactory.getLog(SearchService.class);
 
     private final INetEaseService netEaseService;
 

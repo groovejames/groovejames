@@ -32,10 +32,7 @@ import groovejames.service.search.AlbumSearch;
 import groovejames.service.search.ArtistSearch;
 import groovejames.service.search.GeneralSearch;
 import groovejames.service.search.SearchParameter;
-import groovejames.util.ConsoleUtil;
 import groovejames.util.OSUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pivot.beans.BXML;
 import org.apache.pivot.beans.BXMLSerializer;
 import org.apache.pivot.collections.ArrayList;
@@ -91,6 +88,8 @@ import org.apache.pivot.wtk.effects.SaturationDecorator;
 import org.apache.pivot.wtk.media.BufferedImageSerializer;
 import org.apache.pivot.wtk.media.Image;
 import org.apache.pivot.wtk.media.Picture;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.Desktop;
 import java.awt.image.BufferedImage;
@@ -116,7 +115,7 @@ import static org.apache.pivot.wtk.ScrollPane.ScrollBarPolicy.FILL;
 @SuppressWarnings({"UnusedDeclaration"})
 public class Main extends AbstractApplication {
 
-    private static final Log log = LogFactory.getLog(Main.class);
+    private static final Logger log = LoggerFactory.getLogger(Main.class);
 
     private Settings settings;
     private Resources resources;
@@ -146,9 +145,7 @@ public class Main extends AbstractApplication {
 
     public static void main(String[] args) {
         log.info("GrooveJames started.");
-        log.info("GrooveJames running on " + System.getProperty("java.vm.name") + " " + System.getProperty("java.runtime.version") + " (" + System.getProperty("java.vm.vendor") + ") in " + System.getProperty("java.home"));
-        ConsoleUtil.redirectStdErrToCommonsLogging();
-        ConsoleUtil.redirectStdOutToCommonsLogging();
+        log.info("GrooveJames running on {} {} ({}) in {}", System.getProperty("java.vm.name"), System.getProperty("java.runtime.version"), System.getProperty("java.vm.vendor"), System.getProperty("java.home"));
         System.setProperty("org.apache.pivot.wtk.skin.terra.location", "/groovejames/gui/GrooveJames_theme.json");
         args = OSUtils.filterSystemProperties(args);
         DesktopApplicationContext.main(Main.class, args);
@@ -488,7 +485,7 @@ public class Main extends AbstractApplication {
 
                 @Override
                 public void executeGetSuggestionsFailed(String query, Throwable exception) {
-                    log.error(format("could not autocomplete '%s'", query), exception);
+                    log.error("could not autocomplete '{}'", query, exception);
                 }
             },
             new ListViewItemRenderer() {
@@ -613,7 +610,7 @@ public class Main extends AbstractApplication {
                         Desktop.getDesktop().open(tempFile);
                         return true;
                     } catch (Exception ex) {
-                        log.error("could not show image " + nowPlayingImage, ex);
+                        log.error("could not show image {}", nowPlayingImage, ex);
                     }
                 }
                 return false;

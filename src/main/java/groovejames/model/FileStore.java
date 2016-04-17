@@ -1,14 +1,14 @@
 package groovejames.model;
 
 import groovejames.util.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.blinkenlights.jid3.ID3Exception;
 import org.blinkenlights.jid3.MP3File;
 import org.blinkenlights.jid3.v1.ID3V1Tag;
 import org.blinkenlights.jid3.v1.ID3V1_1Tag;
 import org.blinkenlights.jid3.v2.ID3V2Tag;
 import org.blinkenlights.jid3.v2.ID3V2_3_0Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -20,7 +20,7 @@ import java.io.OutputStream;
 
 public class FileStore implements Store {
 
-    private static final Log log = LogFactory.getLog(FileStore.class);
+    private static final Logger log = LoggerFactory.getLogger(FileStore.class);
     private static final Object directoryDeleteLock = new Object();
 
     private final File file;
@@ -48,7 +48,7 @@ public class FileStore implements Store {
     }
 
     @Override public void writeTrackInfo(Track track) throws IOException {
-        log.info("writing ID3 tags to " + track);
+        log.info("writing ID3 tags to {}", track);
 
         try {
             ID3V1Tag id3V1Tag = new ID3V1_1Tag();
@@ -90,9 +90,9 @@ public class FileStore implements Store {
     @Override public void deleteStore() {
         if (file.exists()) {
             if (file.delete())
-                log.debug("deleted: " + file);
+                log.debug("deleted: {}", file);
             else
-                log.debug("could not delete: " + file);
+                log.debug("could not delete: {}", file);
         }
 
         // delete empty directories, recursively up to (but not including) the top download dir
@@ -102,7 +102,7 @@ public class FileStore implements Store {
                 File parent = dir.getParentFile();
                 if (FileUtils.isEmptyDirectory(dir)) {
                     FileUtils.deleteQuietly(dir);
-                    if (log.isDebugEnabled()) log.debug("deleted dir: " + dir);
+                    log.debug("deleted dir: {}", dir);
                 } else {
                     break;
                 }

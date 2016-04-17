@@ -15,19 +15,20 @@ compileTestJava.targetCompatibility = '1.7'
 repositories { mavenCentral() }
 
 dependencies {
-    compile('log4j:log4j:1.2.17') {
-        exclude group: 'javax.mail', module: 'mail'
-        exclude group: 'javax.jms', module: 'jms'
-        exclude group: 'com.sun.jdmk', module: 'jmxtools'
-        exclude group: 'com.sun.jmx', module: 'jmxri'
-    }
+    compile 'org.slf4j:slf4j-api:1.7.13'
+    runtime 'org.slf4j:jcl-over-slf4j:1.7.13'
+    runtime 'ch.qos.logback:logback-classic:1.1.7' // TODO: runtime
     compile 'com.google.guava:guava:18.0'
-    compile 'org.apache.httpcomponents:httpclient:4.3.6'
+    compile ('org.apache.httpcomponents:httpclient:4.3.6') {
+        exclude group: 'commons-logging', module: 'commons-logging'
+    }
     compile 'org.blinkenlights.jid3:JID3:0.46'
     compile 'org.apache.pivot:pivot-core:2.0.4'
     compile 'org.apache.pivot:pivot-wtk:2.0.4'
     compile 'org.apache.pivot:pivot-wtk-terra:2.0.4'
-    compile 'com.mashape.unirest:unirest-java:1.4.7'
+    compile ('com.mashape.unirest:unirest-java:1.4.7') {
+        exclude group: 'commons-logging', module: 'commons-logging'
+    }
     compile 'com.fasterxml.jackson.core:jackson-databind:2.6.2'
     testCompile "junit:junit:4.12"
 }
