@@ -151,6 +151,10 @@ public class PlayService {
         return playThread.isAlive();
     }
 
+    public void pauseOrResume() {
+        if (isPlaying()) pause(); else if (isPaused()) resume();
+    }
+
     public void clearPlaylist() {
         stopPlaying();
         currentSongIndex = -1;

@@ -1,5 +1,9 @@
 package groovejames.gui;
 
+import com.tulskiy.keymaster.common.HotKey;
+import com.tulskiy.keymaster.common.HotKeyListener;
+import com.tulskiy.keymaster.common.MediaKey;
+import com.tulskiy.keymaster.common.Provider;
 import groovejames.gui.action.RemoveDownloadsAction;
 import groovejames.gui.action.ShareAction;
 import groovejames.gui.action.ShowSettingsAction;
@@ -91,7 +95,10 @@ import org.apache.pivot.wtk.media.Picture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.KeyStroke;
 import java.awt.Desktop;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -103,6 +110,7 @@ import java.util.TimerTask;
 import java.util.prefs.Preferences;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
+import static com.sun.jna.Platform.*;
 import static groovejames.util.MiscUtils.durationToString;
 import static groovejames.util.MiscUtils.toErrorString;
 import static groovejames.util.StringUtils.msgformat;
@@ -121,6 +129,7 @@ public class Main extends AbstractApplication {
     private Resources resources;
     private Display display;
     private ImageLoader imageLoader;
+    private Provider provider;
     private final ArrayList<Track> downloadTracks = new ArrayList<>();
 
     @BXML private Window window;
@@ -200,6 +209,11 @@ public class Main extends AbstractApplication {
         }
         Services.getDownloadService().shutdown();
         Services.getHttpClientService().shutdown();
+        if (this.provider != null) {
+            this.provider.reset();
+            this.provider.stop();
+            this.provider = null;
+        }
         this.display = null;
         return false;
     }
@@ -380,6 +394,24 @@ public class Main extends AbstractApplication {
         window.getActionMappings().add(new Window.ActionMapping(
             new Keyboard.KeyStroke(Keyboard.KeyCode.W, Platform.getCommandModifier().getMask() + Keyboard.Modifier.SHIFT.getMask()),
             "closeAllTabs"));
+        // Desktop-wide hotkey: Pause/Resume with media key (if available and supported on current platform)
+        provider = Provider.getCurrentProvider(false);
+        if (provider != null) {
+            HotKeyListener hotKeyListener = new HotKeyListener() {
+                @Override
+                public void onHotKey(HotKey hotKey) {
+                    log.debug("hotkey received: " + hotKey);
+                    Services.getPlayService().pauseOrResume();
+                }
+            };
+            provider.register(MediaKey.MEDIA_PLAY_PAUSE, hotKeyListener);
+            if (isLinux()) {
+                provider.register(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, InputEvent.META_DOWN_MASK), hotKeyListener);
+            }
+            log.info("Registered global hotkeys META-P and MEDIA_PLAY_PAUSE");
+        } else {
+            log.warn("No support for global hotkeys on this platform (detected: " + ARCH + "; os-type " + getOSType());
+        }
     }
 
     private Window createWindow() throws IOException, SerializationException {
