@@ -2,9 +2,11 @@ package groovejames.service;
 
 import groovejames.util.IOUtils;
 import org.apache.http.HttpHost;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -19,33 +21,37 @@ public class HttpClientService {
 
     private ProxySettings proxySettings;
     private CloseableHttpClient httpClient;
+    private CookieStore cookieStore = new BasicCookieStore();
 
     public HttpClientService() {
     }
 
-    public void setProxySettings(ProxySettings proxySettings) {
+    public synchronized void setProxySettings(ProxySettings proxySettings) {
         if (proxySettings == null && this.proxySettings != null
                 || proxySettings != null && !proxySettings.equals(this.proxySettings)) {
             shutdown();
-            this.httpClient = createHttpClient(proxySettings);
             this.proxySettings = proxySettings;
         }
     }
 
-    public HttpClient getHttpClient() {
+    public synchronized HttpClient getHttpClient() {
         if (httpClient == null)
             httpClient = createHttpClient(proxySettings);
         return httpClient;
     }
 
-    public void shutdown() {
+    public CookieStore getCookieStore() {
+        return cookieStore;
+    }
+
+    public synchronized void shutdown() {
         if (httpClient != null) {
             IOUtils.closeQuietly(httpClient);
             httpClient = null;
         }
     }
 
-    private static CloseableHttpClient createHttpClient(ProxySettings proxySettings) {
+    private CloseableHttpClient createHttpClient(ProxySettings proxySettings) {
         HttpClientBuilder httpClientBuilder = HttpClientBuilder.create()
                 /* set user agent string */
                 .setUserAgent(USER_AGENT)
@@ -57,6 +63,7 @@ public class HttpClientService {
                 .setMaxConnPerRoute(200)
                 /* set retry handler with maximum 3 retries and requestSentRetryEnabled=true so that even POST requests are retried (default is false) */
                 .setRetryHandler(new DefaultHttpRequestRetryHandler(3, true))
+                .setDefaultCookieStore(cookieStore)
                 .setDefaultRequestConfig(RequestConfig.custom()
                         /* timeout in milliseconds until a connection is established, in ms */
                         .setConnectTimeout(SOCKET_TIMEOUT * 1000)

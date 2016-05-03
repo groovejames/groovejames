@@ -1,9 +1,9 @@
-- "load all" link
+- do something against geoblocking (e.g. http://music.163.com/song?id=26393771 has no download location)
+- "load all" button
 - preserve selection when loading more
-- dj channels
-- play with lower bitrate, download with highest bitrate
 
 LATER:
+- dj channels
 - mp3 player: add seek forward/backward
 - persist current downloads list so that it survives restarts
 - use Retrofit (http://square.github.io/retrofit/) instead of Unirest?!?

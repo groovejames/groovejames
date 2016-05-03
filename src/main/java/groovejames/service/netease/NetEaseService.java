@@ -57,17 +57,26 @@ public class NetEaseService implements INetEaseService {
         log.info("NETEASE_LOGIN_IV={}", NETEASE_LOGIN_IV);
         log.info("NETEASE_PUBLIC_KEY={}", NETEASE_PUBLIC_KEY);
         log.info("NETEASE_MODULUS={}", NETEASE_MODULUS);
-    }
 
-    public NetEaseService(HttpClientService httpClientService) {
         Unirest.setObjectMapper(new JacksonObjectMapper());
         Unirest.setDefaultHeader("Referer", MUSIC163_REFERER);
         Unirest.setDefaultHeader("User-Agent", HttpClientService.USER_AGENT);
+    }
+
+    private final HttpClientService httpClientService;
+
+    public NetEaseService(HttpClientService httpClientService) {
+        this.httpClientService = httpClientService;
+        setup();
+    }
+
+    private void setup() {
         Unirest.setHttpClient(httpClientService.getHttpClient());
     }
 
     @Override
     public NEAccount login(String username, String password) throws Exception {
+        setup();
         // https://github.com/wu-nerd/dmusic-plugin-NeteaseCloudMusic/blob/master/neteasecloudmusic/netease_api.py
         String body = new JacksonObjectMapper().writeValue(new Credentials(username, CryptUtils.md5(password)));
         String secretKey = CryptUtils.createRandomHexNumber(16);
@@ -103,6 +112,7 @@ public class NetEaseService implements INetEaseService {
     }
 
     private <T extends NEResponse> T search(String searchString, int offset, int limit, NESearchType searchType, Class<T> responseClass) throws Exception {
+        setup();
         T response = Unirest.post(MUSIC163_API + "/search/get")
             .field("s", searchString)
             .field("type", searchType.getType())
@@ -117,6 +127,7 @@ public class NetEaseService implements INetEaseService {
 
     @Override
     public NEArtistDetailsResponse getHotSongs(long artistID) throws Exception {
+        setup();
         // this request ignores offset and limit
         NEArtistDetailsResponse response = Unirest.get(MUSIC163_API + "/artist/{artistID}")
             .routeParam("artistID", Long.toString(artistID))
@@ -128,6 +139,7 @@ public class NetEaseService implements INetEaseService {
 
     @Override
     public NEArtistAlbumsResultResponse getAlbums(long artistID, int offset, int limit) throws Exception {
+        setup();
         NEArtistAlbumsResultResponse response = Unirest.get(MUSIC163_API + "/artist/albums/{artistID}")
             .routeParam("artistID", Long.toString(artistID))
             .queryString("offset", offset)
@@ -140,6 +152,7 @@ public class NetEaseService implements INetEaseService {
 
     @Override
     public NEAlbum getAlbum(long albumID) throws Exception {
+        setup();
         NEAlbumDetailsResponse response = Unirest.get(MUSIC163_API + "/album/{albumID}")
             .routeParam("albumID", Long.toString(albumID))
             .asObject(NEAlbumDetailsResponse.class)
@@ -150,8 +163,9 @@ public class NetEaseService implements INetEaseService {
 
     @Override
     public Map<Long, NESongDetails> getSongDetails(Collection<Long> songIDs) throws Exception {
+        setup();
         String songIDList = "[" + Joiner.on(',').join(songIDs) + "]";
-        NESongDetailsResponse response = Unirest.post(MUSIC163_API + "/song/detail")
+        NESongDetailsResponse response = Unirest.post("http://anyref-163.appspot.com/" + MUSIC163_API + "/song/detail")
             .field("ids", songIDList)
             .asObject(NESongDetailsResponse.class)
             .getBody();
@@ -165,6 +179,7 @@ public class NetEaseService implements INetEaseService {
 
     @Override
     public NEPlaylistDetails getPlaylistDetails(long playlistID) throws Exception {
+        setup();
         NEPlaylistDetailsResponse response = Unirest.get(MUSIC163_API + "/playlist/detail")
             .queryString("id", Long.toString(playlistID))
             .asObject(NEPlaylistDetailsResponse.class)
@@ -175,6 +190,7 @@ public class NetEaseService implements INetEaseService {
 
     @Override
     public NESongDetails[] getSimilarSongs(long songID) throws Exception {
+        setup();
         NESongDetailsResponse response = Unirest.get(MUSIC163_API + "/discovery/simiSong")
             .queryString("songid", songID)
             .asObject(NESongDetailsResponse.class)
@@ -187,6 +203,7 @@ public class NetEaseService implements INetEaseService {
 
     @Override
     public NEArtist[] getSimilarArtists(long artistID) throws Exception {
+        setup();
         NEArtistSimilarResult response = Unirest.get(MUSIC163_API + "/discovery/simiArtist")
             .queryString("artistid", artistID)
             .asObject(NEArtistSimilarResult.class)
@@ -199,6 +216,7 @@ public class NetEaseService implements INetEaseService {
 
     @Override
     public NESuggestionsResult getSuggestions(String query, int limit) throws Exception {
+        setup();
         NESuggestionsResultResponse response = Unirest.post(MUSIC163_API + "/search/suggest")
             .field("s", query)
             .field("limit", limit)
