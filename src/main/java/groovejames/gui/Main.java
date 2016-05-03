@@ -951,7 +951,7 @@ public class Main extends AbstractApplication {
         public void exception(final Track track, final Exception ex) {
             ApplicationContext.queueCallback(new Runnable() {
                 public void run() {
-                    showError("Error playing track " + track, ex);
+                    showError("Error playing song \"" + track.getSongName() + "\"", ex);
                 }
             });
         }

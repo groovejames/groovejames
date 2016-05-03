@@ -177,7 +177,7 @@ public class DownloadService {
                 track.setStatus(Track.Status.INITIALIZING);
                 fireDownloadStatusChanged();
                 if (isNullOrEmpty(track.getSong().getDownloadURL())) {
-                    throw new IllegalStateException("no download location - maybe this song is not available for your country");
+                    throw new IllegalStateException("No download location.\n\nMaybe this song is not available for your country. Try using a chinese proxy to circumvent geoblocking.");
                 }
                 track.setStartDownloadTime(System.currentTimeMillis());
                 fireDownloadStatusChanged();
