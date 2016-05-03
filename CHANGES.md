@@ -1,6 +1,6 @@
 # GrooveJames change history
 
-### r33 (unreleased)
+### r33 (2016/05/03)
 - bugfix: setting a proxy didn't work at all; now you can set e.g. a chinese proxy to circumvent geoblocking
 - player can now be paused/resumed with the global media key PLAY/PAUSE, if available
 - replaced commons-logging/log4j with slf4j/logback
