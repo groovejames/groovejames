@@ -165,7 +165,7 @@ public class NetEaseService implements INetEaseService {
     public Map<Long, NESongDetails> getSongDetails(Collection<Long> songIDs) throws Exception {
         setup();
         String songIDList = "[" + Joiner.on(',').join(songIDs) + "]";
-        NESongDetailsResponse response = Unirest.post("http://anyref-163.appspot.com/" + MUSIC163_API + "/song/detail")
+        NESongDetailsResponse response = Unirest.post(MUSIC163_API + "/song/detail")
             .field("ids", songIDList)
             .asObject(NESongDetailsResponse.class)
             .getBody();
