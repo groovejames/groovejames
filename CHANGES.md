@@ -1,7 +1,7 @@
 # GrooveJames change history
 
-### r34 (unreleased)
-- 
+### r34 (2017/02/13)
+- download: try to fetch download url from service https://music.163.com/weapi/song/enhance/player/url, fallback to old streaming server http://p3.music.126.net if that doesn't work out
 
 ### r33 (2016/05/03)
 - bugfix: setting a proxy didn't work at all; now you can set e.g. a chinese proxy to circumvent geoblocking

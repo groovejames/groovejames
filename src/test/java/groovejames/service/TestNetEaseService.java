@@ -11,7 +11,7 @@ public class TestNetEaseService {
 
     public static void main(String[] args) throws Exception {
         HttpClientService httpClientService = new HttpClientService();
-        //httpClientService.setProxySettings(new ProxySettings("101.200.179.38", 3128)); //China
+        //httpClientService.setProxySettings(new ProxySettings("124.88.67.81", 80)); //China
         NetEaseService netEaseService = new NetEaseService(httpClientService);
 
         testDownloadInfo(netEaseService);
@@ -26,7 +26,7 @@ public class TestNetEaseService {
     }
 
     private static void testDownloadInfo(NetEaseService netEaseService) throws Exception {
-        long songID = 26393738L;
+        long songID = 22727009L;
         NESongDetails songDetails = netEaseService.getSongDetails(singletonList(songID)).get(songID);
         String url = netEaseService.determineDownloadURL2(songDetails.id, songDetails.bitrate);
         System.out.printf("URL: %s%nBitrate: %s%n", url, songDetails.bitrate);

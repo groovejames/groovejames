@@ -244,7 +244,7 @@ public class NetEaseService implements INetEaseService {
         String secretKey = CryptUtils.createRandomHexNumber(16);
         String params = aesEncrypt(aesEncrypt(body, NETEASE_NONCE), secretKey);
         String encSecKey = rsaEncrypt(secretKey, NETEASE_PUBLIC_KEY, NETEASE_MODULUS);
-        NEDownloadLocationResponse response = Unirest.post(MUSIC163_WEAPI + "/song/enhance/player/url")
+        NEDownloadLocationResponse response = Unirest.post("http://music.163.com/weapi/song/enhance/player/url?csrf_token=")
             .field("params", params)
             .field("encSecKey", encSecKey)
             .asObject(NEDownloadLocationResponse.class)
