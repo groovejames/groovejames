@@ -4,5 +4,6 @@
 !.idea/runConfigurations/**
 .gradle/
 build/
+classes/
 *.iml
 src/main/resources/groovejames/gui/build.properties

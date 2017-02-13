@@ -147,7 +147,6 @@ public class Track {
         sb.append("{songID=").append(song.getSongID());
         sb.append(", store=").append(store.getDescription());
         sb.append(", status=").append(status);
-        sb.append(", downloadURL=").append(song.getDownloadURL());
         sb.append(", totalBytes=").append(totalBytes);
         sb.append(", downloadedBytes=").append(downloadedBytes);
         sb.append('}');

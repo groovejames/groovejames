@@ -20,13 +20,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
-
 public class NetEaseService implements INetEaseService {
 
     private static final String GROOVEJAMES_SYMKEY = "bxdnldW5lg9Fryar";
     private static final String MUSIC163_API = "http://music.163.com/api";
-    private static final String MUSIC163_LOGIN_API = "https://music.163.com/weapi/login/";
+    private static final String MUSIC163_WEAPI = "https://music.163.com/weapi";
+    private static final String MUSIC163_LOGIN_API = MUSIC163_WEAPI + "/login/";
     private static final String MUSIC163_STREAMING_SERVER_URL = System.getProperty("netease.streamingserver", "http://p3.music.126.net");
     private static final String MUSIC163_REFERER = "http://music.163.com";
     private static final String NETEASE_URLDECODE_SECRET = CryptUtils.aesDecrypt(GROOVEJAMES_SYMKEY, "c90e89db10670d7e2a458cc90754292d63f0028456232453f3847daa93ff3d60");
@@ -227,19 +226,31 @@ public class NetEaseService implements INetEaseService {
     }
 
     @Override
-    public NEDownloadInfo getDownloadInfo(NESongDetails songDetails) throws Exception {
-        NEDownloadInfo downloadInfo = new NEDownloadInfo();
+    public String determineDownloadURL1(NESongDetails songDetails) throws Exception {
         NEStreamInfo streamInfo = findBestStreamInfo(songDetails);
-        if (streamInfo != null) {
-            String encryptedId = encryptId(streamInfo);
-            String baseUrl = MUSIC163_STREAMING_SERVER_URL;
-            downloadInfo.url = String.format("%s/%s/%s.%s", baseUrl, encryptedId, streamInfo.dfsId, streamInfo.extension);
-            downloadInfo.bitrate = streamInfo.bitrate;
-        } else if (!isNullOrEmpty(songDetails.mp3Url)) {
-            downloadInfo.url = songDetails.mp3Url;
-            downloadInfo.bitrate = null; // bitrate is unknown
-        }
-        return downloadInfo;
+        songDetails.bitrate = streamInfo.bitrate;
+        // alternative (old) download location
+        long dfsId = streamInfo.dfsId;
+        String encryptedId = encryptId(dfsId);
+        songDetails.mp3UrlAlternative = String.format("%s/%s/%s.%s", MUSIC163_STREAMING_SERVER_URL, encryptedId, dfsId, streamInfo.extension);
+        return songDetails.mp3UrlAlternative;
+    }
+
+    @Override
+    public String determineDownloadURL2(long songId, int bitrate) throws Exception {
+        setup();
+        // determine download location, see https://github.com/sk1418/zhuaxia/blob/master/zhuaxia/netease.py
+        String body = new JacksonObjectMapper().writeValue(new UrlReq(songId, bitrate));
+        String secretKey = CryptUtils.createRandomHexNumber(16);
+        String params = aesEncrypt(aesEncrypt(body, NETEASE_NONCE), secretKey);
+        String encSecKey = rsaEncrypt(secretKey, NETEASE_PUBLIC_KEY, NETEASE_MODULUS);
+        NEDownloadLocationResponse response = Unirest.post(MUSIC163_WEAPI + "/song/enhance/player/url")
+            .field("params", params)
+            .field("encSecKey", encSecKey)
+            .asObject(NEDownloadLocationResponse.class)
+            .getBody();
+        if (response.code != 200) throw new NetEaseException(response.code, "error download location");
+        return response.data.length > 0 ? response.data[0].url : null;
     }
 
     private NEStreamInfo findBestStreamInfo(NESongDetails songDetails) {
@@ -249,10 +260,10 @@ public class NetEaseService implements INetEaseService {
         return songDetails.bMusic;
     }
 
-    private String encryptId(NEStreamInfo streamInfo) throws Exception {
+    private String encryptId(long dfsId) throws Exception {
         // from https://github.com/yanunon/NeteaseCloudMusic
         byte[] byte1 = NETEASE_URLDECODE_SECRET.getBytes("US-ASCII");
-        byte[] byte2 = String.valueOf(streamInfo.dfsId).getBytes("US-ASCII");
+        byte[] byte2 = String.valueOf(dfsId).getBytes("US-ASCII");
         int byte1_len = byte1.length;
         for (int i = 0; i < byte2.length; i++) {
             byte2[i] = (byte) (byte2[i] ^ byte1[i % byte1_len]);
@@ -295,6 +306,18 @@ public class NetEaseService implements INetEaseService {
             this.username = username;
             this.password = password;
             this.rememberLogin = "true";
+        }
+    }
+
+    private static class UrlReq {
+        public final long[] ids;
+        public final int br; // bitrate
+        public final String csrf_token;
+
+        private UrlReq(long songId, int bitrate) {
+            this.ids = new long[] {songId};
+            this.br = bitrate;
+            this.csrf_token = "";
         }
     }
 }

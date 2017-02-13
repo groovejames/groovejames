@@ -13,7 +13,6 @@ import groovejames.service.netease.NEArtist;
 import groovejames.service.netease.NEArtistAlbumsResultResponse;
 import groovejames.service.netease.NEArtistDetailsResponse;
 import groovejames.service.netease.NEArtistSearchResult;
-import groovejames.service.netease.NEDownloadInfo;
 import groovejames.service.netease.NEPlaylist;
 import groovejames.service.netease.NEPlaylistDetails;
 import groovejames.service.netease.NEPlaylistSearchResult;
@@ -22,6 +21,8 @@ import groovejames.service.netease.NESong;
 import groovejames.service.netease.NESongDetails;
 import groovejames.service.netease.NESongSearchResult;
 import groovejames.service.netease.NESuggestionsResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +34,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class SearchService {
+
+    private static final Logger log = LoggerFactory.getLogger(SearchService.class);
 
     private final INetEaseService netEaseService;
 
@@ -187,10 +190,9 @@ public class SearchService {
         song.setImageURL(neSongDetails.album.picUrl);
         song.setPopularity(neSongDetails.popularity / 100.0);
         song.setDuration(neSongDetails.duration / 1000);
-
-        NEDownloadInfo downloadInfo = netEaseService.getDownloadInfo(neSongDetails);
-        song.setDownloadURL(downloadInfo.url);
-        song.setBitrate(downloadInfo.bitrate != null ? downloadInfo.bitrate / 1000 : null);
+        song.setDownloadURL(neSongDetails.mp3Url);
+        song.setAlternativeDownloadURL(netEaseService.determineDownloadURL1(neSongDetails));
+        song.setBitrate(neSongDetails.bitrate);
     }
 
     public Song[] autoplayGetSongs(Iterable<Song> songsAlreadySeen) throws Exception {
@@ -327,6 +329,15 @@ public class SearchService {
                 throw new IllegalArgumentException("invalid search type: " + searchType);
         }
         return new SearchResult<>(result, total);
+    }
+
+    public String getDownloadURL(Song song) throws Exception {
+        try {
+            return netEaseService.determineDownloadURL2(song.getSongID(), song.getBitrate());
+        } catch(Exception ex) {
+            log.error("could not determine download url using service", ex);
+            return null;
+        }
     }
 
 }

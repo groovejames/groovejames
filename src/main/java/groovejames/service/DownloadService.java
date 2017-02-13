@@ -5,6 +5,7 @@ import groovejames.model.MemoryStore;
 import groovejames.model.Song;
 import groovejames.model.Store;
 import groovejames.model.Track;
+import groovejames.service.search.SearchService;
 import groovejames.util.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -53,13 +54,15 @@ public class DownloadService {
     private final ExecutorService executorService;
     private final ExecutorService executorServiceForPlay;
     private final HttpClientService httpClientService;
+    private final SearchService searchService;
     private final ArrayList<DownloadTask> currentlyRunningDownloads = new ArrayList<>();
     private final FilenameSchemeParser filenameSchemeParser;
 
     private File downloadDir;
 
-    public DownloadService(HttpClientService httpClientService) {
+    public DownloadService(HttpClientService httpClientService, SearchService searchService) {
         this.httpClientService = httpClientService;
+        this.searchService = searchService;
         this.downloadDir = defaultDownloadDir;
         this.executorService = Executors.newFixedThreadPool(numberOfParallelDownloads);
         this.executorServiceForPlay = Executors.newFixedThreadPool(1);
@@ -159,6 +162,8 @@ public class DownloadService {
         private final DownloadListener downloadListener;
         private volatile HttpGet httpGet;
         private volatile boolean aborted;
+        private volatile String primaryDownloadURL;
+        private volatile String realDownloadURL;
 
         public DownloadTask(Track track, int initialDelay, DownloadListener downloadListener) {
             this.track = track;
@@ -176,9 +181,7 @@ public class DownloadService {
                 log.info("start download track {}", track);
                 track.setStatus(Track.Status.INITIALIZING);
                 fireDownloadStatusChanged();
-                if (isNullOrEmpty(track.getSong().getDownloadURL())) {
-                    throw new IllegalStateException("No download location.\n\nMaybe this song is not available for your country. Try using a chinese proxy to circumvent geoblocking.");
-                }
+                determineDownloadURL();
                 track.setStartDownloadTime(System.currentTimeMillis());
                 fireDownloadStatusChanged();
                 if (Boolean.getBoolean("mockNet"))
@@ -220,9 +223,24 @@ public class DownloadService {
             return false;
         }
 
+        private void determineDownloadURL() throws Exception {
+            this.primaryDownloadURL = searchService.getDownloadURL(track.getSong());
+            if (!isNullOrEmpty(this.primaryDownloadURL)) {
+                this.realDownloadURL = this.primaryDownloadURL;
+            }
+            if (isNullOrEmpty(this.realDownloadURL)) {
+                this.realDownloadURL = track.getSong().getAlternativeDownloadURL();
+            }
+            if (isNullOrEmpty(this.realDownloadURL)) {
+                this.realDownloadURL = track.getSong().getDownloadURL();
+            }
+            if (isNullOrEmpty(this.realDownloadURL)) {
+                throw new IllegalStateException("No download location.\n\nMaybe this song is not available for your country. Try using a chinese proxy to circumvent geoblocking.");
+            }
+        }
+
         private void download() throws IOException {
-            String url = track.getSong().getDownloadURL();
-            httpGet = new HttpGet(url);
+            httpGet = new HttpGet(realDownloadURL);
             HttpResponse httpResponse = httpClientService.getHttpClient().execute(httpGet);
             HttpEntity httpEntity = httpResponse.getEntity();
             track.setStatus(Track.Status.DOWNLOADING);
@@ -248,9 +266,11 @@ public class DownloadService {
                     outputStream = null;
                     // write ID tags
                     store.writeTrackInfo(track);
+                } else if (statusCode == HttpStatus.SC_NOT_FOUND && isNullOrEmpty(primaryDownloadURL)) {
+                    throw new IllegalStateException("No valid download location found.\n\nMaybe this song is not available for your country. Try using a chinese proxy to circumvent geoblocking.");
                 } else {
                     throw new HttpResponseException(statusCode,
-                        format("%s: %d %s", url, statusCode, statusLine.getReasonPhrase()));
+                        format("%s: %d %s", realDownloadURL, statusCode, statusLine.getReasonPhrase()));
                 }
             } finally {
                 IOUtils.closeQuietly(instream, track.getStore().getDescription());
@@ -259,7 +279,7 @@ public class DownloadService {
         }
 
         private void fakedownload() throws InterruptedException, IOException {
-            httpGet = new HttpGet(track.getSong().getDownloadURL());
+            httpGet = new HttpGet(realDownloadURL);
             Thread.sleep(1000);
             String songName = track.getSongName();
             songName = songName.contains("track1") ? "track1" : songName.contains("track2") ? "track2" : songName;

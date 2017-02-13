@@ -15,5 +15,13 @@ public class NESongDetails extends NESong {
     /** value from 0.0 to 100.0 */
     public double popularity;
     public NEStreamInfo bMusic, lMusic, mMusic, hMusic;
+
+    /* not part of response, gets computed */
+    public int bitrate;
+    /* not part of response, gets computed */
+    public String mp3UrlNew;
+    /* not part of response, gets computed */
+    public String mp3UrlAlternative;
+
 }
 

@@ -119,7 +119,7 @@
                                         </TableView.Column>
                                         <TableView.Column name="bitrate" headerData="Bitrate" width="45">
                                             <cellRenderer>
-                                                <content:TableViewNumberCellRenderer/>
+                                                <guicomponents:TableViewNumberCellRenderer factor="1000"/>
                                             </cellRenderer>
                                         </TableView.Column>
                                     </columns>

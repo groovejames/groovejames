@@ -104,8 +104,13 @@ public class NetEaseServiceMock implements INetEaseService {
     }
 
     @Override
-    public NEDownloadInfo getDownloadInfo(NESongDetails songDetails) throws Exception {
-        return new NetEaseService(null).getDownloadInfo(songDetails);
+    public String determineDownloadURL1(NESongDetails songDetails) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String determineDownloadURL2(long songID, int bitrate) throws Exception {
+        return null;
     }
 
     private NEAlbum createAlbum(String name) {

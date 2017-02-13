@@ -2,7 +2,6 @@ package groovejames.service;
 
 import groovejames.service.netease.NEAccount;
 import groovejames.service.netease.NEArtist;
-import groovejames.service.netease.NEDownloadInfo;
 import groovejames.service.netease.NESongDetails;
 import groovejames.service.netease.NetEaseService;
 
@@ -29,8 +28,8 @@ public class TestNetEaseService {
     private static void testDownloadInfo(NetEaseService netEaseService) throws Exception {
         long songID = 26393738L;
         NESongDetails songDetails = netEaseService.getSongDetails(singletonList(songID)).get(songID);
-        NEDownloadInfo downloadInfo = netEaseService.getDownloadInfo(songDetails);
-        System.out.printf("URL: %s%nBitrate: %s%n", downloadInfo.url, downloadInfo.bitrate);
+        String url = netEaseService.determineDownloadURL2(songDetails.id, songDetails.bitrate);
+        System.out.printf("URL: %s%nBitrate: %s%n", url, songDetails.bitrate);
     }
 
     private static NEAccount testLogin(NetEaseService netEaseService, String username, String password) throws Exception {

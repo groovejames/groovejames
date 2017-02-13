@@ -15,6 +15,7 @@ public class Song extends BaseModelObject {
     private Double popularity;
     private Integer bitrate;
     private String downloadURL;
+    private String alternativeDownloadURL;
 
     public long getArtistID() {
         return artistID;
@@ -128,6 +129,14 @@ public class Song extends BaseModelObject {
 
     public void setDownloadURL(String downloadURL) {
         this.downloadURL = downloadURL;
+    }
+
+    public String getAlternativeDownloadURL() {
+        return alternativeDownloadURL;
+    }
+
+    public void setAlternativeDownloadURL(String alternativeDownloadURL) {
+        this.alternativeDownloadURL = alternativeDownloadURL;
     }
 
     @Override

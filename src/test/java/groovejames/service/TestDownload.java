@@ -18,7 +18,7 @@ public class TestDownload {
         SearchResult<Song> songSearchResult = searchService.searchSongs(new SongSearch(1782142L, "Can Your Love Find It's Way (Club Vocal)", true));
         Song song = songSearchResult.getResult()[0];
 
-        DownloadService downloadService = new DownloadService(httpClientService);
+        DownloadService downloadService = new DownloadService(httpClientService, searchService);
         downloadService.setDownloadDir(new File("/tmp"));
         downloadService.download(song);
     }
