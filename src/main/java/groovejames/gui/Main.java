@@ -405,10 +405,8 @@ public class Main extends AbstractApplication {
                 }
             };
             provider.register(MediaKey.MEDIA_PLAY_PAUSE, hotKeyListener);
-            if (isLinux()) {
-                provider.register(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, InputEvent.META_DOWN_MASK), hotKeyListener);
-            }
-            log.info("Registered global hotkeys META-P and MEDIA_PLAY_PAUSE");
+            provider.register(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.META_DOWN_MASK + InputEvent.SHIFT_DOWN_MASK), hotKeyListener);
+            log.info("Registered global hotkeys MEDIA_PLAY_PAUSE and Win-Shift-P");
         } else {
             log.warn("No support for global hotkeys on this platform (detected: " + ARCH + "; os-type " + getOSType());
         }
