@@ -21,9 +21,8 @@ public class NetEaseServiceMock implements INetEaseService {
 
     @Override
     public NESongSearchResult searchSongs(String searchString, int offset, int limit) throws Exception {
-        int cnt = 0;
         ArrayList<NESong> songs = new ArrayList<>();
-        for (int i = offset; i < total && cnt < limit; i++, cnt++) {
+        for (int i = offset, cnt = 0; i < total && cnt < limit; i++, cnt++) {
             NESong song = new NESong();
             song.id = searchString.hashCode() + i;
             songs.add(song);
@@ -38,12 +37,28 @@ public class NetEaseServiceMock implements INetEaseService {
 
     @Override
     public NEArtistSearchResult searchArtists(String searchString, int offset, int limit) throws Exception {
-        return null; // TODO
+        ArrayList<NEArtist> artists = new ArrayList<>();
+        for (int i = offset, cnt = 0; i < total && cnt < limit; i++, cnt++) {
+            artists.add(createArtist(searchString + " " + i));
+        }
+        NEArtistSearchResult result = new NEArtistSearchResult();
+        result.artistCount = total;
+        result.artists = artists.toArray(new NEArtist[artists.size()]);
+        delay();
+        return result;
     }
 
     @Override
     public NEAlbumSearchResult searchAlbums(String searchString, int offset, int limit) throws Exception {
-        return null; // TODO
+        ArrayList<NEAlbum> artists = new ArrayList<>();
+        for (int i = offset, cnt = 0; i < total && cnt < limit; i++, cnt++) {
+            artists.add(createAlbum(searchString + " " + i));
+        }
+        NEAlbumSearchResult result = new NEAlbumSearchResult();
+        result.albumCount = total;
+        result.albums = artists.toArray(new NEAlbum[artists.size()]);
+        delay();
+        return result;
     }
 
     @Override
@@ -73,7 +88,7 @@ public class NetEaseServiceMock implements INetEaseService {
         for (long songID : songIDs) {
             NESongDetails songDetails = new NESongDetails();
             songDetails.id = songID;
-            songDetails.name = latestSearch + i;
+            songDetails.name = latestSearch + i++;
             songDetails.album = createAlbum(latestSearch);
             songDetails.artists = new NEArtist[] {createArtist(latestSearch)};
             songDetails.duration = 3 * 60 * 1000;

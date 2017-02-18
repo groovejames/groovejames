@@ -39,6 +39,8 @@ public class DownloadService {
 
     public static final File defaultDownloadDir;
 
+    private static final boolean mockNet = Boolean.getBoolean("mockNet");
+
     static {
         String downloadDir = System.getProperty("downloadDir");
         if (downloadDir != null) {
@@ -184,7 +186,7 @@ public class DownloadService {
                 determineDownloadURL();
                 track.setStartDownloadTime(System.currentTimeMillis());
                 fireDownloadStatusChanged();
-                if (Boolean.getBoolean("mockNet"))
+                if (mockNet)
                     fakedownload();
                 else
                     download();
@@ -224,6 +226,7 @@ public class DownloadService {
         }
 
         private void determineDownloadURL() throws Exception {
+            if (mockNet) return;
             this.primaryDownloadURL = searchService.getDownloadURL(track.getSong());
             if (!isNullOrEmpty(this.primaryDownloadURL)) {
                 this.realDownloadURL = this.primaryDownloadURL;
@@ -279,11 +282,11 @@ public class DownloadService {
         }
 
         private void fakedownload() throws InterruptedException, IOException {
-            httpGet = new HttpGet(realDownloadURL);
             Thread.sleep(1000);
             String songName = track.getSongName();
-            songName = songName.contains("track1") ? "track1" : songName.contains("track2") ? "track2" : songName;
-            File file = new File(format("src/test/resources/%s.mp3", songName));
+            char lastChar = songName.charAt(songName.length() - 1);
+            String trackName = lastChar % 2 == 0 ? "track1" : "track2";
+            File file = new File(format("src/test/resources/%s.mp3", trackName));
             Store store = track.getStore();
             OutputStream storeOutputStream = store.getOutputStream();
             OutputStream outputStream = new MonitoredOutputStream(storeOutputStream);
