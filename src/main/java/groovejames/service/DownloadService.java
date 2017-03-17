@@ -101,6 +101,7 @@ public class DownloadService {
         if (downloadWasInterrupted && !forPlay)
             initialDelay += 5000;
         DownloadTask downloadTask = new DownloadTask(track, initialDelay, downloadListener);
+        downloadTask.fireDownloadStatusChanged();
         currentlyRunningDownloads.add(downloadTask);
         if (forPlay) {
             executorServiceForPlay.submit(downloadTask);
@@ -157,6 +158,10 @@ public class DownloadService {
         }
     }
 
+    public void shutdownNicely() {
+        executorService.shutdown();
+        executorServiceForPlay.shutdown();
+    }
 
     private class DownloadTask implements Runnable {
         private final Track track;

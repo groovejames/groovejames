@@ -20,6 +20,30 @@
         </encoder>
     </appender>
 
+    <appender name="BATCHLOG" class="ch.qos.logback.classic.sift.SiftingAppender">
+        <discriminator>
+            <key>file</key>
+            <defaultValue>unknown</defaultValue>
+        </discriminator>
+        <sift>
+            <appender name="BATCHLOG-${file}" class="ch.qos.logback.core.FileAppender">
+                <file>${user.dir}/batchdownloader.log</file>
+                <append>false</append>
+                <encoder>
+                    <pattern>%-5level: %msg%n</pattern>
+                </encoder>
+            </appender>
+        </sift>
+        <!-- Only accept messages which are marked with BATCHLOG: -->
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator class="ch.qos.logback.classic.boolex.OnMarkerEvaluator">
+                <marker>BATCHLOG</marker>
+            </evaluator>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
     <logger name="groovejames" level="debug"/>
     <logger name="org.apache.http" level="info"/>
     <logger name="org.apache.http.headers" level="debug"/>
@@ -28,5 +52,6 @@
     <root level="info">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
+        <appender-ref ref="BATCHLOG"/>
     </root>
 </configuration>
