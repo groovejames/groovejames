@@ -46,10 +46,10 @@ public class FilenameSchemaParserTest {
         assertEquals("", parser.parse(song, "<#>"));
         assertEquals("", parser.parse(song, "<####>"));
         assertEquals("", parser.parse(song, "<#?>"));
-        assertEquals("foo", parser.parse(song, "<#?foo>"));
-        assertEquals("Beck", parser.parse(song, "<#?<Artist>>"));
+        assertEquals("", parser.parse(song, "<#?foo>"));
+        assertEquals("", parser.parse(song, "<#?<Artist>>"));
         assertEquals("", parser.parse(song, "<#?<####>>"));
-        assertEquals("Beck", parser.parse(song, "<####?<####?<Artist>>>"));
+        assertEquals("", parser.parse(song, "<####?<####?<Artist>>>"));
 
         assertEquals("?Beck", parser.parse(song, "<Artist??<Artist>>"));
         assertEquals("Beck?", parser.parse(song, "<Artist?<Artist>?>"));
