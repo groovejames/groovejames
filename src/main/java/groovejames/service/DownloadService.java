@@ -28,6 +28,7 @@ import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.lang.String.format;
@@ -166,6 +167,16 @@ public class DownloadService {
     public void shutdownNicely() {
         executorService.shutdown();
         executorServiceForPlay.shutdown();
+        try {
+            executorService.awaitTermination(1, TimeUnit.DAYS);
+        } catch (InterruptedException e) {
+            log.warn("interrupted", e);
+        }
+        try {
+            executorServiceForPlay.awaitTermination(1, TimeUnit.DAYS);
+        } catch (InterruptedException e) {
+            log.warn("interrupted", e);
+        }
     }
 
     private class DownloadTask implements Runnable {
