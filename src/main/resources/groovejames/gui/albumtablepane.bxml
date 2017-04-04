@@ -38,15 +38,15 @@
                                                     defaultImage="@images/unknownSong.png"/>
                                         </cellRenderer>
                                     </TableView.Column>
-                                    <TableView.Column name="albumName" headerData="Album" width="1*"/>
-                                    <TableView.Column name="artistName" headerData="Artist" width="300"/>
+                                    <TableView.Column name="albumName" headerData="Album" width="300"/>
+                                    <TableView.Column name="artistName" headerData="Artist" width="200"/>
                                     <TableView.Column name="numSongs" headerData="# Songs" width="55"/>
                                     <TableView.Column name="publishingTime" headerData="Year" width="80">
                                         <cellRenderer>
                                             <wtkcontent:TableViewDateCellRenderer dateFormat="YYYY"/>
                                         </cellRenderer>
                                     </TableView.Column>
-                                    <TableView.Column name="relevance" headerData="Relevance" width="80">
+                                    <TableView.Column name="relevance" headerData="Relevance" width="1*">
                                         <cellRenderer>
                                             <guicomponents:MeterTableCellRenderer/>
                                         </cellRenderer>

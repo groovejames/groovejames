@@ -1,6 +1,5 @@
 BUGS:
 - downloads table: bitrate/1000
-- table columns: resize behaviour like in downloads table
 - <##?<##>> doesn't work
 
 WISHLIST:

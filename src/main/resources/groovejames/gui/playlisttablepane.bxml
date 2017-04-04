@@ -35,10 +35,10 @@
                                                     defaultImage="@images/unknownSong.png"/>
                                         </cellRenderer>
                                     </TableView.Column>
-                                    <TableView.Column name="name" headerData="Name" width="1*"/>
+                                    <TableView.Column name="name" headerData="Name" width="400"/>
                                     <TableView.Column name="userName" headerData="created by" width="100"/>
                                     <TableView.Column name="numSongs" headerData="# Songs" width="55"/>
-                                    <TableView.Column name="relevance" headerData="Relevance" width="80">
+                                    <TableView.Column name="relevance" headerData="Relevance" width="1*">
                                         <cellRenderer>
                                             <guicomponents:MeterTableCellRenderer/>
                                         </cellRenderer>
