@@ -6,6 +6,9 @@ import org.apache.pivot.wtk.TableView;
 
 import java.awt.Color;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 public class DownloadProgressTableCellRenderer extends MeterTableCellRenderer {
 
     private Color defaultMeterColor;
@@ -75,7 +78,7 @@ public class DownloadProgressTableCellRenderer extends MeterTableCellRenderer {
         }
 
         meter.setText(text);
-        meter.setPercentage(percentage);
+        meter.setPercentage(max(min(percentage, 1.0), 0.0));
         meter.getStyles().put("color", foregroundColor);
     }
 
