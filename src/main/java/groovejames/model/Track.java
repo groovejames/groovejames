@@ -64,7 +64,7 @@ public class Track {
     }
 
     public void setTotalBytes(long totalBytes) {
-        this.totalBytes = totalBytes;
+        this.totalBytes = totalBytes >= 0 ? totalBytes : Long.MAX_VALUE;
     }
 
     public long getDownloadedBytes() {
