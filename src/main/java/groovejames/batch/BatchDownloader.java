@@ -8,6 +8,7 @@ import groovejames.model.Track;
 import groovejames.service.DownloadListener;
 import groovejames.service.DownloadService;
 import groovejames.service.FilenameSchemeParser;
+import groovejames.service.ProxySettings;
 import groovejames.service.Services;
 import groovejames.service.search.AlbumSearch;
 import groovejames.service.search.ArtistSearch;
@@ -41,9 +42,12 @@ public class BatchDownloader {
     private static final Marker BATCHLOG = MarkerFactory.getMarker("BATCHLOG");
 
     public static void main(String[] args) throws IOException {
-        if (args.length != 1) {
-            System.err.println("Usage: BatchDownloader <missingfiles.txt>");
+        if (args.length != 1 && args.length != 3) {
+            System.err.println("Usage: BatchDownloader <missingfiles.txt> [<proxyhost> <proxyport>]");
             System.exit(1);
+        }
+        if (args.length == 3) {
+            Services.getHttpClientService().setProxySettings(new ProxySettings(args[1], Integer.parseInt(args[2])));
         }
         Runtime.getRuntime().addShutdownHook(new Thread("batchdownloader-shutdownhook") {
             @Override
