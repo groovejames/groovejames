@@ -6,6 +6,7 @@ import groovejames.model.Song;
 import groovejames.model.Store;
 import groovejames.model.Track;
 import groovejames.service.search.SearchService;
+import groovejames.util.FileUtils;
 import groovejames.util.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -23,6 +24,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -34,6 +37,7 @@ public class DownloadService {
     private static final Logger log = LoggerFactory.getLogger(DownloadService.class);
 
     private static final int numberOfParallelDownloads = Integer.getInteger("numberOfParallelDownloads", 1);
+    private static final int maxRetries = Integer.getInteger("maxRetries", 3);
 
     private static final int downloadBufferSize = 10240;
 
@@ -84,7 +88,8 @@ public class DownloadService {
     }
 
     public synchronized Track download(Song song, DownloadListener downloadListener) {
-        File file = new File(downloadDir, filenameSchemeParser.parse(song));
+        String filename = FileUtils.sanitizeFilepath(filenameSchemeParser.parse(song));
+        File file = new File(downloadDir, filename + ".mp3");
         Store store = new FileStore(file, downloadDir);
         return download(song, store, downloadListener, false);
     }
@@ -249,40 +254,50 @@ public class DownloadService {
 
         private void download() throws IOException {
             httpGet = new HttpGet(realDownloadURL);
-            HttpResponse httpResponse = httpClientService.getHttpClient().execute(httpGet);
-            HttpEntity httpEntity = httpResponse.getEntity();
-            track.setStatus(Track.Status.DOWNLOADING);
-            fireDownloadStatusChanged();
-            OutputStream outputStream = null;
-            InputStream instream = null;
-            try {
-                StatusLine statusLine = httpResponse.getStatusLine();
-                int statusCode = statusLine.getStatusCode();
-                if (statusCode == HttpStatus.SC_OK) {
-                    track.setTotalBytes(httpEntity.getContentLength());
-                    Store store = track.getStore();
-                    OutputStream storeOutputStream = store.getOutputStream();
-                    outputStream = new MonitoredOutputStream(storeOutputStream);
-                    instream = httpEntity.getContent();
-                    byte[] buf = new byte[downloadBufferSize];
-                    int l;
-                    while ((l = instream.read(buf)) != -1) {
-                        outputStream.write(buf, 0, l);
+            for (int i = 1; i <= maxRetries; i++) {
+                try {
+                    HttpResponse httpResponse = httpClientService.getHttpClient().execute(httpGet);
+                    HttpEntity httpEntity = httpResponse.getEntity();
+                    track.setStatus(Track.Status.DOWNLOADING);
+                    fireDownloadStatusChanged();
+                    OutputStream outputStream = null;
+                    InputStream instream = null;
+                    try {
+                        StatusLine statusLine = httpResponse.getStatusLine();
+                        int statusCode = statusLine.getStatusCode();
+                        if (statusCode == HttpStatus.SC_OK) {
+                            track.setTotalBytes(httpEntity.getContentLength());
+                            Store store = track.getStore();
+                            OutputStream storeOutputStream = store.getOutputStream();
+                            outputStream = new MonitoredOutputStream(storeOutputStream);
+                            instream = httpEntity.getContent();
+                            byte[] buf = new byte[downloadBufferSize];
+                            int l;
+                            while ((l = instream.read(buf)) != -1) {
+                                outputStream.write(buf, 0, l);
+                            }
+                            // need to close immediately otherwise we cannot write ID tags
+                            outputStream.close();
+                            outputStream = null;
+                            // write ID tags
+                            store.writeTrackInfo(track);
+                            return;
+                        } else if (statusCode == HttpStatus.SC_NOT_FOUND && isNullOrEmpty(primaryDownloadURL)) {
+                            throw new IllegalStateException("No valid download location found.\n\nMaybe this song is not available for your country. Try using a chinese proxy to circumvent geoblocking.");
+                        } else {
+                            throw new HttpResponseException(statusCode,
+                                format("%s: %d %s", realDownloadURL, statusCode, statusLine.getReasonPhrase()));
+                        }
+                    } finally {
+                        IOUtils.closeQuietly(instream, track.getStore().getDescription());
+                        IOUtils.closeQuietly(outputStream, track.getStore().getDescription());
                     }
-                    // need to close immediately otherwise we cannot write ID tags
-                    outputStream.close();
-                    outputStream = null;
-                    // write ID tags
-                    store.writeTrackInfo(track);
-                } else if (statusCode == HttpStatus.SC_NOT_FOUND && isNullOrEmpty(primaryDownloadURL)) {
-                    throw new IllegalStateException("No valid download location found.\n\nMaybe this song is not available for your country. Try using a chinese proxy to circumvent geoblocking.");
-                } else {
-                    throw new HttpResponseException(statusCode,
-                        format("%s: %d %s", realDownloadURL, statusCode, statusLine.getReasonPhrase()));
+                } catch (ConnectException | SocketTimeoutException ex) {
+                    if (i >= maxRetries)
+                        throw ex;
+                    else
+                        log.warn("Error downloading track {} - will be retried (this was retry {} of {}); error was: {}", track, i, maxRetries, ex);
                 }
-            } finally {
-                IOUtils.closeQuietly(instream, track.getStore().getDescription());
-                IOUtils.closeQuietly(outputStream, track.getStore().getDescription());
             }
         }
 

@@ -6,7 +6,7 @@ import java.text.DecimalFormat;
 import java.util.Locale;
 
 public class FilenameSchemeParser {
-    public static final String DEFAULT_FILENAME_SCHEME = "<Artist?<Artist>/><Album?<Album>/><##?<##> - ><Title>.mp3";
+    public static final String DEFAULT_FILENAME_SCHEME = "<Artist?<Artist>/><Album?<Album>/><##?<##> - ><Title>";
     public static final char DEFAULT_WHITESPACE_REPLACE_CHAR = ' ';
     public static final char DEFAULT_ILLEGAL_REPLACE_CHAR = '_';
 

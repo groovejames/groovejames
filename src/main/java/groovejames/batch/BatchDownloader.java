@@ -109,6 +109,7 @@ public class BatchDownloader {
             log.error(BATCHLOG, "SEARCH ERROR: {}{}{}{}{} - {}", searchArtist, separator, searchAlbum, separator, searchTitle, ex.toString(), ex);
         }
         if (song != null) {
+            log.info(BATCHLOG, "    downloading: {}", song.getSongName());
             Services.getDownloadService().download(song, downloadListener);
         } else {
             writeStillMissing(searchArtist, searchAlbum, searchTitle);
@@ -146,11 +147,13 @@ public class BatchDownloader {
             if (fuzzyEquals(searchArtist, artist.getArtistName())) {
                 artistCache.put(searchArtist, artist);
                 return artist;
-            } else {
-                log.info(BATCHLOG, "  artist not matching: {}", artist.getArtistName());
             }
         }
         artistCache.put(searchArtist, ARTIST_NOT_FOUND);
+        log.info(BATCHLOG, "  artist not found: {}", searchArtist);
+        log.info(BATCHLOG, "  available artists:");
+        for (Artist artist : artists)
+            log.info(BATCHLOG, "    {}", artist.getArtistName());
         return null;
     }
 
@@ -164,32 +167,26 @@ public class BatchDownloader {
             if (fuzzyEquals(searchAlbum, album.getAlbumName())) {
                 albumCache.put(cacheKey, album);
                 return album;
-            } else {
-                log.info(BATCHLOG, "  album not matching: {}", album.getAlbumName());
             }
         }
         albumCache.put(cacheKey, ALBUM_NOT_FOUND);
+        log.info(BATCHLOG, "  album not found: {}", searchAlbum);
+        log.info(BATCHLOG, "  available albums:");
+        for (Album album : albums)
+            log.info(BATCHLOG, "    {}", album.getAlbumName());
         return null;
     }
 
     private Song findSong(Album album, String searchTitle) throws Exception {
         AlbumSearch albumSearch = new AlbumSearch(album.getAlbumID(), album.getAlbumName(), album.getArtistName(), false);
         List<Song> songs = getAll(albumSearch, SearchType.Songs);
-        for (Song song : songs) {
+        for (Song song : songs)
             if (fuzzyEquals(searchTitle, song.getSongName()))
                 return song;
-            else
-                log.info(BATCHLOG, "    title not matching: {}", song.getSongName());
-        }
-        log.info(BATCHLOG, "  searching misc songs...");
-        ArtistSearch artistSearch = new ArtistSearch(album.getArtistID(), album.getArtistName());
-        songs = getAll(artistSearch, SearchType.Songs);
-        for (Song song : songs) {
-            if (fuzzyEquals(searchTitle, song.getSongName()))
-                return song;
-            else
-                log.info(BATCHLOG, "    title not matching: {}", song.getSongName());
-        }
+        log.info(BATCHLOG, "    title not found: {}", searchTitle);
+        log.info(BATCHLOG, "    available titles:");
+        for (Song song : songs)
+            log.info(BATCHLOG, "      {}", song.getSongName());
         return null;
     }
 
@@ -252,7 +249,7 @@ public class BatchDownloader {
                 numberOfDownloads--;
                 if (numberOfDownloads <= 0) semaphore.release();
                 if (track.getStatus() == Track.Status.ERROR) {
-                    log.error(BATCHLOG, "DOWNLOAD ERROR: {}|{}|{} (id:{}): {}", track.getArtistName(), separator, track.getAlbumName(), separator, track.getSongName(), separator, track.getSong().getSongID(), track.getFault(), track.getFault());
+                    log.error(BATCHLOG, "DOWNLOAD ERROR: {}{}{}{}{} (id:{}): {}", track.getArtistName(), separator, track.getAlbumName(), separator, track.getSongName(), track.getSong().getSongID(), track.getFault(), track.getFault());
                     try {
                         writeStillMissing(track.getArtistName(), track.getAlbumName(), track.getSongName());
                     } catch (IOException ex) {
@@ -284,7 +281,14 @@ public class BatchDownloader {
 
     private static String normalize(String s) {
         s = s.toLowerCase(Locale.ENGLISH);
-        s = s.replaceAll("[ !\"§$%&/()\\[\\]=?`*+#'<>,;.:-_’]", "");
+        s = s.replaceAll("[ !\"§$%&/()\\[\\]=?`*+#'<>,;.:_\\-’]", "");
+        s = s.replaceAll("deluxe$", "");
+        s = s.replaceAll("deluxeedition$", "");
+        s = s.replaceAll("radioedit$", "");
+        s = s.replaceAll("albumversion$", "");
+        s = s.replaceAll("lpversion$", "");
+        s = s.replaceAll("remix$", "");
+        s = s.replaceAll(" & ", " and ");
         return s;
     }
 

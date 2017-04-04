@@ -124,4 +124,25 @@ public class FileUtils {
             }
         }
     }
+
+    /**
+     * Ensure that every part of the given file path is not longer that 240 chars
+     *
+     * @param filepath a
+     */
+    public static String sanitizeFilepath(String filepath) {
+        String[] parts = filepath.split("/");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < parts.length; i++) {
+            if (i > 0) sb.append("/");
+            String part = parts[i];
+            sb.append(truncateFilenamePart(part));
+        }
+        return sb.toString();
+    }
+
+    private static String truncateFilenamePart(String part) {
+        return part.length() > 240 ? part.substring(0, 240) : part;
+    }
+
 }

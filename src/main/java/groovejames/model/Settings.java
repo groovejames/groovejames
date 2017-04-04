@@ -3,6 +3,7 @@ package groovejames.model;
 import groovejames.service.DownloadService;
 import groovejames.service.FilenameSchemeParser;
 
+import java.util.Locale;
 import java.util.prefs.Preferences;
 
 public class Settings {
@@ -71,6 +72,9 @@ public class Settings {
     }
 
     public void setFilenameScheme(String filenameScheme) {
+        if (filenameScheme != null && filenameScheme.toLowerCase(Locale.ENGLISH).endsWith(".mp3")) {
+            filenameScheme = filenameScheme.substring(0, filenameScheme.length() - 4); // cut off .mp3 from previous versions
+        }
         this.filenameScheme = filenameScheme;
     }
 

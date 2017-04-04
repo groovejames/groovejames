@@ -56,15 +56,15 @@ public class FilenameSchemaParserTest {
         assertEquals("?Beck?", parser.parse(song, "<Artist??<Artist>?>"));
 
         assertEquals("BeckOdelay", parser.parse(song, "<Artist><Album>"));
-        assertEquals("Beck - Odelay - Devil's Haircut.mp3", parser.parse(song, "<Artist> - <Album> - <Title>.mp3"));
-        assertEquals("Beck/Odelay/Devil's Haircut.mp3", parser.parse(song, "<Artist>/<Album>/<Title>.mp3"));
+        assertEquals("Beck - Odelay - Devil's Haircut", parser.parse(song, "<Artist> - <Album> - <Title>"));
+        assertEquals("Beck/Odelay/Devil's Haircut", parser.parse(song, "<Artist>/<Album>/<Title>"));
 
         song.setAlbumName(null);
         song.setTrackNum(20);
-        assertEquals("Beck//Devil's Haircut.mp3", parser.parse(song, "<Artist>/<Album>/<Title>.mp3"));
-        assertEquals("Beck/Devil's Haircut.mp3", parser.parse(song, "<Artist><Album?/<Album>>/<Title>.mp3"));
-        assertEquals("foo\\bar\\baz\\Beck/Devil's Haircut.mp3", parser.parse(song, "foo\\bar\\baz\\<Artist><Album?/<Album>>/<Title>.mp3"));
-        assertEquals("Beck/020 - Devil's Haircut.mp3", parser.parse(song, "<Artist><Album?/<Album>>/<###?<###> - ><Title>.mp3"));
+        assertEquals("Beck//Devil's Haircut", parser.parse(song, "<Artist>/<Album>/<Title>"));
+        assertEquals("Beck/Devil's Haircut", parser.parse(song, "<Artist><Album?/<Album>>/<Title>"));
+        assertEquals("foo\\bar\\baz\\Beck/Devil's Haircut", parser.parse(song, "foo\\bar\\baz\\<Artist><Album?/<Album>>/<Title>"));
+        assertEquals("Beck/020 - Devil's Haircut", parser.parse(song, "<Artist><Album?/<Album>>/<###?<###> - ><Title>"));
 
         assertIllegalArgumentException("scheme may not be empty", song, "");
         assertIllegalArgumentException("unbalanced < >", song, "<");
@@ -90,12 +90,12 @@ public class FilenameSchemaParserTest {
         song.setAlbumName("Odelay");
         song.setSongName("Devil's Haircut");
         song.setTrackNum(1);
-        assertEquals("Beck/Odelay/01 - Devil's Haircut.mp3", parser.parse(song, FilenameSchemeParser.DEFAULT_FILENAME_SCHEME));
+        assertEquals("Beck/Odelay/01 - Devil's Haircut", parser.parse(song, FilenameSchemeParser.DEFAULT_FILENAME_SCHEME));
 
         song.setArtistName(null);
         song.setAlbumName("");
         song.setTrackNum(1);
-        assertEquals("01 - Devil's Haircut.mp3", parser.parse(song, FilenameSchemeParser.DEFAULT_FILENAME_SCHEME));
+        assertEquals("01 - Devil's Haircut", parser.parse(song, FilenameSchemeParser.DEFAULT_FILENAME_SCHEME));
     }
 
 
