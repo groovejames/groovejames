@@ -1,5 +1,5 @@
 BUGS:
-- <##?<##>> doesn't work
+-
 
 WISHLIST:
 - dj channels
