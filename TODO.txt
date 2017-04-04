@@ -1,5 +1,4 @@
 BUGS:
-- downloads table: bitrate/1000
 - <##?<##>> doesn't work
 
 WISHLIST:

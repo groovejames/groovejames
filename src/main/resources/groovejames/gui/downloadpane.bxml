@@ -68,7 +68,7 @@
                                     <TableView.Column name="albumName" headerData="Album" width="155"/>
                                     <TableView.Column name="song.bitrate" headerData="Bitrate" width="45">
                                         <cellRenderer>
-                                            <content:TableViewNumberCellRenderer/>
+                                            <guicomponents:TableViewNumberCellRenderer factor="1000"/>
                                         </cellRenderer>
                                     </TableView.Column>
                                     <TableView.Column name="progress" headerData="Progress" width="1*">
