@@ -1,7 +1,11 @@
 # GrooveJames change history
 
 ### r35 (unreleased)
+- retry failed downloads automatically up to 3 times
 - register Win-Shift-P as an alternative shortcut for play/pause, because media keys cannot be registered on GNOME with JKeyMaster (workaround for https://github.com/tulskiy/jkeymaster/issues/22)
+- bugfix: resizing of table columns
+- bugfix: couldn't download songs with names longer than 240 characters
+- bugfix: the download schema "<##?<##>>" didn't work
 
 ### r34 (2017/02/13)
 - download: try to fetch download url from service https://music.163.com/weapi/song/enhance/player/url, fallback to old streaming server http://p3.music.126.net if that doesn't work out
