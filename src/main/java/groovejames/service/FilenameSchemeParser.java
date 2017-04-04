@@ -118,18 +118,16 @@ public class FilenameSchemeParser {
     private String matchNumberTag(String tag, Song song, String conditionalText) {
         if (!tag.matches("#+"))
             return null;
+        Integer trackNum = song.getTrackNum();
+        if (trackNum == null)
+            return "";
         String parsedConditionalText = null;
         if (conditionalText != null)
             parsedConditionalText = parse0(song, conditionalText);
         if (conditionalText != null)
             return parsedConditionalText;
-        Integer trackNum = song.getTrackNum();
-        if (trackNum != null) {
-            String formatMask = tag.replace('#', '0');
-            return new DecimalFormat(formatMask).format(trackNum);
-        } else {
-            return "";
-        }
+        String formatMask = tag.replace('#', '0');
+        return new DecimalFormat(formatMask).format(trackNum);
     }
 
     private String matchTag(String tagName, String actualTag, String entryValue, String conditionalText, Song song) {
