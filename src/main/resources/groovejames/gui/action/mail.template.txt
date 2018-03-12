@@ -14,5 +14,3 @@ To hear {it} do the following:
 
 Regards,
 GrooveJames
-
-PS: Note that you need GrooveJames 21 or higher.
