@@ -7,6 +7,8 @@ WISHLIST:
 - persist current downloads list so that it survives restarts
 
 LATER:
+- last.fm scrobbling, download recommendations
+
 - use api from https://musicafe.co ?!?
     provides uniform API for NetEase, Xiami, QQ, but has same restrictions regarding geoblocking (ie. you need a chinese proxy for some tracks)
     part of source: https://github.com/LIU9293/musicAPI
