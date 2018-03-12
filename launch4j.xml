@@ -24,7 +24,7 @@
   </jre>
 <!--
   <splash>
-    <file>src/org/lastjames/gui/resources/splash.bmp</file>
+    <file>src/main/resources/org/groovejames/gui/images/splash.bmp</file>
     <waitForWindow>true</waitForWindow>
     <timeout>60</timeout>
     <timeoutErr>true</timeoutErr>
