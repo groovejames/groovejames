@@ -1,10 +1,11 @@
-BUGS:
--
-
 WISHLIST:
+- preserve selection when loading more
+- "load all" button
+- re-enqueue erroneous downloads
 - dj channels
 - mp3 player: add seek forward/backward
 - persist current downloads list so that it survives restarts
+
 
 LATER:
 - last.fm scrobbling, download recommendations
@@ -19,6 +20,3 @@ LATER:
     https://github.com/SergioZgz/Fildo/blob/master/Fildo.Core/NetEase.cs (method FixUrl)
 
 - NetEase account?!? http://reg.163.com/reg/reg.jsp?product=music
-
-- preserve selection when loading more
-- "load all" button

@@ -2,6 +2,7 @@ package groovejames.util;
 
 import java.io.ByteArrayOutputStream;
 import java.text.MessageFormat;
+import java.util.Random;
 
 public class StringUtils {
 
@@ -44,6 +45,15 @@ public class StringUtils {
         for (int i = 0; i < s.length(); i++)
             sb.append(String.format("%02x", (int) s.charAt(i)));
         return sb.toString();
+    }
+
+    public static String randomChars(String charset, int length) {
+        Random random = new Random(System.currentTimeMillis());
+        char[] result = new char[length];
+        for (int i = 0; i < length; i++) {
+            result[i] = charset.charAt(random.nextInt(charset.length()));
+        }
+        return new String(result);
     }
 
     /** @see <a href="http://docs.oracle.com/javase/7/docs/api/java/text/MessageFormat.html">MessageFormat</a> */

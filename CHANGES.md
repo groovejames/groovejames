@@ -1,6 +1,7 @@
 # GrooveJames change history
 
-### r35 (unreleased)
+### r35 (2018/10/02)
+- bugfix: download "cheating" error
 - retry failed downloads automatically up to 3 times
 - register Win-Shift-P as an alternative shortcut for play/pause, because media keys cannot be registered on GNOME with JKeyMaster (workaround for https://github.com/tulskiy/jkeymaster/issues/22)
 - bugfix: resizing of table columns

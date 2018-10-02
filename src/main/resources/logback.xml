@@ -47,7 +47,9 @@
     <logger name="groovejames" level="debug"/>
     <logger name="org.apache.http" level="info"/>
     <logger name="org.apache.http.headers" level="debug"/>
-    <!--logger name="org.apache.http.wire" level="debug"/-->
+
+    <!-- set to "debug" for showing (lots of) network traffic -->
+    <logger name="org.apache.http.wire" level="info"/>
 
     <root level="info">
         <appender-ref ref="CONSOLE"/>

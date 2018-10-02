@@ -245,12 +245,22 @@ public class NetEaseService implements INetEaseService {
         String params = aesEncrypt(aesEncrypt(body, NETEASE_NONCE), secretKey);
         String encSecKey = rsaEncrypt(secretKey, NETEASE_PUBLIC_KEY, NETEASE_MODULUS);
         NEDownloadLocationResponse response = Unirest.post("http://music.163.com/weapi/song/enhance/player/url?csrf_token=")
+            .header("Cookie", createCookie())
             .field("params", params)
             .field("encSecKey", encSecKey)
             .asObject(NEDownloadLocationResponse.class)
             .getBody();
         if (response.code != 200) throw new NetEaseException(response.code, "error download location");
         return response.data.length > 0 ? response.data[0].url : null;
+    }
+
+    private String createCookie() {
+        String timestamp = String.valueOf(System.currentTimeMillis() * 1000);
+        String jsessionid = StringUtils.randomChars("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKMNOPQRSTUVWXYZ", 176) + ":" + timestamp;
+        String nuid = StringUtils.randomChars("0123456789abcdefghijklmnopqrstuvwxyz", 32);
+        return String.format(
+            "JSESSIONID-WYYY=%s; _iuqxldmzr_=32; _ntes_nnid=%s,%s; _ntes_nuid=%s; appver=1.7.3",
+            jsessionid, nuid, timestamp, nuid);
     }
 
     private NEStreamInfo findBestStreamInfo(NESongDetails songDetails) {
