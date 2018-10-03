@@ -3,7 +3,7 @@ import org.gradle.api.tasks.wrapper.Wrapper.DistributionType
 apply plugin: 'java'
 
 group 'groovejames'
-version '35'
+version '36'
 
 compileJava.options.encoding = 'utf-8'
 compileJava.options.compilerArgs << '-Xlint:unchecked'

@@ -1,5 +1,8 @@
 # GrooveJames change history
 
+### r36 (2018/10/03)
+- bugfix: autocomplete
+
 ### r35 (2018/10/02)
 - bugfix: download "cheating" error
 - retry failed downloads automatically up to 3 times

@@ -2,9 +2,7 @@
 
 ### A standalone Java application to download songs from music.163.com
 
-Was previously used to download songs from the late Grooveshark service, but is now being rewritten to use the music.163.com service.
-
-Current status: r35 (stable): allows searching for artists, albums, songs, playlists; downloading of songs and albums, preview songs
+Current status: r36 (stable): allows searching for artists, albums, songs, playlists; downloading of songs and albums, preview songs
 
 #### Requirements:
 - Java7 or higher
