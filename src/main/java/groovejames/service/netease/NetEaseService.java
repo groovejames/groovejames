@@ -216,7 +216,7 @@ public class NetEaseService implements INetEaseService {
     @Override
     public NESuggestionsResult getSuggestions(String query, int limit) throws Exception {
         setup();
-        NESuggestionsResultResponse response = Unirest.post(MUSIC163_API + "/search/suggest")
+        NESuggestionsResultResponse response = Unirest.post(MUSIC163_API + "/search/suggest/web")
             .field("s", query)
             .field("limit", limit)
             .asObject(NESuggestionsResultResponse.class)
