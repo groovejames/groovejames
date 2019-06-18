@@ -2,6 +2,7 @@ package groovejames.gui.components;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import groovejames.gui.WtkUtil;
 import groovejames.model.ImageObject;
 import groovejames.service.Services;
 import org.apache.http.HttpEntity;
@@ -10,7 +11,6 @@ import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
-import org.apache.pivot.util.concurrent.TaskExecutionException;
 import org.apache.pivot.wtk.ApplicationContext;
 import org.apache.pivot.wtk.Component;
 import org.apache.pivot.wtk.media.Image;
@@ -53,15 +53,7 @@ public class ImageLoader {
         if (defaultImageURL == null) {
             throw new IllegalArgumentException("defaultImageURL is null.");
         }
-        Image defaultImage = (Image) ApplicationContext.getResourceCache().get(defaultImageURL);
-        if (defaultImage == null) {
-            try {
-                defaultImage = Image.load(defaultImageURL);
-            } catch (TaskExecutionException ex) {
-                throw new IllegalArgumentException(ex);
-            }
-            ApplicationContext.getResourceCache().put(defaultImageURL, defaultImage);
-        }
+        Image defaultImage = WtkUtil.getIcon(defaultImageURL);
         setDefaultImage(defaultImage);
     }
 

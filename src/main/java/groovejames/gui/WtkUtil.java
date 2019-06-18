@@ -85,6 +85,10 @@ public class WtkUtil {
         if (iconURL == null) {
             throw new IllegalArgumentException("iconResource not found: " + iconResource);
         }
+        return getIcon(iconURL);
+    }
+
+    public static Image getIcon(URL iconURL) {
         Image icon = (Image) ApplicationContext.getResourceCache().get(iconURL);
         if (icon == null) {
             try {
