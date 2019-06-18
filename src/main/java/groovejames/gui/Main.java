@@ -886,7 +886,7 @@ public class Main extends AbstractApplication {
         }
 
         @Override
-        public void playbackPaused(final Track track, final int audioPosition) {
+        public void playbackPaused(final Track track) {
             ApplicationContext.queueCallback(new Runnable() {
                 public void run() {
                     updatePlayInfo(track, "Paused");
@@ -897,7 +897,7 @@ public class Main extends AbstractApplication {
         }
 
         @Override
-        public void playbackFinished(final Track track, final int audioPosition) {
+        public void playbackFinished(final Track track) {
             ApplicationContext.queueCallback(new Runnable() {
                 public void run() {
                     if (track.getStatus() == Track.Status.ERROR) {
