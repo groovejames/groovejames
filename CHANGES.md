@@ -1,6 +1,6 @@
 # GrooveJames change history
 
-### r37 (unreleased)
+### r37 (2019/06/19)
 - added ability to retry erroneous downloads and update running downloads
 - simplify remove buttons on downloads pane
 
