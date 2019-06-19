@@ -1,5 +1,3 @@
-import org.gradle.api.tasks.wrapper.Wrapper.DistributionType
-
 apply plugin: 'java'
 
 group 'groovejames'
@@ -112,7 +110,7 @@ task distAll(dependsOn: [clean, build, distBin, distSrc])
 build.mustRunAfter clean
 
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.6'
-    distributionType = DistributionType.ALL
+wrapper {
+    gradleVersion = '5.4.1'
+    distributionType = Wrapper.DistributionType.ALL
 }
