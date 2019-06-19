@@ -89,6 +89,7 @@ public class DownloadService {
         return download(song, null);
     }
 
+    /** used only for experimental batch downloader */
     public synchronized Track download(Song song, DownloadListener downloadListener) {
         String filename = FileUtils.sanitizeFilepath(filenameSchemeParser.parse(song));
         File file = new File(downloadDir, filename + ".mp3");
