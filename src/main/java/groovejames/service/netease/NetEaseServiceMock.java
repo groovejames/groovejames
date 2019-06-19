@@ -115,7 +115,9 @@ public class NetEaseServiceMock implements INetEaseService {
 
     @Override
     public NESuggestionsResult getSuggestions(String query, int limit) {
-        return null; // TODO
+        NESuggestionsResult result = new NESuggestionsResult();
+        result.order = new NESearchType[0];
+        return result;
     }
 
     @Override

@@ -28,6 +28,7 @@ import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -315,19 +316,22 @@ public class DownloadService {
         private void fakedownload() throws InterruptedException, IOException {
             Thread.sleep(1000);
             String songName = track.getSongName();
-            char lastChar = songName.charAt(songName.length() - 1);
-            String trackName = lastChar % 2 == 0 ? "track1" : "track2";
+            boolean isEven = songName.charAt(songName.length() - 1) % 2 == 0;
+            String trackName = isEven ? "track1" : "track2";
             File file = new File(format("src/test/resources/%s.mp3", trackName));
             Store store = track.getStore();
             OutputStream storeOutputStream = store.getOutputStream();
             OutputStream outputStream = new MonitoredOutputStream(storeOutputStream);
             track.setTotalBytes(file.length());
             InputStream instream = new FileInputStream(file);
+            long errorAtByte = ThreadLocalRandom.current().nextLong(file.length());
             try {
                 byte[] buf = new byte[downloadBufferSize];
                 int l;
                 while ((l = instream.read(buf)) != -1) {
                     outputStream.write(buf, 0, l);
+                    if (!isEven && track.getDownloadedBytes() > errorAtByte)
+                        throw new IOException("mockNet: fake I/O exception");
                     Thread.sleep(100);
                     if (aborted)
                         return;

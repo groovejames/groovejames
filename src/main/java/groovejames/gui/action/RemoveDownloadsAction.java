@@ -10,30 +10,35 @@ import org.apache.pivot.wtk.Component;
 
 import java.util.Iterator;
 
+import static groovejames.gui.action.RemoveDownloadsAction.Mode.ALL;
+import static groovejames.gui.action.RemoveDownloadsAction.Mode.SELECTED;
+import static groovejames.gui.action.RemoveDownloadsAction.Mode.SUCESSFUL;
+
 public class RemoveDownloadsAction extends Action {
 
     private final Main main;
-    private final boolean selectedOnly;
-    private final boolean successfulOnly;
-    private final boolean removeFromDisc;
 
-    public RemoveDownloadsAction(Main main, boolean selectedOnly, boolean successfulOnly, boolean removeFromDisc) {
+    public enum Mode {SELECTED, SUCESSFUL, ALL}
+
+    private final Mode mode;
+
+    public RemoveDownloadsAction(Main main, Mode mode) {
         this.main = main;
-        this.selectedOnly = selectedOnly;
-        this.successfulOnly = successfulOnly;
-        this.removeFromDisc = removeFromDisc;
+        this.mode = mode;
+        setEnabled(false);
     }
 
-    @Override @SuppressWarnings("unchecked")
+    @Override
     public void perform(Component source) {
-        Sequence<Track> selectedTracks = selectedOnly ? main.getSelectedDownloadTracks() : new ArrayList<Track>();
+        Sequence<Track> selectedTracks = mode == SELECTED ? main.getSelectedDownloadTracks() : new ArrayList<Track>();
         Iterator<Track> it = main.getDownloadTracks().iterator();
         while (it.hasNext()) {
             Track track = it.next();
-            if ((selectedOnly && selectedTracks.indexOf(track) != -1)
-                || (!selectedOnly && successfulOnly && track.getStatus().isSuccessful())
-                || (!selectedOnly && !successfulOnly && track.getStatus().isFinished())) {
-                Services.getDownloadService().cancelDownload(track, removeFromDisc);
+            boolean isSelected = mode == SELECTED && selectedTracks.indexOf(track) != -1;
+            if (mode == SELECTED && isSelected
+                || mode == SUCESSFUL && track.getStatus().isSuccessful()
+                || mode == ALL && track.getStatus().isFinished()) {
+                Services.getDownloadService().cancelDownload(track, isSelected || !track.getStatus().isSuccessful());
                 it.remove();
                 selectedTracks.remove(track);
             }

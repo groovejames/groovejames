@@ -3,6 +3,7 @@ package groovejames.gui;
 import groovejames.gui.components.ClickableTableListener;
 import groovejames.gui.components.ClickableTableView;
 import groovejames.gui.components.DefaultTableViewSortListener;
+import groovejames.gui.components.SimpleTableViewSelectionListener;
 import groovejames.gui.components.TableSelectAllKeyListener;
 import groovejames.gui.components.TooltipTableMouseListener;
 import groovejames.model.SearchResult;
@@ -173,24 +174,9 @@ public class SongTablePane extends AbstractSearchTablePane<Song> {
                 return false;
             }
         });
-        songTable.getTableViewSelectionListeners().add(new TableViewSelectionListener() {
+        songTable.getTableViewSelectionListeners().add(new SimpleTableViewSelectionListener() {
             @Override
-            public void selectedRangeAdded(TableView tableView, int rangeStart, int rangeEnd) {
-                updateToolbarButtons();
-            }
-
-            @Override
-            public void selectedRangeRemoved(TableView tableView, int rangeStart, int rangeEnd) {
-                updateToolbarButtons();
-            }
-
-            @Override
-            public void selectedRangesChanged(TableView tableView, Sequence<Span> previousSelectedRanges) {
-                updateToolbarButtons();
-            }
-
-            @Override
-            public void selectedRowChanged(TableView tableView, Object previousSelectedRow) {
+            public void selectionChanged(TableView tableView) {
                 updateToolbarButtons();
             }
         });

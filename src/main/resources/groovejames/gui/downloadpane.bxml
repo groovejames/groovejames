@@ -14,44 +14,23 @@
     </columns>
     <rows>
         <TablePane.Row>
-            <MenuButton>
-                <buttonData>
-                    <content:ButtonData text="Remove From List"/>
-                </buttonData>
-                <menu>
-                    <Menu>
-                        <sections>
-                            <Menu.Section>
-                                <Menu.Item action="clearSelectedDownloads"
-                                           buttonData="Selected Downloads"/>
-                                <Menu.Item action="clearSuccessfulDownloads"
-                                           buttonData="All Successful Downloads"/>
-                                <Menu.Item action="clearFinishedDownloads"
-                                           buttonData="All Downloads (including errors)"/>
-                            </Menu.Section>
-                        </sections>
-                    </Menu>
-                </menu>
-            </MenuButton>
-            <MenuButton>
-                <buttonData>
-                    <content:ButtonData text="Remove From Disk"/>
-                </buttonData>
-                <menu>
-                    <Menu>
-                        <sections>
-                            <Menu.Section>
-                                <Menu.Item action="deleteSelectedDownloads"
-                                           buttonData="Selected Downloads"/>
-                                <Menu.Item action="deleteSuccessfulDownloads"
-                                           buttonData="All Successful Downloads"/>
-                                <Menu.Item action="deleteFinishedDownloads"
-                                           buttonData="All Finished Downloads (including errors)"/>
-                            </Menu.Section>
-                        </sections>
-                    </Menu>
-                </menu>
-            </MenuButton>
+            <FlowPane>
+                <PushButton action="removeSelectedDownloads" tooltipText="Remove selected downloads from list, even running/waiting downloads, and delete incomplete/corrupt files">
+                    <buttonData>
+                        <content:ButtonData text="Remove selected" icon="@images/edit-cut.png"/>
+                    </buttonData>
+                </PushButton>
+                <PushButton action="removeSuccessfulDownloads" tooltipText="Remove successful downloads from list">
+                    <buttonData>
+                        <content:ButtonData text="Remove only successful" icon="@images/check.png"/>
+                    </buttonData>
+                </PushButton>
+                <PushButton action="removeFinishedDownloads" tooltipText="Remove all finished downloads (and delete incomplete/corrupt files), but don't cancel running downloads">
+                    <buttonData>
+                        <content:ButtonData text="Remove all" icon="@images/trash.png"/>
+                    </buttonData>
+                </PushButton>
+            </FlowPane>
         </TablePane.Row>
         <TablePane.Row height="1*">
             <Border TablePane.columnSpan="3">

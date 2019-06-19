@@ -1,5 +1,8 @@
 # GrooveJames change history
 
+### r37 (unreleased)
+- simplify remove buttons on downloads pane
+
 ### r36 (2018/10/03)
 - bugfix: autocomplete
 

@@ -1,22 +1,17 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Main (mockNet)" type="Application" factoryName="Application" singleton="true">
-    <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+    <envs>
+      <env name="GDK_SCALE" value="1" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="groovejames.gui.Main" />
+    <module name="groovejames_main" />
+    <option name="VM_PARAMETERS" value="-DmockNet=true" />
+    <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="groovejames.gui.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
-    <option name="MAIN_CLASS_NAME" value="groovejames.gui.Main" />
-    <option name="VM_PARAMETERS" value="-DmockNet=true" />
-    <option name="PROGRAM_PARAMETERS" value="" />
-    <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
-    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-    <option name="ALTERNATIVE_JRE_PATH" />
-    <option name="ENABLE_SWING_INSPECTOR" value="false" />
-    <option name="ENV_VARIABLES" />
-    <option name="PASS_PARENT_ENVS" value="true" />
-    <module name="groovejames_main" />
-    <envs />
     <RunnerSettings RunnerId="Debug">
       <option name="DEBUG_PORT" value="" />
       <option name="TRANSPORT" value="0" />
@@ -28,6 +23,8 @@
     <RunnerSettings RunnerId="Run" />
     <ConfigurationWrapper RunnerId="Debug" />
     <ConfigurationWrapper RunnerId="Run" />
-    <method />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
   </configuration>
 </component>

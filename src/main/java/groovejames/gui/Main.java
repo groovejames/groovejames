@@ -22,6 +22,8 @@ import groovejames.gui.components.ClickableTableView;
 import groovejames.gui.components.DefaultTableViewSortListener;
 import groovejames.gui.components.FixedTerraTooltipSkin;
 import groovejames.gui.components.ImageLoader;
+import groovejames.gui.components.ListChangedListener;
+import groovejames.gui.components.SimpleTableViewSelectionListener;
 import groovejames.gui.components.SuggestionPopupTextInputContentListener;
 import groovejames.gui.components.SuggestionsProvider;
 import groovejames.gui.components.TableSelectAllKeyListener;
@@ -110,7 +112,8 @@ import java.util.TimerTask;
 import java.util.prefs.Preferences;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
-import static com.sun.jna.Platform.*;
+import static com.sun.jna.Platform.ARCH;
+import static com.sun.jna.Platform.getOSType;
 import static groovejames.util.MiscUtils.durationToString;
 import static groovejames.util.MiscUtils.toErrorString;
 import static groovejames.util.StringUtils.msgformat;
@@ -365,12 +368,9 @@ public class Main extends AbstractApplication {
         Action.getNamedActions().put("closeCurrentTab", new CloseCurrentTabAction());
         Action.getNamedActions().put("closeAllTabs", new CloseAllTabsAction());
         Action.getNamedActions().put("closeOtherTabs", new CloseOtherTabsAction());
-        Action.getNamedActions().put("clearSelectedDownloads", new RemoveDownloadsAction(this, true, false, false));
-        Action.getNamedActions().put("clearSuccessfulDownloads", new RemoveDownloadsAction(this, false, true, false));
-        Action.getNamedActions().put("clearFinishedDownloads", new RemoveDownloadsAction(this, false, false, false));
-        Action.getNamedActions().put("deleteSelectedDownloads", new RemoveDownloadsAction(this, true, false, true));
-        Action.getNamedActions().put("deleteSuccessfulDownloads", new RemoveDownloadsAction(this, false, true, true));
-        Action.getNamedActions().put("deleteFinishedDownloads", new RemoveDownloadsAction(this, false, false, true));
+        Action.getNamedActions().put("removeSelectedDownloads", new RemoveDownloadsAction(this, RemoveDownloadsAction.Mode.SELECTED));
+        Action.getNamedActions().put("removeSuccessfulDownloads", new RemoveDownloadsAction(this, RemoveDownloadsAction.Mode.SUCESSFUL));
+        Action.getNamedActions().put("removeFinishedDownloads", new RemoveDownloadsAction(this, RemoveDownloadsAction.Mode.ALL));
 
         Action.getNamedActions().put("songPlayPause", new SongPlayPauseAction());
         Action.getNamedActions().put("songPrevious", new SongPreviousAction());
@@ -457,6 +457,19 @@ public class Main extends AbstractApplication {
                     openSearchTab(new AlbumSearch(song.getAlbumID(), song.getAlbumName(), song.getArtistName(), false));
                 }
                 return false;
+            }
+        });
+        downloadsTable.getTableViewSelectionListeners().add(new SimpleTableViewSelectionListener() {
+            @Override
+            public void selectionChanged(TableView tableView) {
+                Action.getNamedActions().get("removeSelectedDownloads").setEnabled(tableView.getSelectedRows().getLength() > 0);
+            }
+        });
+        downloadTracks.getListListeners().add(new ListChangedListener<Track>() {
+            @Override
+            public void listChanged(List<Track> list) {
+                Action.getNamedActions().get("removeSuccessfulDownloads").setEnabled(!list.isEmpty());
+                Action.getNamedActions().get("removeFinishedDownloads").setEnabled(!list.isEmpty());
             }
         });
         TooltipTableMouseListener.install(downloadsTable);
@@ -851,23 +864,9 @@ public class Main extends AbstractApplication {
     }
 
 
-    private class PlaylistListListener extends ListListener.Adapter<Song> {
+    private class PlaylistListListener extends ListChangedListener<Song> {
         @Override
-        public void itemInserted(List<Song> list, int index) {
-            updateToggleRadioAction(list);
-        }
-
-        @Override
-        public void itemsRemoved(List<Song> list, int index, Sequence<Song> items) {
-            updateToggleRadioAction(list);
-        }
-
-        @Override
-        public void listCleared(List<Song> list) {
-            updateToggleRadioAction(list);
-        }
-
-        private void updateToggleRadioAction(List<Song> list) {
+        public void listChanged(List<Song> list) {
             Action.getNamedActions().get("toggleRadio").setEnabled(!list.isEmpty());
         }
     }
