@@ -39,7 +39,7 @@
                         <view>
                             <guicomponents:ClickableTableView bxml:id="downloadsTable"
                                                               selectMode="multi"
-                                                              clickableColumns="1,2"
+                                                              clickableColumns="1,2,5"
                                                               styles="{showVerticalGridLines:true}">
                                 <columns>
                                     <TableView.Column name="songName" headerData="Name" width="190"/>
@@ -55,6 +55,7 @@
                                             <gui:DownloadProgressTableCellRenderer/>
                                         </cellRenderer>
                                     </TableView.Column>
+                                    <TableView.Column name="action" width="60"/>
                                 </columns>
                             </guicomponents:ClickableTableView>
                         </view>

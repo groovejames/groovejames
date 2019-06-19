@@ -18,6 +18,8 @@ public class Track {
         }
     }
 
+    public enum Action { Remove, Retry, Cancel }
+
     private final Song song;
     private final Store store;
     private long totalBytes;
@@ -90,6 +92,18 @@ public class Track {
     public void setStatus(Status status) {
         if (!this.status.isFinished()) {
             this.status = status;
+        }
+    }
+
+    public Action getAction() {
+        switch (status) {
+            case FINISHED:
+            case CANCELLED:
+                return Action.Remove;
+            case ERROR:
+                return Action.Retry;
+            default:
+                return Action.Cancel;
         }
     }
 

@@ -449,12 +449,20 @@ public class Main extends AbstractApplication {
         downloadsTable.getClickableTableListeners().add(new ClickableTableListener() {
             @Override
             public boolean cellClicked(ClickableTableView source, Object row, int rowIndex, int columnIndex, Mouse.Button button, int clickCount) {
+                Track track = (Track) row;
                 TableView.Column column = source.getColumns().get(columnIndex);
-                Song song = ((Track) row).getSong();
+                Song song = track.getSong();
                 if ("artistName".equals(column.getName())) {
                     openSearchTab(new ArtistSearch(song.getArtistID(), song.getArtistName()));
                 } else if ("albumName".equals(column.getName())) {
                     openSearchTab(new AlbumSearch(song.getAlbumID(), song.getAlbumName(), song.getArtistName(), false));
+                } else if ("action".equals(column.getName())) {
+                    downloadsTable.setSelectedIndex(rowIndex);
+                    if (track.getAction() == Track.Action.Retry) {
+                        download(song);
+                    } else {
+                        Action.getNamedActions().get("removeSelectedDownloads").perform(source);
+                    }
                 }
                 return false;
             }
