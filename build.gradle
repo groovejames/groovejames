@@ -1,7 +1,7 @@
 apply plugin: 'java'
 
 group 'groovejames'
-version '37'
+version '38'
 
 compileJava.options.encoding = 'utf-8'
 compileJava.options.compilerArgs << '-Xlint:unchecked'
