@@ -90,10 +90,14 @@ public class FilenameSchemaParserTest {
         song.setAlbumName("Odelay");
         song.setSongName("Devil's Haircut");
         song.setTrackNum(1);
-        assertEquals("Beck/Odelay/01 - Devil's Haircut", parser.parse(song, FilenameSchemeParser.DEFAULT_FILENAME_SCHEME));
+        assertEquals("Odelay/01 - Beck - Devil's Haircut", parser.parse(song, FilenameSchemeParser.DEFAULT_FILENAME_SCHEME));
+
+        song.setAlbumArtistName("Various Artists");
+        assertEquals("Various Artists - Odelay/01 - Beck - Devil's Haircut", parser.parse(song, FilenameSchemeParser.DEFAULT_FILENAME_SCHEME));
 
         song.setArtistName(null);
         song.setAlbumName("");
+        song.setAlbumArtistName(null);
         song.setTrackNum(1);
         assertEquals("01 - Devil's Haircut", parser.parse(song, FilenameSchemeParser.DEFAULT_FILENAME_SCHEME));
     }

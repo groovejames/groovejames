@@ -7,6 +7,7 @@
 .gradle/
 build/
 classes/
+out/
 *.iml
 src/main/resources/groovejames/gui/build.properties
 etc/credentials.txt

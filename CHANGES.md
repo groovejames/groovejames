@@ -1,6 +1,10 @@
 # GrooveJames change history
 
 ### r38 (unreleased)
+- now handles album artist correctly for multi-artist compilations:
+  - displays album artist column in download and playback pane
+  - new tag \<AlbumArtist> for download filename scheme
+  - tag mp3 files with "Album Artist" id3v2 tag
 
 ### r37 (2019/06/19)
 - added ability to retry erroneous downloads and update running downloads
@@ -27,7 +31,7 @@
 - replaced commons-logging/log4j with slf4j/logback
 
 ### r32 (2016/04/14)
-- bugfix: workaround for a problem in the blinkenlights MP3 IDv1 tagger: songs with unicode codepoints > 256 in the first 30 characters of its name could not be properly tagged, leading to NegativeArraySizeException and leftover files named "id3.<hash>.tmp" in the download folder
+- bugfix: workaround for a problem in the blinkenlights MP3 IDv1 tagger: songs with unicode codepoints > 256 in the first 30 characters of its name could not be properly tagged, leading to NegativeArraySizeException and leftover files named "id3.\<hash>.tmp" in the download folder
 
 ### r31 (2016/04/05)
 - bugfix: deal properly with songs without download url

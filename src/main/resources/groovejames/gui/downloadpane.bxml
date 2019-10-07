@@ -39,12 +39,13 @@
                         <view>
                             <guicomponents:ClickableTableView bxml:id="downloadsTable"
                                                               selectMode="multi"
-                                                              clickableColumns="1,2,5"
+                                                              clickableColumns="1,2,6"
                                                               styles="{showVerticalGridLines:true}">
                                 <columns>
                                     <TableView.Column name="songName" headerData="Name" width="190"/>
                                     <TableView.Column name="artistName" headerData="Artist" width="155"/>
                                     <TableView.Column name="albumName" headerData="Album" width="155"/>
+                                    <TableView.Column name="albumArtistName" headerData="Album Artist" width="155"/>
                                     <TableView.Column name="song.bitrate" headerData="Bitrate" width="45">
                                         <cellRenderer>
                                             <guicomponents:TableViewNumberCellRenderer factor="1000"/>

@@ -8,6 +8,7 @@ public class Song extends BaseModelObject {
     private long songID;
     private long albumID;
     private String albumName;
+    private String albumArtistName;
     private String imageURL;
     private Integer trackNum;
     private Integer duration;
@@ -71,6 +72,14 @@ public class Song extends BaseModelObject {
 
     public void setAlbumName(String albumName) {
         this.albumName = albumName;
+    }
+
+    public String getAlbumArtistName() {
+        return albumArtistName;
+    }
+
+    public void setAlbumArtistName(String albumArtistName) {
+        this.albumArtistName = albumArtistName;
     }
 
     @Override

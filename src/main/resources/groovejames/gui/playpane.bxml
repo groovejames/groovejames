@@ -112,6 +112,7 @@
                                         <TableView.Column name="songName" headerData="Name" width="140"/>
                                         <TableView.Column name="artistName" headerData="Artist" width="140"/>
                                         <TableView.Column name="albumName" headerData="Album" width="140"/>
+                                        <TableView.Column name="albumArtistName" headerData="Album Artist" width="140"/>
                                         <TableView.Column name="duration" headerData="Length" width="45">
                                             <cellRenderer>
                                                 <gui:TimeTableCellRenderer/>

@@ -57,6 +57,11 @@ public class Track {
         return song.getAlbumName();
     }
 
+    // used for binding in download table
+    public String getAlbumArtistName() {
+        return song.getAlbumArtistName();
+    }
+
     public Store getStore() {
         return store;
     }

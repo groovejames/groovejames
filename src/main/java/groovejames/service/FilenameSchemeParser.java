@@ -6,7 +6,7 @@ import java.text.DecimalFormat;
 import java.util.Locale;
 
 public class FilenameSchemeParser {
-    public static final String DEFAULT_FILENAME_SCHEME = "<Artist?<Artist>/><Album?<Album>/><##?<##> - ><Title>";
+    public static final String DEFAULT_FILENAME_SCHEME = "<AlbumArtist?<AlbumArtist> - ><Album?<Album>/><##?<##> - ><Artist?<Artist> - ><Title>";
     public static final char DEFAULT_WHITESPACE_REPLACE_CHAR = ' ';
     public static final char DEFAULT_ILLEGAL_REPLACE_CHAR = '_';
 
@@ -15,6 +15,7 @@ public class FilenameSchemeParser {
     private static final char QUESTIONMARK = '?';
     private static final String TAG_ARTIST = "Artist";
     private static final String TAG_ALBUM = "Album";
+    private static final String TAG_ALBUM_ARTIST = "AlbumArtist";
     private static final String TAG_TITLE = "Title";
 
     private String filenameScheme = DEFAULT_FILENAME_SCHEME;
@@ -109,6 +110,8 @@ public class FilenameSchemeParser {
             result = matchTag(TAG_ALBUM, tag, song.getAlbumName(), conditionalText, song);
         if (result == null)
             result = matchTag(TAG_TITLE, tag, song.getSongName(), conditionalText, song);
+        if (result == null)
+            result = matchTag(TAG_ALBUM_ARTIST, tag, song.getAlbumArtistName(), conditionalText, song);
         if (result == null)
             throw new IllegalArgumentException("unknown tag: " + tag);
 

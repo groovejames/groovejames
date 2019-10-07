@@ -184,9 +184,9 @@ public class SearchService {
         song.setSongName(neSongDetails.name);
         song.setAlbumName(neSongDetails.album.name);
         song.setAlbumID(neSongDetails.album.id);
+        song.setAlbumArtistName(neSongDetails.album.artists[0].name);
         song.setArtistName(neSongDetails.artists[0].name);
         song.setArtistID(neSongDetails.artists[0].id);
-        //song.setImageURL(neSongDetails.artists[0].img1v1Url);
         song.setImageURL(neSongDetails.album.picUrl);
         song.setPopularity(neSongDetails.popularity / 100.0);
         song.setDuration(neSongDetails.duration / 1000);
@@ -250,7 +250,7 @@ public class SearchService {
             }
             case Artist: {
                 // search for albums of a certain artist
-                Long artistID = ((ArtistSearch) searchParameter).getArtistID();
+                long artistID = ((ArtistSearch) searchParameter).getArtistID();
                 NEArtistAlbumsResultResponse response = netEaseService.getAlbums(artistID, searchParameter.getOffset(), searchParameter.getLimit());
                 Album[] result = convert(response.hotAlbums, -1, -1);
                 return new SearchResult<>(result, response.artist.albumSize, response.artist.name);

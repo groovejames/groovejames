@@ -5,8 +5,8 @@ import org.blinkenlights.jid3.ID3Exception;
 import org.blinkenlights.jid3.MP3File;
 import org.blinkenlights.jid3.v1.ID3V1Tag;
 import org.blinkenlights.jid3.v1.ID3V1_1Tag;
-import org.blinkenlights.jid3.v2.ID3V2Tag;
 import org.blinkenlights.jid3.v2.ID3V2_3_0Tag;
+import org.blinkenlights.jid3.v2.TPE2TextInformationID3V2Frame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +52,7 @@ public class FileStore implements Store {
 
         try {
             ID3V1Tag id3V1Tag = new ID3V1_1Tag();
-            ID3V2Tag id3V2Tag = new ID3V2_3_0Tag();
+            ID3V2_3_0Tag id3V2Tag = new ID3V2_3_0Tag();
 
             String artistName = track.getSong().getArtistName();
             if (artistName != null) {
@@ -64,6 +64,12 @@ public class FileStore implements Store {
             if (albumName != null) {
                 id3V1Tag.setAlbum(fixLongIDV1String(albumName));
                 id3V2Tag.setAlbum(albumName);
+            }
+
+            String albumArtisName = track.getSong().getAlbumArtistName();
+            if (albumArtisName != null) {
+                id3V2Tag.removeTPE2TextInformationFrame();
+                id3V2Tag.setTPE2TextInformationFrame(new TPE2TextInformationID3V2Frame(albumArtisName));
             }
 
             String songName = track.getSong().getSongName();
