@@ -5,7 +5,6 @@ import groovejames.model.Artist;
 import groovejames.model.Playlist;
 import groovejames.model.SearchResult;
 import groovejames.model.Song;
-import groovejames.model.User;
 import groovejames.service.netease.INetEaseService;
 import groovejames.service.netease.NEAlbum;
 import groovejames.service.netease.NEAlbumSearchResult;
@@ -110,7 +109,7 @@ public class SearchService {
             }
             case Album: {
                 // search for songs of the given album
-                Long albumID = ((AlbumSearch) searchParameter).getAlbumID();
+                long albumID = ((AlbumSearch) searchParameter).getAlbumID();
                 NEAlbum neAlbum = netEaseService.getAlbum(albumID);
                 Song[] songs = convert(neAlbum.songs, true);
                 total = songs.length;
@@ -124,14 +123,6 @@ public class SearchService {
                 NEArtistDetailsResponse response = netEaseService.getHotSongs(artistID);
                 Song[] songs = convert(response.hotSongs, false);
                 total = songs.length;
-                result = songs;
-                break;
-            }
-            case User: {
-                // search for library songs of the given user
-                long userID = ((UserSearch) searchParameter).getUserID();
-                Song[] songs = new Song[0];
-                total = 0;
                 result = songs;
                 break;
             }
@@ -211,29 +202,27 @@ public class SearchService {
         SearchType searchType = searchParameter.getSearchType();
         Artist[] result;
         int total;
-        switch (searchType) {
-            case General:
-                // search for artists via string search
-                String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
-                NEArtistSearchResult artistSearchResult = netEaseService.searchArtists(searchString, searchParameter.getOffset(), searchParameter.getLimit());
-                total = artistSearchResult.artistCount;
-                if (total == 0 || artistSearchResult.artists == null) {
-                    result = new Artist[0];
-                } else {
-                    result = new Artist[artistSearchResult.artists.length];
-                    int i = 0;
-                    for (NEArtist neArtist : artistSearchResult.artists) {
-                        Artist artist = new Artist();
-                        artist.setArtistID(neArtist.id);
-                        artist.setArtistName(neArtist.name);
-                        artist.setImageURL(neArtist.img1v1Url);
-                        artist.setRelevance(1.0 - (((double) (searchParameter.getOffset() + i)) / (double) total));
-                        result[i++] = artist;
-                    }
+        if (searchType == SearchType.General) {
+            // search for artists via string search
+            String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
+            NEArtistSearchResult artistSearchResult = netEaseService.searchArtists(searchString, searchParameter.getOffset(), searchParameter.getLimit());
+            total = artistSearchResult.artistCount;
+            if (total == 0 || artistSearchResult.artists == null) {
+                result = new Artist[0];
+            } else {
+                result = new Artist[artistSearchResult.artists.length];
+                int i = 0;
+                for (NEArtist neArtist : artistSearchResult.artists) {
+                    Artist artist = new Artist();
+                    artist.setArtistID(neArtist.id);
+                    artist.setArtistName(neArtist.name);
+                    artist.setImageURL(neArtist.img1v1Url);
+                    artist.setRelevance(1.0 - (((double) (searchParameter.getOffset() + i)) / (double) total));
+                    result[i++] = artist;
                 }
-                break;
-            default:
-                throw new IllegalArgumentException("invalid search type: " + searchType);
+            }
+        } else {
+            throw new IllegalArgumentException("invalid search type: " + searchType);
         }
         return new SearchResult<>(result, total);
     }
@@ -278,60 +267,39 @@ public class SearchService {
         return result;
     }
 
-    public SearchResult<User> searchPeople(SearchParameter searchParameter) throws Exception {
-        SearchType searchType = searchParameter.getSearchType();
-        User[] result;
-        switch (searchType) {
-            case General:
-                String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
-                result = new User[0];
-                break;
-            default:
-                throw new IllegalArgumentException("invalid search type: " + searchType);
-        }
-        return new SearchResult<>(result, result.length);
-    }
-
     public SearchResult<Playlist> searchPlaylists(SearchParameter searchParameter) throws Exception {
         SearchType searchType = searchParameter.getSearchType();
         Playlist[] result;
         int total;
-        switch (searchType) {
-            case General:
-                String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
-                NEPlaylistSearchResult nePlaylistSearchResult = netEaseService.searchPlaylists(searchString, searchParameter.getOffset(), searchParameter.getLimit());
-                if (nePlaylistSearchResult.playlistCount == 0 || nePlaylistSearchResult.playlists == null) {
-                    total = 0;
-                    result = new Playlist[0];
-                } else {
-                    total = nePlaylistSearchResult.playlistCount;
-                    result = new Playlist[nePlaylistSearchResult.playlists.length];
-                    int i = 0;
-                    for (NEPlaylist nePlaylist : nePlaylistSearchResult.playlists) {
-                        Playlist playlist = new Playlist();
-                        playlist.setPlaylistID(nePlaylist.id);
-                        playlist.setName(nePlaylist.name);
-                        playlist.setPicture(nePlaylist.coverImgUrl);
-                        playlist.setNumSongs(nePlaylist.trackCount);
-                        playlist.setUserID(nePlaylist.userId);
-                        playlist.setUserName(nePlaylist.creator.nickname);
-                        playlist.setRelevance(1.0 - (((double) (searchParameter.getOffset() + i)) / (double) total));
-                        result[i++] = playlist;
-                    }
-                }
-                break;
-            case User:
-                Long userID = ((UserSearch) searchParameter).getUserID();
+        if (searchType == SearchType.General) {
+            String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
+            NEPlaylistSearchResult nePlaylistSearchResult = netEaseService.searchPlaylists(searchString, searchParameter.getOffset(), searchParameter.getLimit());
+            if (nePlaylistSearchResult.playlistCount == 0 || nePlaylistSearchResult.playlists == null) {
                 total = 0;
                 result = new Playlist[0];
-                break;
-            default:
-                throw new IllegalArgumentException("invalid search type: " + searchType);
+            } else {
+                total = nePlaylistSearchResult.playlistCount;
+                result = new Playlist[nePlaylistSearchResult.playlists.length];
+                int i = 0;
+                for (NEPlaylist nePlaylist : nePlaylistSearchResult.playlists) {
+                    Playlist playlist = new Playlist();
+                    playlist.setPlaylistID(nePlaylist.id);
+                    playlist.setName(nePlaylist.name);
+                    playlist.setPicture(nePlaylist.coverImgUrl);
+                    playlist.setNumSongs(nePlaylist.trackCount);
+                    playlist.setUserID(nePlaylist.userId);
+                    playlist.setUserName(nePlaylist.creator.nickname);
+                    playlist.setRelevance(1.0 - (((double) (searchParameter.getOffset() + i)) / (double) total));
+                    result[i++] = playlist;
+                }
+            }
+        } else {
+            throw new IllegalArgumentException("invalid search type: " + searchType);
         }
         return new SearchResult<>(result, total);
     }
 
-    public String getDownloadURL(Song song) throws Exception {
+    public String getDownloadURL(Song song) {
         try {
             return netEaseService.determineDownloadURL2(song.getSongID(), song.getBitrate());
         } catch(Exception ex) {

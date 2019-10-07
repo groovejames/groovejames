@@ -55,7 +55,6 @@ public class SearchResultPane extends TablePane implements Bindable {
                 addTab("songtablepane.bxml", "Songs");
                 addTab("albumtablepane.bxml", "Albums");
                 addTab("playlisttablepane.bxml", "Playlists");
-                //addTab("peopletablepane.bxml", "Users"); // TODO: this will become DJ channels/radio
                 break;
             case Artist:
                 addTab("albumtablepane.bxml", "Albums");
@@ -63,10 +62,6 @@ public class SearchResultPane extends TablePane implements Bindable {
                 break;
             case Album:
                 addTab("songtablepane.bxml", "Songs");
-                break;
-            case User:
-                addTab("songtablepane.bxml", "Library");
-                addTab("playlisttablepane.bxml", "Playlists");
                 break;
             case Playlist:
                 addTab("songtablepane.bxml", "Songs");

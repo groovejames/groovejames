@@ -316,10 +316,6 @@ public class SongTablePane extends AbstractSearchTablePane<Song> {
                 // sort by track number (instead of relevance)
                 songTable.setSort("trackNum", SortDirection.ASCENDING);
                 break;
-            case User:
-                // don't sort at all
-                songTable.clearSort();
-                break;
             default:
                 break;
         }
