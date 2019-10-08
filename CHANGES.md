@@ -1,6 +1,6 @@
 # GrooveJames change history
 
-### r38 (unreleased)
+### r38 (2019/10/08)
 - now handles album artist correctly for multi-artist compilations:
   - displays album artist column in download and playback pane
   - new tag \<AlbumArtist> for download filename scheme
