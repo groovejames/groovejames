@@ -12,4 +12,6 @@ public interface PlayServiceListener extends DownloadListener {
     void positionChanged(Track track, int audioPosition);
 
     void exception(Track track, Exception ex);
+
+    void noMoreRadioSongs();
 }

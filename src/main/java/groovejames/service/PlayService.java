@@ -271,9 +271,12 @@ public class PlayService {
             startPlaying(currentSong, 0);
         } else {
             log.info("skipped beyond end of playlist");
+            if (listener != null)
+                listener.playbackFinished(null);
             if (radio) {
-                addNextRadioSong();
-                skipToNext();
+                if (addNextRadioSong()) {
+                    skipToNext();
+                }
             }
         }
     }
@@ -289,13 +292,22 @@ public class PlayService {
         }
     }
 
-    private void addNextRadioSong() {
+    private boolean addNextRadioSong() {
         try {
             log.info("fetching next radio song...");
             Song[] nextRadioSongs = Services.getSearchService().autoplayGetSongs(playlist);
-            add(new LinkedList<>(nextRadioSongs), AddMode.LAST);
+            if (nextRadioSongs.length > 0) {
+                add(new LinkedList<>(nextRadioSongs), AddMode.LAST);
+                return true;
+            } else {
+                if (listener != null) listener.noMoreRadioSongs();
+                return false;
+            }
         } catch (Exception ex) {
-            log.error("error fetching next songs for radio", ex);
+            if (listener != null) {
+                listener.exception(currentTrack, new IOException("error fetching next songs for radio", ex));
+            }
+            return false;
         }
     }
 
@@ -411,6 +423,11 @@ public class PlayService {
         @Override
         public void downloadedBytesChanged(Track track) {
             if (origListener != null) origListener.downloadedBytesChanged(track);
+        }
+
+        @Override
+        public void noMoreRadioSongs() {
+            if (origListener != null) origListener.noMoreRadioSongs();
         }
     }
 }

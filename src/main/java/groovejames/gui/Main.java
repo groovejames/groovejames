@@ -907,7 +907,7 @@ public class Main extends AbstractApplication {
         public void playbackFinished(final Track track) {
             ApplicationContext.queueCallback(new Runnable() {
                 public void run() {
-                    if (track.getStatus() == Track.Status.ERROR) {
+                    if (track != null && track.getStatus() == Track.Status.ERROR) {
                         updatePlayInfo(track, "ERROR");
                         exception(track, track.getFault());
                     } else {
@@ -935,7 +935,9 @@ public class Main extends AbstractApplication {
                     if (track.getStatus() == Track.Status.ERROR) {
                         resetPlayInfo();
                         Services.getPlayService().stop();
-                    } else {
+                    } else if (track.getStatus() == Track.Status.QUEUED
+                        || track.getStatus() == Track.Status.INITIALIZING
+                        || track.getStatus() == Track.Status.DOWNLOADING) {
                         updatePlayInfo(track, "Now playing");
                     }
                     playerTable.repaint();
@@ -959,6 +961,11 @@ public class Main extends AbstractApplication {
                     showError("Error playing song \"" + track.getSongName() + "\"", ex);
                 }
             });
+        }
+
+        @Override
+        public void noMoreRadioSongs() {
+            Prompt.prompt(MessageType.INFO, "Radio: no more similar songs found.", window);
         }
     }
 }
