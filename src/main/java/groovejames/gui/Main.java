@@ -192,7 +192,7 @@ public class Main extends AbstractApplication {
     }
 
     @Override
-    public boolean shutdown(boolean optional) throws Exception {
+    public boolean shutdown(boolean optional) {
         if (optional) {
             int numberOfCurrentRunningDownloads = Services.getDownloadService().getNumberOfCurrentRunningDownloads();
             if (numberOfCurrentRunningDownloads > 0) {
@@ -248,7 +248,11 @@ public class Main extends AbstractApplication {
 
     @SuppressWarnings("unchecked")
     public Sequence<Song> getSelectedPlayerSongs() {
-        return (Sequence<Song>) playerTable.getSelectedRows();
+        Sequence<?> selectedRows = playerTable.getSelectedRows();
+        if (selectedRows.getLength() == 0) {
+            selectedRows = playerTable.getTableData();
+        }
+        return (Sequence<Song>) selectedRows;
     }
 
     public void download(Song song) {
@@ -256,7 +260,6 @@ public class Main extends AbstractApplication {
         lowerPane.setSelectedIndex(0);
         Track track = Services.getDownloadService().download(song);
         List.ItemIterator<Track> it = downloadTracks.iterator();
-        //noinspection WhileLoopReplaceableByForEach
         while (it.hasNext()) {
             Track existingTrack = it.next();
             if (track.getStore().isSameLocation(existingTrack.getStore())) {
@@ -875,6 +878,12 @@ public class Main extends AbstractApplication {
     private class PlaylistListListener extends ListChangedListener<Song> {
         @Override
         public void listChanged(List<Song> list) {
+            Action.getNamedActions().get("songPlayPause").setEnabled(!list.isEmpty());
+            Action.getNamedActions().get("songPrevious").setEnabled(!list.isEmpty());
+            Action.getNamedActions().get("songNext").setEnabled(!list.isEmpty());
+            Action.getNamedActions().get("songKeep").setEnabled(!list.isEmpty());
+            Action.getNamedActions().get("songClearPlaylist").setEnabled(!list.isEmpty());
+            Action.getNamedActions().get("songShare").setEnabled(!list.isEmpty());
             Action.getNamedActions().get("toggleRadio").setEnabled(!list.isEmpty());
         }
     }
