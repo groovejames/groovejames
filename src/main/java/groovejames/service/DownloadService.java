@@ -187,8 +187,7 @@ public class DownloadService {
         private final DownloadListener downloadListener;
         private volatile HttpGet httpGet;
         private volatile boolean aborted;
-        private volatile String primaryDownloadURL;
-        private volatile String realDownloadURL;
+        private volatile String downloadURL;
 
         public DownloadTask(Track track, int initialDelay, DownloadListener downloadListener) {
             this.track = track;
@@ -250,23 +249,24 @@ public class DownloadService {
 
         private void determineDownloadURL() throws Exception {
             if (mockNet) return;
-            this.primaryDownloadURL = searchService.getDownloadURL(track.getSong());
-            if (!isNullOrEmpty(this.primaryDownloadURL)) {
-                this.realDownloadURL = this.primaryDownloadURL;
+            this.downloadURL = searchService.getDownloadURL(track.getSong());
+            if (isNullOrEmpty(this.downloadURL)) {
+                log.error("could not determine primary download url, trying alternative url...");
+                this.downloadURL = track.getSong().getAlternativeDownloadURL();
             }
-            if (isNullOrEmpty(this.realDownloadURL)) {
-                this.realDownloadURL = track.getSong().getAlternativeDownloadURL();
+            if (isNullOrEmpty(this.downloadURL)) {
+                log.error("could not determine alternative download url, trying direct song url...");
+                this.downloadURL = track.getSong().getDownloadURL();
             }
-            if (isNullOrEmpty(this.realDownloadURL)) {
-                this.realDownloadURL = track.getSong().getDownloadURL();
-            }
-            if (isNullOrEmpty(this.realDownloadURL)) {
+            if (isNullOrEmpty(this.downloadURL)) {
+                log.error("could not determine direct song url, bail out.");
                 throw new IllegalStateException("No download location.\n\nMaybe this song is not available for your country. Try using a chinese proxy to circumvent geoblocking.");
             }
+            log.info("using download url: {}", this.downloadURL);
         }
 
         private void download() throws IOException {
-            httpGet = new HttpGet(realDownloadURL);
+            httpGet = new HttpGet(downloadURL);
             for (int i = 1; i <= maxRetries; i++) {
                 try {
                     HttpResponse httpResponse = httpClientService.getHttpClient().execute(httpGet);
@@ -295,11 +295,13 @@ public class DownloadService {
                             // write ID tags
                             store.writeTrackInfo(track);
                             return;
-                        } else if (statusCode == HttpStatus.SC_NOT_FOUND && isNullOrEmpty(primaryDownloadURL)) {
+                        } else if (statusCode == HttpStatus.SC_NOT_FOUND) {
                             throw new IllegalStateException("No valid download location found.\n\nMaybe this song is not available for your country. Try using a chinese proxy to circumvent geoblocking.");
+                        } else if (statusCode == HttpStatus.SC_FORBIDDEN) {
+                            throw new IllegalStateException("Not allowed to download this song.\n\nMaybe this song is not available for your country. Try using a chinese proxy to circumvent geoblocking.");
                         } else {
                             throw new HttpResponseException(statusCode,
-                                format("%s: %d %s", realDownloadURL, statusCode, statusLine.getReasonPhrase()));
+                                format("%s: %d %s", downloadURL, statusCode, statusLine.getReasonPhrase()));
                         }
                     } finally {
                         IOUtils.closeQuietly(instream, track.getStore().getDescription());

@@ -20,6 +20,7 @@ import groovejames.service.netease.NESong;
 import groovejames.service.netease.NESongDetails;
 import groovejames.service.netease.NESongSearchResult;
 import groovejames.service.netease.NESuggestionsResult;
+import groovejames.service.netease.NetEaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -193,8 +194,18 @@ public class SearchService {
             latestSongId = song.getSongID();
             songIDsAlreadySeen.add(latestSongId);
         }
+        ArrayList<NESongDetails> freeSongsNotSeenYet = new ArrayList<>();
         NESongDetails[] similarSongs = netEaseService.getSimilarSongs(latestSongId);
-        return convert(similarSongs, false);
+        for (NESongDetails similarSong : similarSongs) {
+            if (similarSong.fee != 1 && !songIDsAlreadySeen.contains(similarSong.id)) {
+                freeSongsNotSeenYet.add(similarSong);
+            }
+        }
+        if (freeSongsNotSeenYet.isEmpty()) {
+            return new Song[0];
+        } else {
+            return convert(freeSongsNotSeenYet, false);
+        }
     }
 
 
@@ -299,10 +310,10 @@ public class SearchService {
         return new SearchResult<>(result, total);
     }
 
-    public String getDownloadURL(Song song) {
+    public String getDownloadURL(Song song) throws Exception {
         try {
             return netEaseService.determineDownloadURL2(song.getSongID(), song.getBitrate());
-        } catch(Exception ex) {
+        } catch (NetEaseException ex) {
             log.error("could not determine download url using service", ex);
             return null;
         }

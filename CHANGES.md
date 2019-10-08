@@ -5,6 +5,7 @@
   - displays album artist column in download and playback pane
   - new tag \<AlbumArtist> for download filename scheme
   - tag mp3 files with "Album Artist" id3v2 tag
+- enable radio in player again
 
 ### r37 (2019/06/19)
 - added ability to retry erroneous downloads and update running downloads

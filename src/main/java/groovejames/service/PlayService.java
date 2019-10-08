@@ -158,7 +158,6 @@ public class PlayService {
         stopPlaying();
         currentSongIndex = -1;
         playlist.clear();
-        radio = false;
     }
 
     /**
@@ -372,7 +371,7 @@ public class PlayService {
         }
     }
 
-    private abstract class ChainedPlayServiceListener implements PlayServiceListener {
+    private static abstract class ChainedPlayServiceListener implements PlayServiceListener {
         private final PlayServiceListener origListener;
 
         private ChainedPlayServiceListener(PlayServiceListener origListener) {
