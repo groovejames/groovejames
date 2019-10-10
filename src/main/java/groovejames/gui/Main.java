@@ -653,7 +653,7 @@ public class Main extends AbstractApplication {
             @Override
             public boolean mouseClick(Component component, Mouse.Button button, int x, int y, int count) {
                 Image image = nowPlayingImage.getImage();
-                if (image != null && image instanceof Picture) {
+                if (image instanceof Picture) {
                     Picture picture = (Picture) image;
                     try {
                         BufferedImage bufferedImage = picture.getBufferedImage();
@@ -944,8 +944,10 @@ public class Main extends AbstractApplication {
                     if (track.getStatus() == Track.Status.ERROR) {
                         resetPlayInfo();
                         Services.getPlayService().stop();
-                    } else if (track.getStatus() == Track.Status.QUEUED
-                        || track.getStatus() == Track.Status.INITIALIZING
+                    } else if (track.getStatus() == Track.Status.QUEUED) {
+                        resetPlayInfo();
+                        updatePlayInfo(track, "Now playing");
+                    } else if (track.getStatus() == Track.Status.INITIALIZING
                         || track.getStatus() == Track.Status.DOWNLOADING) {
                         updatePlayInfo(track, "Now playing");
                     }

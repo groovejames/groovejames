@@ -1,7 +1,7 @@
 # GrooveJames change history
 
 ### r39 (unreleased)
-
+- bugfix: reset progressbar when skipping between songs
 
 ### r38 (2019/10/08)
 - now handles album artist correctly for multi-artist compilations:
