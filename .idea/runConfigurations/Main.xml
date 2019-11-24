@@ -2,7 +2,7 @@
   <configuration default="false" name="Main" type="Application" factoryName="Application" singleton="true" nameIsGenerated="true">
     <option name="ALTERNATIVE_JRE_PATH" value="1.8" />
     <option name="MAIN_CLASS_NAME" value="groovejames.gui.Main" />
-    <module name="groovejames_main" />
+    <module name="groovejames.main" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="groovejames.gui.*" />
