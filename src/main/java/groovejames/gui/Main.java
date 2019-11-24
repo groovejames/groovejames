@@ -439,7 +439,7 @@ public class Main extends AbstractApplication {
             public boolean mouseClick(Component component, Mouse.Button button, int x, int y, int count) {
                 int col = downloadsTable.getColumnAt(x);
                 int row = downloadsTable.getRowAt(y);
-                if (col == 4 && row >= 0) {
+                if (col == 5 && row >= 0) {
                     Track track = (Track) downloadsTable.getTableData().get(row);
                     if (track.getStatus() == Track.Status.ERROR) {
                         showError("Download error", track.getFault());
