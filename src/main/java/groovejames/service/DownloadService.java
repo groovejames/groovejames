@@ -311,7 +311,7 @@ public class DownloadService {
                     if (i >= maxRetries)
                         throw ex;
                     else
-                        log.warn("Error downloading track {} - will be retried (this was retry {} of {}); error was: {}", track, i, maxRetries, ex);
+                        log.warn("Error downloading track {} - will be retried (this was retry {} of {}); error was:", track, i, maxRetries, ex);
                 }
             }
         }
