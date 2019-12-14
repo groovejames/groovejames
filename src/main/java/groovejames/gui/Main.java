@@ -157,7 +157,15 @@ public class Main extends AbstractApplication {
 
     public static void main(String[] args) {
         log.info("GrooveJames started.");
-        log.info("GrooveJames running on {} {} ({}) in {}", System.getProperty("java.vm.name"), System.getProperty("java.runtime.version"), System.getProperty("java.vm.vendor"), System.getProperty("java.home"));
+        log.info("GrooveJames running on {} {} ({}) in {}",
+            System.getProperty("java.vm.name"),
+            System.getProperty("java.runtime.version"),
+            System.getProperty("java.vm.vendor"),
+            System.getProperty("java.home"));
+        log.info("memory: used: {} MB, free: {} MB, total: {} MB",
+            Runtime.getRuntime().totalMemory() / 1024 / 1024,
+            Runtime.getRuntime().freeMemory() / 1024 / 1024,
+            Runtime.getRuntime().maxMemory() / 1024 / 1024);
         System.setProperty("org.apache.pivot.wtk.skin.terra.location", "/groovejames/gui/GrooveJames_theme.json");
         args = OSUtils.filterSystemProperties(args);
         DesktopApplicationContext.main(Main.class, args);

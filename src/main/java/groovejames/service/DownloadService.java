@@ -203,6 +203,10 @@ public class DownloadService {
                 if (track.getStatus() == Track.Status.CANCELLED)
                     return;
                 log.info("start download track {}", track);
+                log.info("memory: used: {} MB, free: {} MB, total: {} MB",
+                    Runtime.getRuntime().totalMemory() / 1024 / 1024,
+                    Runtime.getRuntime().freeMemory() / 1024 / 1024,
+                    Runtime.getRuntime().maxMemory() / 1024 / 1024);
                 track.setStatus(Track.Status.INITIALIZING);
                 fireDownloadStatusChanged();
                 determineDownloadURL();
