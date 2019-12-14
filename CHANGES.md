@@ -2,6 +2,7 @@
 
 ### r39 (unreleased)
 - bugfix: reset progressbar when skipping between songs
+- bugfix: consume much less memory by resampling artist/album images to their target size of 40 pixels
 
 ### r38 (2019/10/08)
 - now handles album artist correctly for multi-artist compilations:

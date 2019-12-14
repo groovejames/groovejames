@@ -29,6 +29,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
+import static groovejames.util.UrlUtils.getURLLastFilePart;
 import static java.lang.String.format;
 
 public class ImageLoader {
@@ -37,7 +38,7 @@ public class ImageLoader {
 
     private static final Cache<String, Image> imageCache = CacheBuilder.newBuilder().softValues().build();
     private static final Cache<String, Set<ImageTarget>> imageTargetCache = CacheBuilder.newBuilder().maximumSize(20000).build();
-    private static final ExecutorService executorService = Executors.newFixedThreadPool(6);
+    private static final ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     private Image defaultImage;
 
@@ -65,14 +66,14 @@ public class ImageLoader {
         setDefaultImage(classLoader.getResource(defaultImageName));
     }
 
-    public Image getImage(ImageObject imageObject, Component target) {
+    public Image getImage(ImageObject imageObject, Component target, int preferredWidth, int preferredHeight) {
         Image image = imageObject.getImage();
         if (image == null) {
             String imageURL = imageObject.getImageURL();
             if (!isNullOrEmpty(imageURL)) {
                 image = imageCache.getIfPresent(imageURL);
                 if (image == null) {
-                    startLoadingImage(imageURL, imageObject, target);
+                    startLoadingImage(imageURL, imageObject, target, preferredWidth, preferredHeight);
                 }
             } else {
                 image = defaultImage;
@@ -83,18 +84,18 @@ public class ImageLoader {
 
     public Image getImageIgnoringCache(ImageObject imageObject, Component target) {
         String imageURL = imageObject.getImageURL();
-        startLoadingImage(imageURL, imageObject, target);
+        startLoadingImage(imageURL, imageObject, target, null, null);
         return imageObject.getImage();
     }
 
-    private synchronized void startLoadingImage(final String url, ImageObject imageObject, Component target) {
+    private synchronized void startLoadingImage(final String url, ImageObject imageObject, Component target, Integer preferredWidth, Integer preferredHeight) {
         if (!imageObject.isLoadingImage()) {
             imageObject.setLoadingImage(true);
             Set<ImageTarget> imageTargets = imageTargetCache.getIfPresent(url);
             if (imageTargets == null) {
                 imageTargets = new HashSet<>();
                 imageTargetCache.put(url, imageTargets);
-                executorService.submit(new ImageUrlLoadTask(url, defaultImage));
+                executorService.submit(new ImageUrlLoadTask(url, defaultImage, preferredWidth, preferredHeight));
             }
             imageTargets.add(new ImageTarget(imageObject, target));
         }
@@ -104,10 +105,14 @@ public class ImageLoader {
     private static class ImageUrlLoadTask implements Runnable {
         private final String url;
         private final Image defaultImage;
+        private final Integer preferredWidth;
+        private final Integer preferredHeight;
 
-        public ImageUrlLoadTask(String url, Image defaultImage) {
+        public ImageUrlLoadTask(String url, Image defaultImage, Integer preferredWidth, Integer preferredHeight) {
             this.url = url;
             this.defaultImage = defaultImage;
+            this.preferredWidth = preferredWidth;
+            this.preferredHeight = preferredHeight;
         }
 
         @Override
@@ -133,7 +138,11 @@ public class ImageLoader {
                 if (statusCode == HttpStatus.SC_OK) {
                     try (InputStream inputStream = httpEntity.getContent()) {
                         BufferedImage image = ImageIO.read(inputStream);
-                        return new Picture(image);
+                        Picture picture = new Picture(image);
+                        if (preferredWidth != null && preferredHeight != null) {
+                            resample(picture);
+                        }
+                        return picture;
                     }
                 } else {
                     throw new IOException(format("error loading image: uri=%s, status=%s%n", uri, statusLine));
@@ -141,6 +150,20 @@ public class ImageLoader {
             } finally {
                 EntityUtils.consume(httpEntity);
             }
+        }
+
+        /**
+         * resample big image to much smaller target {@code preferredWidth} and {@code preferredHeight}, keeping
+         * aspect ration. Saves memory.
+         */
+        private void resample(Picture picture) {
+            double width = picture.getWidth();
+            double height = picture.getHeight();
+            double ratio = Math.min((double) preferredWidth / width, (double) preferredHeight / height);
+            int newWidth = (int) (width * ratio);
+            int newHeight = (int) (height * ratio);
+            log.info("resampling image {} from {}x{} to {}x{} (ratio: {})", getURLLastFilePart(url), width, height, newWidth, newHeight, ratio);
+            picture.resample(newWidth, newHeight);
         }
 
         private void notifyImageTargetsImageAvailable(Image image) {

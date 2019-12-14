@@ -37,7 +37,7 @@ public class ImageObjectCellRenderer extends TableViewImageCellRenderer {
     public void render(Object row, int rowIndex, int columnIndex, TableView tableView, String columnName, boolean selected, boolean highlighted, boolean disabled) {
         if (row != null) {
             ImageObject imageObject = (ImageObject) row;
-            Image image = imageLoader.getImage(imageObject, tableView);
+            Image image = imageLoader.getImage(imageObject, tableView, getWidth(), getHeight());
             setImage(image);
         }
     }

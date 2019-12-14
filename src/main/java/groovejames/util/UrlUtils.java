@@ -4,7 +4,9 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
 
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -49,6 +51,17 @@ public class UrlUtils {
             }
         }
         return params;
+    }
+
+    public static String getURLLastFilePart(final String s) {
+        String path;
+        try {
+            path = new URL(s).getPath();
+        } catch (MalformedURLException e) {
+            path = s;
+        }
+        int idx = path.lastIndexOf('/');
+        return idx >= 0 && idx < path.length() ? path.substring(idx + 1) : path;
     }
 
 }
