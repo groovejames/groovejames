@@ -19,6 +19,7 @@
     <minVersion>1.7.0</minVersion>
     <maxVersion></maxVersion>
     <jdkPreference>preferJre</jdkPreference>
+    <maxHeapPercent>80</maxHeapPercent>
     <!--<opt>-Dsun.java2d.d3d=false</opt>-->
     <opt>-Djna.nosys=true</opt>
   </jre>
