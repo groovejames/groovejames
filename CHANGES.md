@@ -1,6 +1,6 @@
 # GrooveJames change history
 
-### r39 (unreleased)
+### r39 (2019/12/15)
 - updated grooveJames.exe to Launch4j version 3.12 for support of Java > 8
 - grooveJames.exe now reclaims up to 80% of available memory
 - bugfix: reset progressbar when skipping between songs
