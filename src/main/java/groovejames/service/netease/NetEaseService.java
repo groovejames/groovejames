@@ -15,6 +15,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Collection;
 import java.util.HashMap;
@@ -228,6 +229,9 @@ public class NetEaseService implements INetEaseService {
     @Override
     public String determineDownloadURL1(NESongDetails songDetails) throws Exception {
         NEStreamInfo streamInfo = findBestStreamInfo(songDetails);
+        if (streamInfo == null) {
+            return null;
+        }
         songDetails.bitrate = streamInfo.bitrate;
         // alternative (old) download location
         long dfsId = streamInfo.dfsId;
@@ -272,8 +276,8 @@ public class NetEaseService implements INetEaseService {
 
     private String encryptId(long dfsId) throws Exception {
         // from https://github.com/yanunon/NeteaseCloudMusic
-        byte[] byte1 = NETEASE_URLDECODE_SECRET.getBytes("US-ASCII");
-        byte[] byte2 = String.valueOf(dfsId).getBytes("US-ASCII");
+        byte[] byte1 = NETEASE_URLDECODE_SECRET.getBytes(StandardCharsets.US_ASCII);
+        byte[] byte2 = String.valueOf(dfsId).getBytes(StandardCharsets.US_ASCII);
         int byte1_len = byte1.length;
         for (int i = 0; i < byte2.length; i++) {
             byte2[i] = (byte) (byte2[i] ^ byte1[i % byte1_len]);

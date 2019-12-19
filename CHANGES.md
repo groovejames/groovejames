@@ -1,7 +1,7 @@
 # GrooveJames change history
 
 ### r40 (unreleased)
-
+- bugfix: fix NPE when song is not available
 
 ### r39 (2019/12/15)
 - updated grooveJames.exe to Launch4j version 3.12 for support of Java > 8
