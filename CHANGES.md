@@ -3,6 +3,7 @@
 ### r40 (unreleased)
 - bugfix: fix NPE when song is not available
 - bugfix: reset download bar to zero when download gets retried
+- bugfix: song search exception and garbled screen when popularity of song was > 100.0
 
 ### r39 (2019/12/15)
 - updated grooveJames.exe to Launch4j version 3.12 for support of Java > 8

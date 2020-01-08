@@ -170,7 +170,9 @@ public class SearchService {
         song.setArtistName(neSongDetails.artists[0].name);
         song.setArtistID(neSongDetails.artists[0].id);
         song.setImageURL(neSongDetails.album.picUrl);
-        song.setPopularity(neSongDetails.popularity / 100.0);
+        // TODO: instead of fencing between 0.0 and 100.0 it would be better to normalize it between real min and max
+        //   but for this to work correctly you'd have to normalize over _all_ fetched songs after each fetch
+        song.setPopularity(Math.min(Math.max(neSongDetails.popularity, 0.0), 100.0) / 100.0);
         song.setDuration(neSongDetails.duration / 1000);
         song.setDownloadURL(neSongDetails.mp3Url);
         song.setAlternativeDownloadURL(netEaseService.determineDownloadURL1(neSongDetails));
