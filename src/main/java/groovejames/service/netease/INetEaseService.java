@@ -1,7 +1,6 @@
 package groovejames.service.netease;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.List;
 
 public interface INetEaseService {
 
@@ -21,7 +20,8 @@ public interface INetEaseService {
 
     NEAlbum getAlbum(long albumID) throws Exception;
 
-    Map<Long, NESongDetails> getSongDetails(Collection<Long> songIDs) throws Exception;
+    /** return details for a list of songs. Return the details in the same order as specified in the {@code songIDs} list */
+    NESongDetails[] getSongDetails(List<Long> songIDs) throws Exception;
 
     NEPlaylistDetails getPlaylistDetails(long playlistID) throws Exception;
 

@@ -27,7 +27,7 @@ public class TestNetEaseService {
 
     private static void testDownloadInfo(NetEaseService netEaseService) throws Exception {
         long songID = 22727009L;
-        NESongDetails songDetails = netEaseService.getSongDetails(singletonList(songID)).get(songID);
+        NESongDetails songDetails = netEaseService.getSongDetails(singletonList(songID))[0];
         String url = netEaseService.determineDownloadURL2(songDetails.id, songDetails.bitrate);
         System.out.printf("URL: %s%nBitrate: %s%n", url, songDetails.bitrate);
     }

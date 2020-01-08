@@ -30,7 +30,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class SearchService {
@@ -90,20 +89,15 @@ public class SearchService {
                 if (total == 0 || songSearchResult.songs == null) {
                     result = new Song[0];
                 } else {
-                    result = new Song[songSearchResult.songs.length];
                     ArrayList<Long> songIDs = new ArrayList<>();
-                    int i = 0;
                     for (NESong neSong : songSearchResult.songs) {
-                        Song song = new Song();
-                        song.setSongID(neSong.id);
-                        song.setRelevance(1.0 - (((double) (searchParameter.getOffset() + i)) / (double) total));
                         songIDs.add(neSong.id);
-                        result[i++] = song;
                     }
-                    Map<Long, NESongDetails> songDetailsMap = netEaseService.getSongDetails(songIDs);
-                    for (Song song : result) {
-                        NESongDetails neSongDetails = songDetailsMap.get(song.getSongID());
-                        setSongAttributes(song, neSongDetails);
+                    NESongDetails[] songDetails = netEaseService.getSongDetails(songIDs);
+                    result = convert(songDetails, false);
+                    for (int i = 0; i < result.length; i++) {
+                        Song song = result[i];
+                        song.setRelevance(1.0 - (((double) (searchParameter.getOffset() + i)) / (double) total));
                     }
                 }
                 break;
@@ -112,9 +106,8 @@ public class SearchService {
                 // search for songs of the given album
                 long albumID = ((AlbumSearch) searchParameter).getAlbumID();
                 NEAlbum neAlbum = netEaseService.getAlbum(albumID);
-                Song[] songs = convert(neAlbum.songs, true);
-                total = songs.length;
-                result = songs;
+                result = convert(neAlbum.songs, true);
+                total = result.length;
                 updatedSearchLabel = "Album: \"" + neAlbum.name + "\"" + (neAlbum.artist == null ? "" : " by " + neAlbum.artist.name);
                 break;
             }
@@ -122,27 +115,24 @@ public class SearchService {
                 // search for all songs of the given artist
                 long artistID = ((ArtistSearch) searchParameter).getArtistID();
                 NEArtistDetailsResponse response = netEaseService.getHotSongs(artistID);
-                Song[] songs = convert(response.hotSongs, false);
-                total = songs.length;
-                result = songs;
+                result = convert(response.hotSongs, false);
+                total = result.length;
                 break;
             }
             case Playlist: {
                 // search for songs of the given playlist
                 long playlistID = ((PlaylistSearch) searchParameter).getPlaylistID();
                 NEPlaylistDetails nePlaylistDetails = netEaseService.getPlaylistDetails(playlistID);
-                Song[] songs = convert(nePlaylistDetails.tracks, true);
-                total = songs.length;
-                result = songs;
+                result = convert(nePlaylistDetails.tracks, true);
+                total = result.length;
                 break;
             }
             case Songs: {
                 // search for songs with the given song IDs
-                Set<Long> songIDs = ((SongSearch) searchParameter).getSongIDs();
-                Map<Long, NESongDetails> songDetails = netEaseService.getSongDetails(songIDs);
-                Song[] songs = convert(songDetails.values(), false);
-                total = songs.length;
-                result = songs;
+                List<Long> songIDs = ((SongSearch) searchParameter).getSongIDs();
+                NESongDetails[] songDetails = netEaseService.getSongDetails(songIDs);
+                result = convert(songDetails, false);
+                total = result.length;
                 break;
             }
             default: {

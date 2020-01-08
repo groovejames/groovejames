@@ -1,9 +1,7 @@
 package groovejames.service.netease;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 public class NetEaseServiceMock implements INetEaseService {
 
@@ -82,17 +80,18 @@ public class NetEaseServiceMock implements INetEaseService {
     }
 
     @Override
-    public Map<Long, NESongDetails> getSongDetails(Collection<Long> songIDs) throws Exception {
-        Map<Long, NESongDetails> result = new HashMap<>();
+    public NESongDetails[] getSongDetails(List<Long> songIDs) throws Exception {
+        NESongDetails[] result = new NESongDetails[songIDs.size()];
         int i = 0;
         for (long songID : songIDs) {
             NESongDetails songDetails = new NESongDetails();
             songDetails.id = songID;
-            songDetails.name = latestSearch + i++;
+            songDetails.name = latestSearch + i;
             songDetails.artists = new NEArtist[] {createArtist(latestSearch)};
             songDetails.album = createAlbum(latestSearch, songDetails.artists);
             songDetails.duration = 3 * 60 * 1000;
-            result.put(songID, songDetails);
+            result[i] = songDetails;
+            i++;
         }
         delay();
         return result;

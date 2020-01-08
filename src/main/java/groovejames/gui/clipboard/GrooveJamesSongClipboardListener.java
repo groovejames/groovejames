@@ -3,17 +3,14 @@ package groovejames.gui.clipboard;
 import groovejames.gui.Main;
 import groovejames.service.search.SongSearch;
 import groovejames.util.UrlUtils;
-
 import org.apache.pivot.wtk.ApplicationContext;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URISyntaxException;
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,9 +36,9 @@ public class GrooveJamesSongClipboardListener implements ClipboardListener {
 
     @Override
     public boolean clipboardContentsChanged(String newClipboardContent) {
-        final Set<Long> songIds = new LinkedHashSet<>();
-        final Set<Long> autoPlaySongIds = new LinkedHashSet<>();
-        final Set<String> songNames = new LinkedHashSet<>();
+        final List<Long> songIds = new ArrayList<>();
+        final List<Long> autoPlaySongIds = new ArrayList<>();
+        final List<String> songNames = new ArrayList<>();
         Matcher matcher = pattern.matcher(newClipboardContent);
         while (matcher.find()) {
             String uri = matcher.group();
@@ -66,9 +63,9 @@ public class GrooveJamesSongClipboardListener implements ClipboardListener {
                     songNames.addAll(songNameList);
                 }
             } catch (URISyntaxException ex) {
-                log.error("wrong uri pattern: {}; exception: ", uri, ex.toString());
+                log.error("wrong uri pattern: {}; exception: {}", uri, ex.toString());
             } catch (NumberFormatException ex) {
-                log.error("invalid song id: {}; exception: ", uri, ex.toString());
+                log.error("invalid song id: {}; exception: {}", uri, ex.toString());
             }
         }
         if (!songIds.isEmpty()) {

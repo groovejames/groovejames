@@ -351,7 +351,7 @@ public class SongTablePane extends AbstractSearchTablePane<Song> {
         boolean isFirstAdd = songList.isEmpty();
         addSongs(songs);
         updateToolbarButtons();
-        Set<Long> autoPlaySongIds = new java.util.HashSet<>();
+        java.util.List<Long> autoPlaySongIds = new java.util.ArrayList<>();
         if (searchParameter.getSearchType() == SearchType.Album) {
             if (((AlbumSearch) searchParameter).isAutoplay()) {
                 for (Song song : songs) {

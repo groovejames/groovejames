@@ -214,7 +214,7 @@ _extends: Song_
 - disc: (string) number of disc if album is multi-disc, otherwise empty string 
 - no: (int) position on disc
 - position: (int) position on album?!? mostly the same as "no", but not always
-- popularity: (double) from 0.0 to 100.0
+- popularity: (double) usually from 0.0 to 100.0, but have seen values up to 375.0 also
 - score: (int) same as popularity, as int
 - audition: (StreamInfo) m4a, very low quality (64k)
 - bMusic: (StreamInfo) mp3, low quality (96k)

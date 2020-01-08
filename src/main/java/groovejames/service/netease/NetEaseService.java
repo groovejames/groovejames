@@ -17,8 +17,8 @@ import javax.crypto.spec.SecretKeySpec;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class NetEaseService implements INetEaseService {
@@ -162,7 +162,7 @@ public class NetEaseService implements INetEaseService {
     }
 
     @Override
-    public Map<Long, NESongDetails> getSongDetails(Collection<Long> songIDs) throws Exception {
+    public NESongDetails[] getSongDetails(List<Long> songIDs) throws Exception {
         setup();
         String songIDList = "[" + Joiner.on(',').join(songIDs) + "]";
         NESongDetailsResponse response = Unirest.post(MUSIC163_API + "/song/detail")
@@ -174,7 +174,11 @@ public class NetEaseService implements INetEaseService {
         for (NESongDetails song : response.songs) {
             map.put(song.id, song);
         }
-        return map;
+        NESongDetails[] result = new NESongDetails[songIDs.size()];
+        for (int i = 0; i < songIDs.size(); i++) {
+            result[i] = map.get(songIDs.get(i));
+        }
+        return result;
     }
 
     @Override

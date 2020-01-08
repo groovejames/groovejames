@@ -1,24 +1,24 @@
 package groovejames.service.search;
 
 import java.util.Collections;
-import java.util.Set;
+import java.util.List;
 
 public class SongSearch extends AbstractSearchParameter {
 
-    private final Set<Long> songIDs;
-    private final Set<String> songNames;
-    private final Set<Long> autoPlaySongIds;
+    private final List<Long> songIDs;
+    private final List<String> songNames;
+    private final List<Long> autoPlaySongIds;
 
-    public SongSearch(Set<Long> songIDs, Set<String> songNames, Set<Long> autoPlaySongIds) {
+    public SongSearch(List<Long> songIDs, List<String> songNames, List<Long> autoPlaySongIds) {
         this.songIDs = songIDs;
         this.songNames = songNames;
         this.autoPlaySongIds = autoPlaySongIds;
     }
 
     public SongSearch(long songID, String songName, boolean autoplay) {
-        this.songIDs = Collections.singleton(songID);
-        this.songNames = Collections.singleton(songName);
-        this.autoPlaySongIds = autoplay ? this.songIDs : Collections.<Long>emptySet();
+        this.songIDs = Collections.singletonList(songID);
+        this.songNames = Collections.singletonList(songName);
+        this.autoPlaySongIds = autoplay ? this.songIDs : Collections.<Long>emptyList();
     }
 
     @Override
@@ -49,15 +49,15 @@ public class SongSearch extends AbstractSearchParameter {
         return getLabel();
     }
 
-    public Set<Long> getSongIDs() {
+    public List<Long> getSongIDs() {
         return songIDs;
     }
 
-    public Set<Long> getAutoPlaySongIds() {
+    public List<Long> getAutoPlaySongIds() {
         return autoPlaySongIds;
     }
 
-    public Set<String> getSongNames() {
+    public List<String> getSongNames() {
         return songNames;
     }
 
