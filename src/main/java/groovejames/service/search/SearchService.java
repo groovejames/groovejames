@@ -75,18 +75,22 @@ public class SearchService {
 
     public SearchResult<Song> searchSongs(SearchParameter searchParameter) throws Exception {
         SearchType searchType = searchParameter.getSearchType();
-        int offset = searchParameter.getOffset();
-        int limit = searchParameter.getLimit();
         int total;
         Song[] result;
         String updatedSearchLabel = null;
         switch (searchType) {
             case General: {
                 // search for song names via string search
+                int offset = searchParameter.getOffset();
+                int limit = searchParameter.getLimit();
+                int searchTotal = searchParameter.getTotal(); // -1 on first call, but when offset > 0 contains total of latest call
+                if (offset > 0 && searchTotal > offset && offset + limit > searchTotal) {
+                    limit = searchTotal - offset;
+                }
                 String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
                 NESongSearchResult songSearchResult = netEaseService.searchSongs(searchString, offset, limit);
-                total = songSearchResult.songCount;
-                if (total == 0 || songSearchResult.songs == null) {
+                total = offset == 0 || searchTotal <= 0 ? songSearchResult.songCount : searchTotal;
+                if (total == 0 || songSearchResult.songs == null || songSearchResult.songs.length == 0) {
                     result = new Song[0];
                 } else {
                     ArrayList<Long> songIDs = new ArrayList<>();
@@ -236,8 +240,10 @@ public class SearchService {
             case General: {
                 String searchString = ((GeneralSearch) searchParameter).getGeneralSearchString();
                 NEAlbumSearchResult neAlbumSearchResult = netEaseService.searchAlbums(searchString, searchParameter.getOffset(), searchParameter.getLimit());
-                int total = neAlbumSearchResult.albumCount;
-                Album[] result = total == 0 || neAlbumSearchResult.albums == null ? new Album[0] : convert(neAlbumSearchResult.albums, searchParameter.getOffset(), total);
+                int albumCount = neAlbumSearchResult.albumCount;
+                Album[] result = albumCount == 0 || neAlbumSearchResult.albums == null ? new Album[0] : convert(neAlbumSearchResult.albums, searchParameter.getOffset(), albumCount);
+                // update total when result is suddenly null (this happens)
+                int total = neAlbumSearchResult.albums == null && searchParameter.getOffset() > 0 ? searchParameter.getOffset() + searchParameter.getLimit() : albumCount;
                 return new SearchResult<>(result, total);
             }
             case Artist: {

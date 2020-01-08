@@ -48,6 +48,7 @@ abstract class AbstractSearchTablePane<V extends BaseModelObject> extends TableP
                 moreLink.setVisible(true);
                 moreLink.setAction(new MoreAction());
                 searchParameter.setOffset(currentCount);
+                searchParameter.setTotal(-1);
             } else if (currentCount == 0) {
                 countText.setText("No results.");
                 moreLink.setVisible(false);
@@ -68,6 +69,7 @@ abstract class AbstractSearchTablePane<V extends BaseModelObject> extends TableP
                 moreLink.setVisible(true);
                 moreLink.setAction(new MoreAction());
                 searchParameter.setOffset(currentCount);
+                searchParameter.setTotal(total);
             }
         }
     }

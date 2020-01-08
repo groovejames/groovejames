@@ -4,10 +4,12 @@ abstract class AbstractSearchParameter implements SearchParameter {
 
     private int offset;
     private int limit;
+    private int total; // -1 means unknown
 
     protected AbstractSearchParameter() {
         this.offset = 0;
         this.limit = DEFAULT_SEARCH_LIMIT;
+        this.total = -1;
     }
 
     @Override
@@ -28,6 +30,16 @@ abstract class AbstractSearchParameter implements SearchParameter {
     @Override
     public void setLimit(int limit) {
         this.limit = limit;
+    }
+
+    @Override
+    public int getTotal() {
+        return total;
+    }
+
+    @Override
+    public void setTotal(int total) {
+        this.total = total;
     }
 
     @Override

@@ -32,6 +32,10 @@ public interface SearchParameter extends Cloneable {
 
     void setLimit(int limit);
 
+    int getTotal();
+
+    void setTotal(int total);
+
     /**
      * used for comparision of tab contents: two search tabs are considered equal
      * if comparing their search parameters using this method returns true.
