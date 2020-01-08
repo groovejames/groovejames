@@ -50,13 +50,13 @@ public class NetEaseServiceMock implements INetEaseService {
 
     @Override
     public NEAlbumSearchResult searchAlbums(String searchString, int offset, int limit) throws Exception {
-        ArrayList<NEAlbum> artists = new ArrayList<>();
+        ArrayList<NEAlbum> albums = new ArrayList<>();
         for (int i = offset, cnt = 0; i < total && cnt < limit; i++, cnt++) {
-            artists.add(createAlbum(searchString + " " + i));
+            albums.add(createAlbum(searchString + " " + i, new NEArtist[] {createArtist("artist " + searchString + " " + i)}));
         }
         NEAlbumSearchResult result = new NEAlbumSearchResult();
         result.albumCount = total;
-        result.albums = artists.toArray(new NEAlbum[artists.size()]);
+        result.albums = albums.toArray(new NEAlbum[albums.size()]);
         delay();
         return result;
     }
@@ -89,8 +89,8 @@ public class NetEaseServiceMock implements INetEaseService {
             NESongDetails songDetails = new NESongDetails();
             songDetails.id = songID;
             songDetails.name = latestSearch + i++;
-            songDetails.album = createAlbum(latestSearch);
             songDetails.artists = new NEArtist[] {createArtist(latestSearch)};
+            songDetails.album = createAlbum(latestSearch, songDetails.artists);
             songDetails.duration = 3 * 60 * 1000;
             result.put(songID, songDetails);
         }
@@ -130,10 +130,12 @@ public class NetEaseServiceMock implements INetEaseService {
         return null;
     }
 
-    private NEAlbum createAlbum(String name) {
+    private NEAlbum createAlbum(String name, NEArtist[] artists) {
         NEAlbum album = new NEAlbum();
         album.name = "Album " + name;
         album.id = album.name.hashCode();
+        album.artists = artists;
+        album.artist = artists != null && artists.length > 0 ? artists[0] : null;
         return album;
     }
 

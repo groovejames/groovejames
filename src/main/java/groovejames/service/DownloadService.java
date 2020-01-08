@@ -24,8 +24,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.ConnectException;
-import java.net.SocketTimeoutException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
@@ -212,10 +210,7 @@ public class DownloadService {
                 determineDownloadURL();
                 track.setStartDownloadTime(System.currentTimeMillis());
                 fireDownloadStatusChanged();
-                if (mockNet)
-                    fakedownload();
-                else
-                    download();
+                downloadWithRetry();
                 track.setStatus(Track.Status.FINISHED);
                 fireDownloadStatusChanged();
                 log.info("finished download track {}", track);
@@ -269,54 +264,69 @@ public class DownloadService {
             log.info("using download url: {}", this.downloadURL);
         }
 
-        private void download() throws IOException {
-            httpGet = new HttpGet(downloadURL);
+        private void downloadWithRetry() throws IOException, InterruptedException {
+            if (downloadURL != null) {
+                synchronized (this) {
+                    httpGet = new HttpGet(downloadURL);
+                }
+            }
             for (int i = 1; i <= maxRetries; i++) {
                 try {
-                    HttpResponse httpResponse = httpClientService.getHttpClient().execute(httpGet);
-                    HttpEntity httpEntity = httpResponse.getEntity();
-                    track.setStatus(Track.Status.DOWNLOADING);
-                    fireDownloadStatusChanged();
-                    OutputStream outputStream = null;
-                    InputStream instream = null;
-                    try {
-                        StatusLine statusLine = httpResponse.getStatusLine();
-                        int statusCode = statusLine.getStatusCode();
-                        if (statusCode == HttpStatus.SC_OK) {
-                            track.setTotalBytes(httpEntity.getContentLength());
-                            Store store = track.getStore();
-                            OutputStream storeOutputStream = store.getOutputStream();
-                            outputStream = new MonitoredOutputStream(storeOutputStream);
-                            instream = httpEntity.getContent();
-                            byte[] buf = new byte[downloadBufferSize];
-                            int l;
-                            while ((l = instream.read(buf)) != -1) {
-                                outputStream.write(buf, 0, l);
-                            }
-                            // need to close immediately otherwise we cannot write ID tags
-                            outputStream.close();
-                            outputStream = null;
-                            // write ID tags
-                            store.writeTrackInfo(track);
-                            return;
-                        } else if (statusCode == HttpStatus.SC_NOT_FOUND) {
-                            throw new IllegalStateException("No valid download location found.\n\nMaybe this song is not available for your country. Try using a chinese proxy to circumvent geoblocking.");
-                        } else if (statusCode == HttpStatus.SC_FORBIDDEN) {
-                            throw new IllegalStateException("Not allowed to download this song.\n\nMaybe this song is not available for your country. Try using a chinese proxy to circumvent geoblocking.");
-                        } else {
-                            throw new HttpResponseException(statusCode,
-                                format("%s: %d %s", downloadURL, statusCode, statusLine.getReasonPhrase()));
-                        }
-                    } finally {
-                        IOUtils.closeQuietly(instream, track.getStore().getDescription());
-                        IOUtils.closeQuietly(outputStream, track.getStore().getDescription());
-                    }
-                } catch (ConnectException | SocketTimeoutException ex) {
-                    if (i >= maxRetries)
-                        throw ex;
+                    if (mockNet)
+                        fakedownload();
                     else
+                        download();
+                    break;
+                } catch (IOException ex) {
+                    if (i >= maxRetries) {
+                        throw ex;
+                    } else {
                         log.warn("Error downloading track {} - will be retried (this was retry {} of {}); error was:", track, i, maxRetries, ex);
+                        track.setDownloadedBytes(0L);
+                        track.setStartDownloadTime(System.currentTimeMillis());
+                        fireDownloadBytesChanged();
+                    }
                 }
+            }
+        }
+
+        private void download() throws IOException {
+            HttpResponse httpResponse = httpClientService.getHttpClient().execute(httpGet);
+            HttpEntity httpEntity = httpResponse.getEntity();
+            track.setStatus(Track.Status.DOWNLOADING);
+            fireDownloadStatusChanged();
+            OutputStream outputStream = null;
+            InputStream instream = null;
+            try {
+                StatusLine statusLine = httpResponse.getStatusLine();
+                int statusCode = statusLine.getStatusCode();
+                if (statusCode == HttpStatus.SC_OK) {
+                    track.setTotalBytes(httpEntity.getContentLength());
+                    Store store = track.getStore();
+                    OutputStream storeOutputStream = store.getOutputStream();
+                    outputStream = new MonitoredOutputStream(storeOutputStream);
+                    instream = httpEntity.getContent();
+                    byte[] buf = new byte[downloadBufferSize];
+                    int l;
+                    while ((l = instream.read(buf)) != -1) {
+                        outputStream.write(buf, 0, l);
+                    }
+                    // need to close immediately otherwise we cannot write ID tags
+                    outputStream.close();
+                    outputStream = null;
+                    // write ID tags
+                    store.writeTrackInfo(track);
+                } else if (statusCode == HttpStatus.SC_NOT_FOUND) {
+                    throw new IllegalStateException("No valid download location found.\n\nMaybe this song is not available for your country. Try using a chinese proxy to circumvent geoblocking.");
+                } else if (statusCode == HttpStatus.SC_FORBIDDEN) {
+                    throw new IllegalStateException("Not allowed to download this song.\n\nMaybe this song is not available for your country. Try using a chinese proxy to circumvent geoblocking.");
+                } else {
+                    throw new HttpResponseException(statusCode,
+                        format("%s: %d %s", downloadURL, statusCode, statusLine.getReasonPhrase()));
+                }
+            } finally {
+                IOUtils.closeQuietly(instream, track.getStore().getDescription());
+                IOUtils.closeQuietly(outputStream, track.getStore().getDescription());
             }
         }
 
@@ -332,6 +342,8 @@ public class DownloadService {
             track.setTotalBytes(file.length());
             InputStream instream = new FileInputStream(file);
             long errorAtByte = ThreadLocalRandom.current().nextLong(file.length());
+            track.setStatus(Track.Status.DOWNLOADING);
+            fireDownloadStatusChanged();
             try {
                 byte[] buf = new byte[downloadBufferSize];
                 int l;
