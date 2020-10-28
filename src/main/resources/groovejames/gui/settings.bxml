@@ -15,29 +15,6 @@
                 <TablePane.Row height="1*">
                     <TabPane>
                         <tabs>
-                            <Form bxml:id="downloadForm" styles="{fill:true, showFlagIcons:false}">
-                                <TabPane.tabData>
-                                    <content:ButtonData text="Download"/>
-                                </TabPane.tabData>
-                                <sections>
-                                    <Form.Section heading="Location">
-                                        <TextInput bxml:id="downloadLocation" textKey="downloadLocation"
-                                                   Form.label="Folder" Form.required="true"/>
-                                        <Label preferredWidth="300" styles="{wrapText:true}"
-                                               text="Where to store the downloaded files. The folder will be created if it doesn't exist."/>
-                                    </Form.Section>
-                                    <Form.Section heading="Filename scheme">
-                                        <TextInput bxml:id="filenameScheme" textKey="filenameScheme"
-                                                   Form.label="Scheme" Form.required="true">
-                                            <validator>
-                                                <gjvalidation:FilenameSchemeTextValidator/>
-                                            </validator>
-                                        </TextInput>
-                                        <Label preferredWidth="420" styles="{wrapText:true}"
-                                               text="This is a format string for file path of downloaded files.&#xA;Use / to create a subdirectory. Available placeholders:&#xA;&#xA;  &lt;Artist&gt; : artist's name&#xA;  &lt;Album&gt; : album title&#xA;  &lt;AlbumArtist&gt; : album artist , for compiliations, e.g. 'Various'&#xA;  &lt;Title&gt; : track's name&#xA;  &lt;#&gt; : track number (if any)&#xA;  &lt;##&gt; or &lt;###&gt; : track number padded with leading zeroes&#xA;&#xA;The following applies to all tags:&#xA;  &lt;Tag?text&gt; : inserts 'text' only if the tag's value is not empty&#xA;  &lt;TAGNAME&gt; : the tag's value in uppercase&#xA;  &lt;tagname&gt; : the tag's value in lowercase"/>
-                                    </Form.Section>
-                                </sections>
-                            </Form>
                             <Form bxml:id="networkForm" styles="{fill:true, showFlagIcons:false}">
                                 <TabPane.tabData>
                                     <content:ButtonData text="Network"/>
@@ -55,6 +32,35 @@
                                                 </validation:RegexTextValidator>
                                             </validator>
                                         </TextInput>
+                                        <Label bxml:id="proxyErrorLabel" preferredWidth="420" styles="{color:'red', wrapText:true}"/>
+                                        <BoxPane styles="{horizontalAlignment:'left', verticalAlignment:'center'}">
+                                            <PushButton bxml:id="checkProxyButton" buttonData="Check current proxy..." styles="%commandButton"/>
+                                            <PushButton bxml:id="searchProxyButton" buttonData="Search for proxy..." styles="%commandButton"/>
+                                        </BoxPane>
+                                    </Form.Section>
+                                </sections>
+                            </Form>
+                            <Form bxml:id="downloadForm" styles="{fill:true, showFlagIcons:false}">
+                                <TabPane.tabData>
+                                    <content:ButtonData text="Download"/>
+                                </TabPane.tabData>
+                                <sections>
+                                    <Form.Section heading="Location">
+                                        <TextInput bxml:id="downloadLocation" textKey="downloadLocation"
+                                                   Form.label="Folder" Form.required="true"/>
+                                        <Label preferredWidth="420" styles="{wrapText:true}"
+                                               text="Where to store the downloaded files. The folder will be created if it doesn't exist."/>
+                                    </Form.Section>
+                                    <Form.Section heading="Filename scheme">
+                                        <TextInput bxml:id="filenameScheme" textKey="filenameScheme"
+                                                   Form.label="Scheme" Form.required="true">
+                                            <validator>
+                                                <gjvalidation:FilenameSchemeTextValidator/>
+                                            </validator>
+                                        </TextInput>
+                                        <Label bxml:id="filenameSchemeErrorLabel" styles="{color:'red'}"/>
+                                        <Label preferredWidth="420" styles="{wrapText:true}"
+                                               text="This is a format string for file path of downloaded files.&#xA;Use / to create a subdirectory. Available placeholders:&#xA;&#xA;  &lt;Artist&gt; : artist's name&#xA;  &lt;Album&gt; : album title&#xA;  &lt;AlbumArtist&gt; : album artist , for compiliations, e.g. 'Various'&#xA;  &lt;Title&gt; : track's name&#xA;  &lt;#&gt; : track number (if any)&#xA;  &lt;##&gt; or &lt;###&gt; : track number padded with leading zeroes&#xA;&#xA;The following applies to all tags:&#xA;  &lt;Tag?text&gt; : inserts 'text' only if the tag's value is not empty&#xA;  &lt;TAGNAME&gt; : the tag's value in uppercase&#xA;  &lt;tagname&gt; : the tag's value in lowercase"/>
                                     </Form.Section>
                                 </sections>
                             </Form>
@@ -82,9 +88,6 @@
                             <TablePane.Column width="-1"/>
                         </columns>
                         <TablePane.Row>
-                            <BoxPane styles="{horizontalAlignment:'left', verticalAlignment:'center'}">
-                                <Label bxml:id="errorLabel" styles="{color:'red'}"/>
-                            </BoxPane>
                             <BoxPane styles="{horizontalAlignment:'right', verticalAlignment:'center'}">
                                 <PushButton bxml:id="okButton" buttonData="OK" styles="%commandButton"/>
                                 <PushButton bxml:id="cancelButton" buttonData="Cancel" styles="%commandButton"/>

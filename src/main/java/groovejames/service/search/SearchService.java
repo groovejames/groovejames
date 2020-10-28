@@ -179,7 +179,7 @@ public class SearchService {
         song.setPopularity(Math.min(Math.max(neSongDetails.popularity, 0.0), 100.0) / 100.0);
         song.setDuration(neSongDetails.duration / 1000);
         song.setDownloadURL(neSongDetails.mp3Url);
-        song.setAlternativeDownloadURL(netEaseService.determineDownloadURL1(neSongDetails));
+        song.setAlternativeDownloadURL(netEaseService.determineAlternativeDownloadURL(neSongDetails));
         song.setBitrate(neSongDetails.bitrate);
     }
 
@@ -310,7 +310,7 @@ public class SearchService {
 
     public String getDownloadURL(Song song) throws Exception {
         try {
-            return netEaseService.determineDownloadURL2(song.getSongID(), song.getBitrate());
+            return netEaseService.determineDownloadURL(song.getSongID(), song.getBitrate());
         } catch (NetEaseException ex) {
             log.error("could not determine download url using service", ex);
             return null;

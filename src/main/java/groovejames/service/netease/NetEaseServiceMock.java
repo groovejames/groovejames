@@ -120,12 +120,12 @@ public class NetEaseServiceMock implements INetEaseService {
     }
 
     @Override
-    public String determineDownloadURL1(NESongDetails songDetails) throws Exception {
+    public String determineAlternativeDownloadURL(NESongDetails songDetails) throws Exception {
         return null;
     }
 
     @Override
-    public String determineDownloadURL2(long songID, int bitrate) throws Exception {
+    public String determineDownloadURL(long songID, int bitrate) throws Exception {
         return null;
     }
 

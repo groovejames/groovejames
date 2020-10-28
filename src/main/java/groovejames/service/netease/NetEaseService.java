@@ -231,7 +231,7 @@ public class NetEaseService implements INetEaseService {
     }
 
     @Override
-    public String determineDownloadURL1(NESongDetails songDetails) throws Exception {
+    public String determineAlternativeDownloadURL(NESongDetails songDetails) throws Exception {
         NEStreamInfo streamInfo = findBestStreamInfo(songDetails);
         if (streamInfo == null) {
             return null;
@@ -245,7 +245,7 @@ public class NetEaseService implements INetEaseService {
     }
 
     @Override
-    public String determineDownloadURL2(long songId, int bitrate) throws Exception {
+    public String determineDownloadURL(long songId, int bitrate) throws Exception {
         setup();
         // determine download location, see https://github.com/sk1418/zhuaxia/blob/master/zhuaxia/netease.py
         String body = new JacksonObjectMapper().writeValue(new UrlReq(songId, bitrate));

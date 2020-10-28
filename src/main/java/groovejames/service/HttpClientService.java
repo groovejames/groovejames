@@ -21,9 +21,21 @@ public class HttpClientService {
 
     private ProxySettings proxySettings;
     private CloseableHttpClient httpClient;
-    private CookieStore cookieStore = new BasicCookieStore();
+    private Integer connectTimeout;
+    private Integer socketTimeout;
+    private final CookieStore cookieStore = new BasicCookieStore();
 
     public HttpClientService() {
+    }
+
+    /** override default connect timeout, in ms. */
+    public void setConnectTimeout(Integer connectTimeout) {
+        this.connectTimeout = connectTimeout;
+    }
+
+    /** override default socket timeout, in ms. */
+    public void setSocketTimeout(Integer socketTimeout) {
+        this.socketTimeout = socketTimeout;
     }
 
     public synchronized void setProxySettings(ProxySettings proxySettings) {
@@ -38,10 +50,6 @@ public class HttpClientService {
         if (httpClient == null)
             httpClient = createHttpClient(proxySettings);
         return httpClient;
-    }
-
-    public CookieStore getCookieStore() {
-        return cookieStore;
     }
 
     public synchronized void shutdown() {
@@ -66,9 +74,9 @@ public class HttpClientService {
                 .setDefaultCookieStore(cookieStore)
                 .setDefaultRequestConfig(RequestConfig.custom()
                         /* timeout in milliseconds until a connection is established, in ms */
-                        .setConnectTimeout(SOCKET_TIMEOUT * 1000)
+                        .setConnectTimeout(connectTimeout != null ? connectTimeout : SOCKET_TIMEOUT * 1000)
                         /* socket timeout in milliseconds, which is the timeout for waiting for data */
-                        .setSocketTimeout(SOCKET_TIMEOUT * 1000)
+                        .setSocketTimeout(socketTimeout != null ? socketTimeout : SOCKET_TIMEOUT * 1000)
                         /* don't use "Expect: 100-continue" because some proxies don't understand */
                         .setExpectContinueEnabled(false)
                         /* need to relax default cookie policy to avoid problem with cookies with invalid expiry dates */

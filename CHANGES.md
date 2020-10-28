@@ -1,6 +1,8 @@
 # GrooveJames change history
 
 ### r40 (unreleased)
+- added action "Search for proxy" to settings dialog to search for a suitable proxy retrieved from pubproxy.com 
+- added action "Check current proxy" to settings dialog; checks if proxy is working with a simple request 
 - bugfix: fix NPE when song is not available
 - bugfix: reset download bar to zero when download gets retried
 - bugfix: song search exception and garbled screen when popularity of song was > 100.0

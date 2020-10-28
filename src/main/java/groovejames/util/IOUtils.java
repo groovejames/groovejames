@@ -22,7 +22,7 @@ public class IOUtils {
                 closeable.close();
             } catch (IOException ex) {
                 if (!isNullOrEmpty(streamDescription)) {
-                    log.error("error closing stream {}: ", streamDescription, ex.toString());
+                    log.error("error closing stream {}: {}", streamDescription, ex.toString());
                 } else {
                     log.error("error closing stream: {}", ex.toString());
                 }

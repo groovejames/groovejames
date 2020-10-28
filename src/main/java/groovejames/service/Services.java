@@ -8,7 +8,6 @@ import groovejames.service.netease.NetEaseServiceMock;
 import groovejames.service.search.SearchService;
 
 import java.io.File;
-import java.io.IOException;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 
@@ -48,7 +47,7 @@ public class Services {
     /**
      * scope: singleton, init:eager.
      */
-    public static SearchService getSearchService() throws IOException {
+    public static SearchService getSearchService() {
         return searchService;
     }
 

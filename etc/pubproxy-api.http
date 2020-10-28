@@ -1,0 +1,9 @@
+GET http://pubproxy.com/api/proxy?country=CN&type=http&limit=10&post=true&format=txt
+
+###
+
+GET http://pubproxy.com/api/proxy?country=CN&type=http&limit=10&post=true&format=json&https=true
+
+###
+
+GET http://pubproxy.com/api/proxy?country=CN&type=http&limit=100&post=true&format=json

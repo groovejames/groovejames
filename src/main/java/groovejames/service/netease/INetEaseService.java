@@ -31,8 +31,8 @@ public interface INetEaseService {
 
     NESuggestionsResult getSuggestions(String query, int limit) throws Exception;
 
-    String determineDownloadURL1(NESongDetails songDetails) throws Exception;
+    String determineDownloadURL(long songID, int bitrate) throws Exception;
 
-    String determineDownloadURL2(long songID, int bitrate) throws Exception;
+    String determineAlternativeDownloadURL(NESongDetails songDetails) throws Exception;
 
 }
