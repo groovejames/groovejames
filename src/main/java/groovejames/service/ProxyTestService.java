@@ -1,5 +1,6 @@
 package groovejames.service;
 
+import groovejames.service.netease.NESuggestionsResult;
 import groovejames.service.netease.NetEaseService;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -39,7 +40,8 @@ public class ProxyTestService {
         httpClientService.setSocketTimeout(5000);
         httpClientService.setProxySettings(proxySettings);
         NetEaseService netEaseService = new NetEaseService(httpClientService);
-        netEaseService.getSuggestions("depeche mode", 1);
+        NESuggestionsResult result = netEaseService.getSuggestions("depeche mode", 1);
+        netEaseService.getAlbums(result.artists[0].id, 0, 1);
     }
 
     public ProxySettings findProxyExcept(ProxySettings proxy, ProxyTestListener proxyTestListener) throws IOException, SerializationException {

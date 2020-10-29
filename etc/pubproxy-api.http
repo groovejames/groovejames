@@ -1,9 +1,10 @@
+### get proxy list as text list
 GET http://pubproxy.com/api/proxy?country=CN&type=http&limit=10&post=true&format=txt
 
-###
-
-GET http://pubproxy.com/api/proxy?country=CN&type=http&limit=10&post=true&format=json&https=true
-
-###
-
+### get proxy list as json
 GET http://pubproxy.com/api/proxy?country=CN&type=http&limit=100&post=true&format=json
+
+### get proxies suitable for https
+GET http://pubproxy.com/api/proxy?country=CN,TW&format=json&https=true
+
+###
