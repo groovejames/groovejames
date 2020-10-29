@@ -1,5 +1,7 @@
 # GrooveJames change history
 
+### r41 (unreleased)
+
 ### r40 (2020/10/29)
 - added action "Search for proxy" to settings dialog to search for a suitable proxy retrieved from pubproxy.com 
 - added action "Check current proxy" to settings dialog; checks if proxy is working with a simple request 
