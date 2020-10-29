@@ -254,6 +254,7 @@ public class NetEaseService implements INetEaseService {
         String encSecKey = rsaEncrypt(secretKey, NETEASE_PUBLIC_KEY, NETEASE_MODULUS);
         NEDownloadLocationResponse response = Unirest.post("http://music.163.com/weapi/song/enhance/player/url?csrf_token=")
             .header("Cookie", createCookie())
+            .header("X-Real-IP", "118.66.66.66") // see https://github.com/cnsilvan/UnblockNeteaseMusic/blob/master/processor/processor.go line 130
             .field("params", params)
             .field("encSecKey", encSecKey)
             .asObject(NEDownloadLocationResponse.class)
@@ -267,7 +268,7 @@ public class NetEaseService implements INetEaseService {
         String jsessionid = StringUtils.randomChars("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKMNOPQRSTUVWXYZ", 176) + ":" + timestamp;
         String nuid = StringUtils.randomChars("0123456789abcdefghijklmnopqrstuvwxyz", 32);
         return String.format(
-            "JSESSIONID-WYYY=%s; _iuqxldmzr_=32; _ntes_nnid=%s,%s; _ntes_nuid=%s; appver=1.7.3",
+            "JSESSIONID-WYYY=%s; _iuqxldmzr_=32; _ntes_nnid=%s,%s; _ntes_nuid=%s; appver=1.7.3; os=pc",
             jsessionid, nuid, timestamp, nuid);
     }
 

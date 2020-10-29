@@ -38,8 +38,8 @@ public class DownloadService {
 
     private static final int numberOfParallelDownloads = Integer.getInteger("numberOfParallelDownloads", 1);
     private static final int maxRetries = Integer.getInteger("maxRetries", 3);
-
     private static final int downloadBufferSize = 10240;
+    private static final String music163Referer = "http://music.163.com";
 
     public static final File defaultDownloadDir;
 
@@ -268,6 +268,7 @@ public class DownloadService {
             if (downloadURL != null) {
                 synchronized (this) {
                     httpGet = new HttpGet(downloadURL);
+                    httpGet.addHeader("Referer", music163Referer);
                 }
             }
             for (int i = 1; i <= maxRetries; i++) {
