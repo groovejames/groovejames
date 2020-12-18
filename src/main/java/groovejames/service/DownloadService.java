@@ -259,7 +259,7 @@ public class DownloadService {
             }
             if (isNullOrEmpty(this.downloadURL)) {
                 log.error("could not determine direct song url, bail out.");
-                throw new IllegalStateException("No download location.\n\nMaybe this song is not available for your country. Try using a chinese proxy to circumvent geoblocking.");
+                throw new IllegalStateException(noDownloadLocationMessage("No download location."));
             }
             log.info("using download url: {}", this.downloadURL);
         }
@@ -318,9 +318,9 @@ public class DownloadService {
                     // write ID tags
                     store.writeTrackInfo(track);
                 } else if (statusCode == HttpStatus.SC_NOT_FOUND) {
-                    throw new IllegalStateException("No valid download location found.\n\nMaybe this song is not available for your country. Try using a chinese proxy to circumvent geoblocking.");
+                    throw new IllegalStateException(noDownloadLocationMessage("No valid download location found."));
                 } else if (statusCode == HttpStatus.SC_FORBIDDEN) {
-                    throw new IllegalStateException("Not allowed to download this song.\n\nMaybe this song is not available for your country. Try using a chinese proxy to circumvent geoblocking.");
+                    throw new IllegalStateException(noDownloadLocationMessage("Not allowed to download this song."));
                 } else {
                     throw new HttpResponseException(statusCode,
                         format("%s: %d %s", downloadURL, statusCode, statusLine.getReasonPhrase()));
@@ -377,6 +377,11 @@ public class DownloadService {
                 downloadListener.downloadedBytesChanged(track);
         }
 
+        private String noDownloadLocationMessage(String message) {
+            return message
+                + "\n\nMaybe this song is not available for your country."
+                + (httpClientService.isUsingProxy() ? "" : "\n\nTry using a chinese proxy to circumvent geoblocking.");
+        }
 
         private class MonitoredOutputStream extends OutputStream {
             private final OutputStream outputStream;

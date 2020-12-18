@@ -1,5 +1,6 @@
 package groovejames.service;
 
+import com.google.common.base.Strings;
 import groovejames.util.IOUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.client.CookieStore;
@@ -44,6 +45,10 @@ public class HttpClientService {
             shutdown();
             this.proxySettings = proxySettings;
         }
+    }
+
+    public synchronized boolean isUsingProxy() {
+        return proxySettings != null && proxySettings.getHost() != null;
     }
 
     public synchronized HttpClient getHttpClient() {
