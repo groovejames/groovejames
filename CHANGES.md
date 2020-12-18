@@ -1,6 +1,6 @@
 # GrooveJames change history
 
-### r41 (unreleased)
+### r41 (2020/12/18)
 - bugfix: make Groovejames run on Java>=15
 
 ### r40 (2020/10/29)
