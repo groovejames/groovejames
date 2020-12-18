@@ -54,14 +54,6 @@
                                     <bxml:include src="downloadpane.bxml" inline="true"/>
                                     <bxml:include src="playpane.bxml" inline="true"/>
                                 </tabs>
-                                <tabPaneSelectionListeners>
-                                    function selectedIndexChanged(tabPane, previousSelectedIndex) {
-                                    if (tabPane.selectedIndex == 0)
-                                    downloadsTable.requestFocus();
-                                    else if (tabPane.selectedIndex == 1)
-                                    playerTable.requestFocus();
-                                    }
-                                </tabPaneSelectionListeners>
                             </TabPane>
                         </bottom>
                     </SplitPane>

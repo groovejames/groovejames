@@ -1,6 +1,7 @@
 # GrooveJames change history
 
 ### r41 (unreleased)
+- bugfix: make Groovejames run on Java>=15
 
 ### r40 (2020/10/29)
 - added action "Search for proxy" to settings dialog to search for a suitable proxy retrieved from pubproxy.com 
