@@ -1,6 +1,7 @@
 # GrooveJames change history
 
-### r42 (unreleased)
+### r42 (2021/12/03)
+- bugfix: "Search for proxy" works again
 
 ### r41 (2020/12/18)
 - bugfix: make Groovejames run on Java>=15
