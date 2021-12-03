@@ -1,4 +1,7 @@
-### get proxy list, see https://getproxylist.com/
+### see https://proxyscrape.com/free-proxy-list and https://docs.proxyscrape.com/
+GET https://api.proxyscrape.com/v2/?request=getproxies&protocol=http&timeout=5000&country=CN&ssl=1&anonymity=all
+
+### from https://getproxylist.com/, it's fine but very low request limit
 GET https://api.getproxylist.com/proxy?protocol=http&country[]=CN&allowsRefererHeader=1&allowsUserAgentHeader=1&allowsCookies=1&allowsPost=1&allowsHttps=1&lastTested=600
 
 ### old, unreliable proxy provider

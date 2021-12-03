@@ -1,6 +1,6 @@
 package groovejames.service;
 
-import com.google.common.base.Optional;
+import com.google.common.base.Splitter;
 import groovejames.service.netease.NESuggestionsResult;
 import groovejames.service.netease.NetEaseService;
 import org.apache.http.client.config.RequestConfig;
@@ -8,20 +8,16 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.pivot.collections.Map;
-import org.apache.pivot.json.JSONSerializer;
-import org.apache.pivot.serialization.SerializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.util.Locale;
-import java.util.SortedSet;
+import java.util.List;
+import java.util.Random;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 public class ProxyTestService {
 
@@ -32,6 +28,7 @@ public class ProxyTestService {
     private static final Logger log = LoggerFactory.getLogger(ProxyTestService.class);
 
     private final TreeSet<ProxySettings> currentProxyList = new TreeSet<>();
+    private final Random random = new Random();
 
     public void checkProxy(String host, int port) throws Exception {
         checkProxy(new ProxySettings(host, port));
@@ -47,7 +44,7 @@ public class ProxyTestService {
         netEaseService.getAlbums(result.artists[0].id, 0, 1);
     }
 
-    public ProxySettings findProxyExcept(ProxySettings proxy, ProxyTestListener proxyTestListener) {
+    public ProxySettings findProxyExcept(ProxySettings proxy, ProxyTestListener proxyTestListener) throws IOException {
         if (currentProxyList.isEmpty()) {
             currentProxyList.addAll(getProxyList());
             currentProxyList.remove(proxy);
@@ -66,36 +63,29 @@ public class ProxyTestService {
         return null;
     }
 
-    private SortedSet<? extends ProxySettings> getProxyList() {
+    @SuppressWarnings("UnstableApiUsage")
+    private TreeSet<? extends ProxySettings> getProxyList() throws IOException {
         log.info("Fetching proxy list...");
         TreeSet<ExtendedProxySettings> proxyList = new TreeSet<>();
-        int numTries = 1;
-        while (proxyList.size() < 5 && numTries <= 30) {
-            try {
-                proxyList.add(fetchOneProxy());
-            } catch (IOException | SerializationException | ParseException e) {
-                log.error("error fetching next proxy (try #{})", numTries, e);
-            }
-            numTries++;
-        }
-        log.info("Got {} proxies: {}", proxyList.size(), proxyList);
-        return proxyList;
-    }
-
-    private ExtendedProxySettings fetchOneProxy() throws IOException, SerializationException, ParseException {
         try (CloseableHttpClient httpClient = createHttpClientForFetchingProxyList()) {
-            try (CloseableHttpResponse response = httpClient.execute(new HttpGet("https://api.getproxylist.com/proxy?protocol=http&country[]=CN&allowsRefererHeader=1&allowsUserAgentHeader=1&allowsCookies=1&allowsPost=1&allowsHttps=1&lastTested=600"))) {
+            try (CloseableHttpResponse response = httpClient.execute(new HttpGet("https://api.proxyscrape.com/v2/?request=getproxies&protocol=http&timeout=5000&country=CN&ssl=1&anonymity=all"))) {
                 try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
                     response.getEntity().writeTo(baos);
-                    String jsonContent = new String(baos.toByteArray(), StandardCharsets.UTF_8);
-                    Map<String, ?> payload = JSONSerializer.parseMap(jsonContent);
-                    String ip = (String) payload.get("ip");
-                    int port = (Integer) payload.get("port");
-                    int downloadSpeed = NumberFormat.getInstance(Locale.ENGLISH).parse(Optional.fromNullable((String) payload.get("downloadSpeed")).or("0")).intValue();
-                    return new ExtendedProxySettings(ip, port, downloadSpeed);
+                    String content = new String(baos.toByteArray(), StandardCharsets.UTF_8);
+                    log.info("New proxy list content:\n{}", content);
+                    List<String> strings = Splitter.on(Pattern.compile("\r?\n")).omitEmptyStrings().trimResults().splitToList(content);
+                    for (String string : strings) {
+                        List<String> parts = Splitter.on(':').splitToList(string);
+                        String ip = parts.get(0);
+                        int port = Integer.parseInt(parts.get(1));
+                        int speed = random.nextInt(); // api.proxyscrape.com doesn't provide speed info. List will be sorted by speed, so use random sorting
+                        proxyList.add(new ExtendedProxySettings(ip, port, speed));
+                    }
                 }
             }
         }
+        log.info("New proxy list: {}", proxyList);
+        return proxyList;
     }
 
     private CloseableHttpClient createHttpClientForFetchingProxyList() {
