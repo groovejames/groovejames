@@ -1,5 +1,6 @@
 package groovejames.service;
 
+import com.google.common.base.Optional;
 import groovejames.service.netease.NESuggestionsResult;
 import groovejames.service.netease.NetEaseService;
 import org.apache.http.client.config.RequestConfig;
@@ -7,7 +8,6 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.pivot.collections.List;
 import org.apache.pivot.collections.Map;
 import org.apache.pivot.json.JSONSerializer;
 import org.apache.pivot.serialization.SerializationException;
@@ -17,6 +17,9 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.Locale;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -44,7 +47,7 @@ public class ProxyTestService {
         netEaseService.getAlbums(result.artists[0].id, 0, 1);
     }
 
-    public ProxySettings findProxyExcept(ProxySettings proxy, ProxyTestListener proxyTestListener) throws IOException, SerializationException {
+    public ProxySettings findProxyExcept(ProxySettings proxy, ProxyTestListener proxyTestListener) {
         if (currentProxyList.isEmpty()) {
             currentProxyList.addAll(getProxyList());
             currentProxyList.remove(proxy);
@@ -63,31 +66,33 @@ public class ProxyTestService {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
-    private SortedSet<? extends ProxySettings> getProxyList() throws IOException, SerializationException {
+    private SortedSet<? extends ProxySettings> getProxyList() {
         log.info("Fetching proxy list...");
-        String proxyListResponseJson = fetchProxyList();
-        log.info("Raw proxy list response: {}", proxyListResponseJson);
-        Map<String, ?> proxyListResponse = JSONSerializer.parseMap(proxyListResponseJson);
-        List<?> proxyList = (List<?>) proxyListResponse.get("data");
-        TreeSet<ExtendedProxySettings> result = new TreeSet<>();
-        for (Object entry : proxyList) {
-            Map<String, ?> proxy = (Map<String, ?>) entry;
-            result.add(new ExtendedProxySettings(
-                (String) proxy.get("ip"),
-                Integer.parseInt((String) proxy.get("port")),
-                Integer.parseInt((String) proxy.get("speed"))));
+        TreeSet<ExtendedProxySettings> proxyList = new TreeSet<>();
+        int numTries = 1;
+        while (proxyList.size() < 5 && numTries <= 30) {
+            try {
+                proxyList.add(fetchOneProxy());
+            } catch (IOException | SerializationException | ParseException e) {
+                log.error("error fetching next proxy (try #{})", numTries, e);
+            }
+            numTries++;
         }
-        log.info("Got {} proxies: {}", result.size(), result);
-        return result;
+        log.info("Got {} proxies: {}", proxyList.size(), proxyList);
+        return proxyList;
     }
 
-    private String fetchProxyList() throws IOException {
+    private ExtendedProxySettings fetchOneProxy() throws IOException, SerializationException, ParseException {
         try (CloseableHttpClient httpClient = createHttpClientForFetchingProxyList()) {
-            try (CloseableHttpResponse response = httpClient.execute(new HttpGet("http://pubproxy.com/api/proxy?country=CN&type=http&limit=10&post=true&format=json"))) {
+            try (CloseableHttpResponse response = httpClient.execute(new HttpGet("https://api.getproxylist.com/proxy?protocol=http&country[]=CN&allowsRefererHeader=1&allowsUserAgentHeader=1&allowsCookies=1&allowsPost=1&allowsHttps=1&lastTested=600"))) {
                 try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
                     response.getEntity().writeTo(baos);
-                    return new String(baos.toByteArray(), StandardCharsets.UTF_8);
+                    String jsonContent = new String(baos.toByteArray(), StandardCharsets.UTF_8);
+                    Map<String, ?> payload = JSONSerializer.parseMap(jsonContent);
+                    String ip = (String) payload.get("ip");
+                    int port = (Integer) payload.get("port");
+                    int downloadSpeed = NumberFormat.getInstance(Locale.ENGLISH).parse(Optional.fromNullable((String) payload.get("downloadSpeed")).or("0")).intValue();
+                    return new ExtendedProxySettings(ip, port, downloadSpeed);
                 }
             }
         }

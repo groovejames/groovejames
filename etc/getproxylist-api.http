@@ -1,0 +1,5 @@
+### get proxy list, see https://getproxylist.com/
+GET https://api.getproxylist.com/proxy?protocol=http&country[]=CN&allowsRefererHeader=1&allowsUserAgentHeader=1&allowsCookies=1&allowsPost=1&allowsHttps=1&lastTested=600
+
+### old, unreliable proxy provider
+GET http://pubproxy.com/api/proxy?country=CN&limit=10&post=true&format=json
