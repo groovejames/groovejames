@@ -93,9 +93,9 @@ public class ProxyTestService {
             .create()
             .setDefaultRequestConfig(RequestConfig.custom()
                 /* timeout in milliseconds until a connection is established, in ms */
-                .setConnectTimeout(3000)
+                .setConnectTimeout(10000)
                 /* socket timeout in milliseconds, which is the timeout for waiting for data */
-                .setSocketTimeout(5000)
+                .setSocketTimeout(10000)
                 .build())
             .build();
     }
