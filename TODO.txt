@@ -8,10 +8,3 @@ WISHLIST:
 
 LATER:
 - last.fm scrobbling, download recommendations
-
-- do something against geoblocking (e.g. http://music.163.com/song?id=26393771 has no download location)
-  Maybe use random chinese proxies like Fildo.net, see:
-    https://github.com/SergioZgz/Fildo/blob/master/Fildo.Core.Services/NetEaseService.cs (this.AvailableProxy) and
-    https://github.com/SergioZgz/Fildo/blob/master/Fildo.Core/NetEase.cs (method FixUrl)
-
-- NetEase account?!? http://reg.163.com/reg/reg.jsp?product=music

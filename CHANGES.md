@@ -1,5 +1,10 @@
 # GrooveJames change history
 
+### next
+- now requires Java 17 or higher
+- update to Gradle 9.x
+- no longer requires external Launch4j set with -Dlaunch4jDir=dir
+
 ### r42 (2021/12/03)
 - bugfix: "Search for proxy" works again
 

@@ -5,7 +5,7 @@
 Current status: r42 (stable): allows searching for artists, albums, songs, playlists; downloading of songs and albums, preview songs
 
 ### Requirements
-- Java7 or higher
+- Java 17 or higher
 
 ### Download
 See [Releases](https://github.com/groovejames/groovejames/releases)
@@ -31,5 +31,5 @@ Execute `./gradlew distAll` to create binary and source distributions.
 
 For Windows there is even a small wrapper `groovejames.exe` generated
 by [Launch4J](http://launch4j.sourceforge.net/) which starts Groovejames
-with the system Java. Just put `groovejames.jar` and `groovejames.exe`
+with your system Java. Just put `groovejames.jar` and `groovejames.exe`
 into the same directory and double click `groovejames.exe` to start it.
